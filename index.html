@@ -749,7 +749,7 @@ footer{padding:26px 0 40px;color:var(--sub);font-size:12px;text-align:center}
         <div class="sync-body">
           <label class="sync-lab">GitHub Token（只勾 gist 权限）<input type="password" id="sync-token" placeholder="ghp_… / github_pat_…" autocomplete="off"></label>
           <label class="sync-lab">同步密码（加密钥匙，务必牢记）<input type="password" id="sync-pass" placeholder="自定义密码" autocomplete="off"></label>
-          <label class="sync-row"><input type="checkbox" id="sync-auto"> 自动同步（改动 3 秒后推 / 打开时拉）</label>
+          <label class="sync-row"><input type="checkbox" id="sync-auto"> 每日自动推送（≤1 次/天；拉取仅手动）</label>
           <div class="sync-btns">
             <button class="btn sm" id="sync-push">⬆️ 推送上云</button>
             <button class="btn ghost sm" id="sync-pull">⬇️ 从云端恢复</button>
@@ -1585,7 +1585,7 @@ document.getElementById('ck-grid').addEventListener('change',e=>{
 });
 
 /* ================= 票据文件夹（文件夹原图 + 上传 IndexedDB） ================= */
-const GALLERY=[];   /* 在线净版：不打包本地票据图 */
+const GALLERY=[];
 let idb=null, galUrls=[];
 function dbGet(){ return new Promise((res)=>{ if(idb) return res(idb);
   const r=indexedDB.open('krtip2026',1);
@@ -1807,7 +1807,10 @@ function syncStatus(t){ const el=document.getElementById('sync-status'); if(el) 
 function scheduleAutoPush(){
   if(SYNCING||localStorage.getItem(SYNC.AUTO)!=='1'||!sTok()||!sPwd()) return;
   clearTimeout(autoPushTimer);
-  autoPushTimer=setTimeout(()=>syncPush(true),3000);
+  const last=+localStorage.getItem(SYNC.PUSH)||0;
+  const H24=24*60*60*1000;
+  if(Date.now()-last<H24) return;                    /* 每天最多自动推送一次 */
+  autoPushTimer=setTimeout(()=>syncPush(true),5000); /* 5秒后执行 */
 }
 async function deriveKey(pass,salt){
   const km=await crypto.subtle.importKey('raw',new TextEncoder().encode(pass),'PBKDF2',false,['deriveKey']);
@@ -1919,7 +1922,7 @@ async function syncPush(silent){
       if(remoteNew&&!localDirty&&!silent&&!await uiConfirm('云端有另一设备推送的更新版本，继续推送将覆盖它。\n（建议先「从云端恢复」）\n仍要覆盖？')){ SYNCING=false; syncStatus('已取消（云端较新）'); return; }
       if(remoteNew&&localDirty&&!silent&&!await uiConfirm('云端和本地都有新改动，推送会覆盖云端版本（本地已自动备份）。继续？')){ SYNCING=false; syncStatus('已取消'); return; }
     }
-    backupLocal();
+    if(!silent) backupLocal();                   /* 仅手动推送时创建本地备份 */
     const r=await gh('/gists/'+id,{method:'PATCH',body:JSON.stringify({description:SYNC.DESC,files:{[SYNC.FILE]:{content:payload}}})});
     if(!r.ok){ const e=r.status===401?'Token 无效（Fine-grained 请改用 Classic）':r.status===403?'权限不足或被限流':'HTTP '+r.status; throw new Error('推送失败：'+e); }
     localStorage.setItem(SYNC.PUSH,String(Date.now()));
@@ -1947,8 +1950,7 @@ async function syncPull(silent){
     if(silent&&!remoteNew){ syncStatus('云端无更新'); SYNCING=false; return; }
     if(silent&&localDirty){ syncStatus('⏸️ 云端较新，但本地有未同步修改——已跳过自动覆盖，请手动「⬆️推送」或「⬇️恢复」'); SYNCING=false; return; }
     if(localDirty&&!silent&&!await uiConfirm('本地有未同步的修改，恢复云端会覆盖本地（已自动备份）。继续？')){ syncStatus('已取消'); SYNCING=false; return; }
-    if(localDirty) backupLocal();
-    const plain=await decAES(sPwd(),content);
+    if(localDirty&&!silent) backupLocal();      /* 仅手动拉取时创建本地备份 */
     const data=JSON.parse(plain);
     applySyncData(data);
     localStorage.setItem(LS_KEY,JSON.stringify(S));
@@ -2034,10 +2036,7 @@ document.getElementById('sync-hist-list')?.addEventListener('click',async e=>{
   }catch(err){ syncStatus(/OperationError/.test(err.name+err.message)?'❌ 解密失败：密码不符':'❌ '+err.message); }
   SYNCING=false;
 });
-['visibilitychange','online'].forEach(ev=>document.addEventListener(ev,()=>{
-  if(ev==='visibilitychange'&&document.visibilityState!=='visible') return;
-  if(localStorage.getItem(SYNC.AUTO)==='1'&&sTok()&&sPwd()&&!SYNCING&&wireSyncUI.done) syncPull(true);
-}));
+/* 自动拉取已彻底禁用（用户要求 2026-09-29）：只在手动点击「⬇️ 从云端恢复」时拉取 */
 wireSyncUI();
 
 /* ================= 启动 ================= */
