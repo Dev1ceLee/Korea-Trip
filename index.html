@@ -328,6 +328,7 @@ footer{padding:26px 0 40px;color:var(--sub);font-size:12px;text-align:center}
 .g-del{border:none;background:none;color:#adb5c6;font-size:11px;cursor:pointer;padding:0 2px;vertical-align:middle}
 .g-edit{border:none;background:none;color:#adb5c6;font-size:11px;cursor:pointer;padding:0 2px;vertical-align:middle}
 .g-edit:hover{color:var(--blue)}
+a.g-edit,a.g-del{text-decoration:none}
 .g-del:hover{color:var(--red)}
 .g-item.g-file{cursor:default}
 .g-filecard{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:150px;border:1.5px dashed var(--line);border-radius:8px;padding:14px 10px;cursor:pointer;transition:border-color .15s}
@@ -733,7 +734,7 @@ footer{padding:26px 0 40px;color:var(--sub);font-size:12px;text-align:center}
       <button class="btn green" onclick="document.getElementById('gal-up').click()">📤 上传文件</button>
       <button class="btn ghost" onclick="galUnhideAll()">👁 显示全部（含隐藏）</button>
       <input type="file" id="gal-up" accept="image/*,application/pdf" multiple hidden>
-      <span class="muted" id="gal-hint">支持图片与 PDF（电子入境单、行程单等，单个 ≤500KB）；上传后加密同步全端；文件夹原图仅本机展示；点图放大、点文件卡片打开。</span>
+      <span class="muted" id="gal-hint">支持多选；图片自动压缩，PDF 等文件单个 ≤10MB（同步时自动分块）；上传后加密同步全端。文件夹原件仅本机展示。</span>
     </div>
     <div class="gallery" id="gallery-grid"></div>
   </section>
@@ -1604,8 +1605,35 @@ document.getElementById('ck-grid').addEventListener('change',e=>{
   S.ck[id]=e.target.checked; save(); renderCK();
 });
 
-/* ================= 票据文件夹（文件夹原图 + 上传 IndexedDB） ================= */
-const GALLERY=[];
+/* ================= 票据文件夹（文件夹原件 + 上传 IndexedDB） ================= */
+const GALLERY=[
+  {src:'D1.jpg',full:'D1.jpg',cap:'D1'},
+  {src:'D1&D6.jpg',full:'D1&D6.jpg',cap:'D1&D6'},
+  {src:'D1_P1.jpg',full:'D1_P1.jpg',cap:'D1_P1'},
+  {src:'D1_P2.jpg',full:'D1_P2.jpg',cap:'D1_P2'},
+  {src:'D1_P3.jpg',full:'D1_P3.jpg',cap:'D1_P3'},
+  {src:'D2.jpg',full:'D2.jpg',cap:'D2'},
+  {src:'D3.jpg',full:'D3.jpg',cap:'D3'},
+  {src:'D4_1.jpg',full:'D4_1.jpg',cap:'D4_1'},
+  {src:'D4_2.jpg',full:'D4_2.jpg',cap:'D4_2'},
+  {src:'D4_3.jpg',full:'D4_3.jpg',cap:'D4_3'},
+  {src:'D4_4.jpg',full:'D4_4.jpg',cap:'D4_4'},
+  {src:'D4_5.jpg',full:'D4_5.jpg',cap:'D4_5'},
+  {src:'D4_6.jpg',full:'D4_6.jpg',cap:'D4_6'},
+  {src:'Korea e-Arrivalcard_EJ5596632(1).pdf',full:'电子入境单 EJ5596632',cap:'入境单 EJ5596632'},
+  {src:'Korea e-Arrivalcard_EJ6619018.pdf',full:'电子入境单 EJ6619018',cap:'入境单 EJ6619018'},
+  {src:'广州-首尔往返机票行程单.pdf',full:'广州-首尔往返机票行程单',cap:'往返机票行程单'},
+];
+let galProbe=null;
+async function probeFolder(){                                 /* 文件夹原件仅本机能访问（未推送线上）：先 HEAD 探测再渲染，60s 缓存 */
+  if(galProbe&&Date.now()-galProbe.t<60000) return galProbe;
+  galProbe={t:Date.now()};
+  await Promise.all(GALLERY.map(async f=>{ try{ const r=await fetch(encodeURI(f.src),{method:'HEAD'});
+    galProbe[f.src]={ok:r.ok,size:+(r.headers.get('content-length')||0)}; }catch(e){ galProbe[f.src]={ok:false,size:0}; } }));
+  return galProbe;
+}
+function galSz(n){ return n>=1048576?(n/1048576).toFixed(1)+'MB':(n?Math.max(1,Math.round(n/1024))+'KB':''); }
+function galOpenUrl(url){ const a=document.createElement('a'); a.href=url; a.target='_blank'; a.rel='noopener'; document.body.appendChild(a); a.click(); a.remove(); }
 let idb=null, galUrls=[];
 function dbGet(){ return new Promise((res)=>{ if(idb) return res(idb);
   const r=indexedDB.open('krtip2026',1);
@@ -1637,7 +1665,14 @@ async function galDelUpload(id){
     const pushed=JSON.parse(localStorage.getItem(SYNC.IMGS)||'{}');
     delete pushed[id]; localStorage.setItem(SYNC.IMGS,JSON.stringify(pushed));
     const gid=localStorage.getItem(SYNC.GIST);
-    if(gid&&sTok()&&sPwd()) gh('/gists/'+gid,{method:'PATCH',body:JSON.stringify({files:{[SYNC.IMG_PRE+id]:{content:null}}})}).catch(()=>{});
+    if(gid&&sTok()&&sPwd()){
+      const files={ [SYNC.IMG_PRE+id]:{content:null} };
+      const r=await gh('/gists/'+gid);                          /* 分块文件 .c1..cN 一并删除 */
+      if(r.ok){ const g=await r.json();
+        Object.keys(g.files||{}).forEach(f=>{ if(f.startsWith(SYNC.IMG_PRE+id+'.c')) files[f]={content:null}; });
+      }
+      gh('/gists/'+gid,{method:'PATCH',body:JSON.stringify({files})}).catch(()=>{});
+    }
   }catch(e){}
   await dbDel(id); renderGallery(); toast('🗑 已删除（云端同步移除）');
 }
@@ -1660,11 +1695,22 @@ async function renderGallery(){
 async function renderGalleryInner(){
   galUrls.forEach(u=>URL.revokeObjectURL(u)); galUrls=[];
   let ups=[]; try{ ups=await dbAll(); }catch(e){}
-  const hidden=GALLERY.filter(f=>S.galHide[f.src]).length;
-  const files=GALLERY.filter(f=>!S.galHide[f.src]);
+  const probe=await probeFolder();
+  const avail=GALLERY.filter(f=>probe[f.src]&&probe[f.src].ok);
+  const missing=GALLERY.length-avail.length;
+  const hidden=avail.filter(f=>S.galHide[f.src]).length;
+  const files=avail.filter(f=>!S.galHide[f.src]);
   const capOf=(k,def)=>(S.galCap&&S.galCap[k])?S.galCap[k]:def;
   document.getElementById('gallery-grid').innerHTML=
-    files.map(f=>`<div class="g-item"><img class="ticket-img" src="${f.src}" data-cap="${escV(capOf(f.src,f.full))}" alt=""><div class="cap">${escV(capOf(f.src,f.cap))}<button class="g-edit" onclick="galEditKey(this.dataset.k)" data-k="${escV(f.src)}" title="修改说明">✏️</button><button class="g-del" onclick="galHideKey(this.dataset.k)" data-k="${f.src}" title="从票据页隐藏（不动原文件）">🗑</button></div></div>`).join('')+
+    files.map(f=>{
+      if(/\.pdf$/i.test(f.src)){                              /* 文件夹 PDF：文件卡片，点开查看 / ⬇️ 直链下载 */
+        return `<div class="g-item g-file"><div class="g-filecard" onclick="galOpenUrl('${encodeURI(f.src)}')" title="点开查看（新标签页）">
+          <div class="g-fico">📄</div><div class="g-fnm">${escV(capOf(f.src,f.full))}</div>
+          <div class="g-fmt">PDF${probe[f.src].size?' · '+galSz(probe[f.src].size):''}</div></div>
+          <div class="cap">📁 ${escV(capOf(f.src,f.cap))}<button class="g-edit" onclick="galEditKey(this.dataset.k)" data-k="${escV(f.src)}" title="修改说明">✏️</button><a class="g-edit" href="${encodeURI(f.src)}" download title="下载到本机">⬇️</a><button class="g-del" onclick="galHideKey(this.dataset.k)" data-k="${escV(f.src)}" title="从票据页隐藏（不动原文件）">🗑</button></div></div>`;
+      }
+      return `<div class="g-item"><img class="ticket-img" src="${encodeURI(f.src)}" data-cap="${escV(capOf(f.src,f.full))}" alt=""><div class="cap">📁 ${escV(capOf(f.src,f.cap))}<button class="g-edit" onclick="galEditKey(this.dataset.k)" data-k="${escV(f.src)}" title="修改说明">✏️</button><button class="g-del" onclick="galHideKey(this.dataset.k)" data-k="${escV(f.src)}" title="从票据页隐藏（不动原文件）">🗑</button></div></div>`;
+    }).join('')+
     ups.map(u=>{ const k='u:'+u.id;
       if(!(u.blob&&u.blob.type||'').startsWith('image/')){              /* 非图片（PDF 等）：文件卡片，点开查看/下载 */
         const ext=((u.name||'').split('.').pop()||'FILE').toUpperCase();
@@ -1678,17 +1724,18 @@ async function renderGalleryInner(){
       return `<div class="g-item"><img class="ticket-img" src="${url}" data-cap="${escV(capOf(k,u.name||'上传图片'))}" alt=""><div class="cap">📤 ${escV(capOf(k,(u.name||'图片').slice(0,18)))}<button class="g-edit" onclick="galEditKey(this.dataset.k)" data-k="${escV(k)}" title="修改说明">✏️</button><button class="g-del" onclick="galDelUpload(this.dataset.k)" data-k="${u.id}" title="删除（云端同步移除）">🗑</button></div></div>`; }).join('');
   const tot=files.length+ups.length;
   document.getElementById('gallery-desc').innerHTML=(tot?'':'⚠️ 当前没有可显示的票据——点上方「📤 上传文件」添加，或「👁 显示全部」恢复隐藏的图。<br>')+
-    '文件夹票据 '+files.length+' 张 + 上传 '+ups.length+' 个'+(hidden?'（'+hidden+' 张已隐藏）':'')+' · 图/文件下方 ✏️ 改说明、🗑 删除/隐藏、文件 ⬇️ 下载';
+    '文件夹文件 '+files.length+' 个（仅本机展示，未推送线上）'+(hidden?'，'+hidden+' 个已隐藏':'')+' + 上传 '+ups.length+' 个（加密同步全端）'+
+    (missing?' · 另有 '+missing+' 个文件夹文件此设备不可见（线上未推送）':'')+' · ✏️ 改说明、🗑 隐藏/删除、⬇️ 下载';
 }
 document.getElementById('gal-up').addEventListener('change',async e=>{
   const fs=[...e.target.files]; let n=0; const skip=[];
   for(const f of fs){
     const isImg=(f.type||'').startsWith('image/');
-    if(!isImg && f.size>500000){ skip.push(f.name+'（'+Math.round(f.size/1024)+'KB）'); continue; }   /* 非图片不可压缩：超 500KB 加密后会逼近 Gist 1MB 上限 */
+    if(!isImg && f.size>10485760){ skip.push(f.name+'（'+(f.size/1048576).toFixed(1)+'MB）'); continue; }   /* 非图片不可压缩：限 10MB，同步时自动分块绕开 Gist 单文件 1MB 上限 */
     await dbPut({id:'u'+Date.now()+Math.floor(Math.random()*999), name:String(f.name||'').replace(/[\t\r\n]/g,' '), blob:f, added:Date.now()}); n++;
   }
   e.target.value=''; renderGallery();
-  toast(skip.length?('⚠️ 已跳过 '+skip.length+' 个超限文件（限 500KB）：'+skip.join('、')):('📤 已上传 '+n+' 个文件（保存在本机浏览器，同步时加密上云）'));
+  toast(skip.length?('⚠️ 已跳过 '+skip.length+' 个超限文件（限 10MB）：'+skip.join('、')):('📤 已上传 '+n+' 个文件（保存在本机浏览器，同步时加密分块上云）'));
 });
 /* 票据按钮已改为 onclick 直调 */
 
@@ -1860,7 +1907,7 @@ async function encAES(pass,plain){
   const salt=crypto.getRandomValues(new Uint8Array(16)), iv=crypto.getRandomValues(new Uint8Array(12));
   const key=await deriveKey(pass,salt);
   const ct=await crypto.subtle.encrypt({name:'AES-GCM',iv},key,new TextEncoder().encode(plain));
-  const b64=a=>btoa(String.fromCharCode(...new Uint8Array(a)));
+  const b64=a=>{ const u=new Uint8Array(a); let s=''; for(let i=0;i<u.length;i+=0x8000) s+=String.fromCharCode.apply(null,u.subarray(i,i+0x8000)); return btoa(s); };   /* 分块转换：大文件展开会栈溢出 */
   return b64(salt)+'.'+b64(iv)+'.'+b64(ct);
 }
 async function decAES(pass,payload){
@@ -1900,7 +1947,7 @@ function blobToB64(blob){ return new Promise((res,rej)=>{ const r=new FileReader
 async function filePlain(u){
   const nm=String(u.name||'').replace(/[\t\r\n]/g,' ')||('file-'+u.id);
   if((u.blob.type||'').startsWith('image/')) return 'image/jpeg\t'+nm+'\t'+await imgToB64(u.blob);
-  if(u.blob.size>500000) throw new Error('超过 500KB 上限（加密同步后会逼近 Gist 1MB 单文件限制），请压缩后再上传');
+  if(u.blob.size>10485760) throw new Error('超过 10MB 上限，请压缩后再上传');
   return (u.blob.type||'application/octet-stream')+'\t'+nm+'\t'+await blobToB64(u.blob);
 }
 function parseFilePlain(pt,id){
@@ -1913,19 +1960,26 @@ async function syncImagesPush(id){
   const ups=await dbAll();
   const pushed=JSON.parse(localStorage.getItem(SYNC.IMGS)||'{}');
   const dels={};
-  const cur=await gh('/gists/'+id);                             /* 删除云端已移除的图片 */
-  if(cur.ok){ const g=await cur.json();
-    Object.keys(g.files||{}).forEach(f=>{ if(f.startsWith(SYNC.IMG_PRE)&&!ups.some(u=>SYNC.IMG_PRE+u.id===f)) dels[f]={content:null}; });
+  const own=(f,u)=>{ const pre=SYNC.IMG_PRE+u.id; return f===pre||f.startsWith(pre+'.c'); };   /* 分块文件 <id>.c1..cN 均归属该上传 */
+  let gistFiles=null;
+  const cur=await gh('/gists/'+id);                             /* 删除云端已移除的文件（含分块） */
+  if(cur.ok){ const g=await cur.json(); gistFiles=g.files||{};
+    Object.keys(gistFiles).forEach(f=>{ if(f.startsWith(SYNC.IMG_PRE)&&!ups.some(u=>own(f,u))) dels[f]={content:null}; });
   }
   if(Object.keys(dels).length) gh('/gists/'+id,{method:'PATCH',body:JSON.stringify({files:dels})}).catch(()=>{});
-  const errs=[];
-  for(const u of ups){                                          /* 逐张推送：单张失败不影响其余图片 */
+  const errs=[]; const CH=900000;                               /* 每块加密文本 ≤900K（Gist 单文件上限 1MB） */
+  for(const u of ups){                                          /* 逐个推送：单个失败不影响其余文件 */
     const key=u.id+':'+u.blob.size;
-    if(pushed[u.id]===key) continue;                            /* 未变图片跳过（增量） */
+    if(pushed[u.id]===key) continue;                            /* 未变文件跳过（增量） */
     try{
       const enc=await encAES(sPwd(),await filePlain(u));
-      const r=await gh('/gists/'+id,{method:'PATCH',body:JSON.stringify({files:{[SYNC.IMG_PRE+u.id]:{content:enc}}})});
-      if(!r.ok){ let d=''; try{ const j=await r.json(); d=(j.message||'')+((j.errors&&j.errors[0]&&j.errors[0].message)?'：'+j.errors[0].message:''); }catch(e){} throw new Error('HTTP '+r.status+(d?'（'+d+'）':'')); }
+      const parts=[]; for(let i=0;i<enc.length;i+=CH) parts.push(enc.slice(i,i+CH));
+      for(let i=0;i<parts.length;i++){                          /* 分块逐个 PATCH：10MB PDF 也能同步 */
+        const r=await gh('/gists/'+id,{method:'PATCH',body:JSON.stringify({files:{[SYNC.IMG_PRE+u.id+'.c'+(i+1)]:{content:parts[i]}}})});
+        if(!r.ok){ let d=''; try{ const j=await r.json(); d=(j.message||'')+((j.errors&&j.errors[0]&&j.errors[0].message)?'：'+j.errors[0].message:''); }catch(e){} throw new Error('HTTP '+r.status+(d?'（'+d+'）':'')); }
+      }
+      if(gistFiles&&gistFiles[SYNC.IMG_PRE+u.id])               /* 旧版整文件残留 → 顺手清掉 */
+        gh('/gists/'+id,{method:'PATCH',body:JSON.stringify({files:{[SYNC.IMG_PRE+u.id]:{content:null}}})}).catch(()=>{});
       pushed[u.id]=key;
     }catch(e){ errs.push((u.name||'上传文件')+'：'+e.message); }
   }
@@ -1933,18 +1987,28 @@ async function syncImagesPush(id){
   if(errs.length) throw new Error(errs.join('；'));
 }
 async function syncImagesPull(g){
-  const names=Object.keys(g.files||{}).filter(f=>f.startsWith(SYNC.IMG_PRE)&&g.files[f].content);
-  if(!names.length) return 0;
+  const byId={};                                                /* 分块重组：<id>.c1..cN 按序拼接；旧版整文件=键 0 */
+  Object.keys(g.files||{}).forEach(f=>{
+    if(!f.startsWith(SYNC.IMG_PRE)||!g.files[f].content) return;
+    const rest=f.slice(SYNC.IMG_PRE.length);
+    const m=/^(.+)\.c(\d+)$/.exec(rest);
+    if(m){ (byId[m[1]]=byId[m[1]]||{})[+m[2]]=g.files[f].content; }
+    else if(!rest.includes('.')){ (byId[rest]=byId[rest]||{})[0]=g.files[f].content; }   /* id 不含点；旧版无后缀 */
+  });
+  const ids=Object.keys(byId); if(!ids.length) return 0;
   const have=new Set((await dbAll()).map(u=>u.id));
   const pushed=JSON.parse(localStorage.getItem(SYNC.IMGS)||'{}');
   let n=0;
-  for(const f of names){
-    const id=f.slice(SYNC.IMG_PRE.length);                      /* 文件名即 id，原样截取（保留旧 -4 写法会错位） */
-    if(S.imgDel&&S.imgDel[id]) continue;                           /* 已删除的不复活 */
+  for(const id of ids){
+    if(S.imgDel&&S.imgDel[id]) continue;                        /* 已删除的不复活 */
     if(have.has(id)){ pushed[id]='pulled'; n++; continue; }
-    const pf=parseFilePlain(await decAES(sPwd(),g.files[f].content),id);
-    await dbPut({id,name:pf.name,blob:b64ToBlob(pf.b64,pf.mime),added:Date.now()});
-    pushed[id]='pulled'; n++;
+    try{
+      const ns=Object.keys(byId[id]).map(Number).sort((a,b)=>a-b);
+      const enc=ns.includes(1)?ns.filter(x=>x>=1).map(x=>byId[id][x]).join(''):byId[id][0];   /* 分块优先，旧整文件兜底 */
+      const pf=parseFilePlain(await decAES(sPwd(),enc),id);
+      await dbPut({id,name:pf.name,blob:b64ToBlob(pf.b64,pf.mime),added:Date.now()});
+      pushed[id]='pulled'; n++;
+    }catch(e){ /* 单个文件损坏/缺块不影响其余 */ }
   }
   localStorage.setItem(SYNC.IMGS,JSON.stringify(pushed));
   return n;
