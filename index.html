@@ -658,6 +658,7 @@ footer{padding:26px 0 40px;color:var(--sub);font-size:12px;text-align:center}
       <div class="ck-progress" style="flex:1;min-width:160px;margin:0"><i id="ck-bar"></i></div>
       <span class="muted" id="ck-count"></span>
       <button class="btn sm" id="ck-addcat">➕ 新增大类</button>
+      <button class="btn ghost sm" id="ck-reset" title="恢复完整清单模板">🔄 完整模板</button>
     </div>
     <p class="muted" style="margin-bottom:10px">每个大类可 ➕ 加条目、✏️ 改名、🗑 删除；条目文字可直接编辑，「必办/选办」点击切换，✕ 删除。</p>
     <div class="ck-grid" id="ck-grid"></div>
@@ -742,9 +743,11 @@ footer{padding:26px 0 40px;color:var(--sub);font-size:12px;text-align:center}
             <button class="btn sm" id="sync-push">⬆️ 推送上云</button>
             <button class="btn ghost sm" id="sync-pull">⬇️ 从云端恢复</button>
             <button class="btn ghost sm" id="sync-baks">🕘 备份</button>
+            <button class="btn ghost sm" id="sync-hist">🕓 云端历史</button>
           </div>
           <div class="muted" id="sync-status" style="font-size:11px;margin-top:6px">未同步</div>
           <div id="sync-baks-list" class="baks-list"></div>
+          <div id="sync-hist-list" class="baks-list"></div>
           <div class="hint">数据在本机用 AES-256-GCM 加密后才写入你的<b>私有 Gist</b>，GitHub 只见密文；主数据+票据图片全部同步（图片自动压缩至≤900px 后逐张加密）。Token/密码只存本机，绝不上传。<b>密码遗忘 = 数据无法解密</b>。每次覆盖前自动本地备份最近 10 版。</div>
         </div>
       </details>
@@ -1527,6 +1530,13 @@ document.getElementById('ck-addcat').onclick=()=>{
   const nm=n.trim(); if(!nm) return toast('名称不能为空');
   S.ckData.push({cat:nm,items:[]}); save(); renderCK(); toast('✅ 大类「'+nm+'」已创建，点 ➕ 加条目');
 };
+document.getElementById('ck-reset').onclick=()=>{
+  if(!confirm('将清单恢复为完整模板（8 大类 44 项）？\n你自建的大类/条目会保留，勾选状态保留。')) return;
+  const seed=CHECKLIST.map(ckNorm);
+  const keep=S.ckData.filter(c=>!seed.some(s=>s.cat===c.cat));
+  S.ckData=seed.concat(keep); save(); renderCK();
+  toast('✅ 完整清单已恢复（'+seed.reduce((a,c)=>a+c.items.length,0)+' 项）——勾选过的请重新打勾');
+};
 document.getElementById('ck-grid').addEventListener('click',e=>{
   const b=e.target.closest('button[data-act]'); if(!b) return;
   const {act}=b.dataset, ci=+b.dataset.ci, ii=+b.dataset.ii;
@@ -1910,6 +1920,39 @@ document.getElementById('sync-baks-list')?.addEventListener('click',e=>{
     syncStatus('✅ 已恢复备份，请尽快「⬆️推送」上云');
     toast('🕘 备份已恢复——记得重新推送');
   }catch(err){ syncStatus('❌ 备份损坏'); }
+  SYNCING=false;
+});
+async function showHist(){
+  const el=document.getElementById('sync-hist-list'); if(!el) return;
+  const id=localStorage.getItem(SYNC.GIST);
+  if(!id){ el.innerHTML='<div class="muted" style="font-size:10.5px">未绑定 Gist（先推送一次）</div>'; return; }
+  el.innerHTML='<div class="muted" style="font-size:10.5px">读取云端历史…</div>';
+  try{
+    const r=await gh('/gists/'+id);
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    const g=await r.json();
+    const hs=(g.history||[]).slice(0,12);
+    el.innerHTML=hs.length?hs.map(v=>'<button class="bak-item" data-hv="'+v.version+'">🕓 '+new Date(v.committed_at).toLocaleString()+'</button>').join(''):'<div class="muted" style="font-size:10.5px">云端无历史版本</div>';
+  }catch(e){ el.innerHTML='<div class="muted" style="font-size:10.5px">读取失败：'+e.message+'</div>'; }
+}
+document.getElementById('sync-hist')?.addEventListener('click',showHist);
+document.getElementById('sync-hist-list')?.addEventListener('click',async e=>{
+  const b=e.target.closest('button[data-hv]'); if(!b) return;
+  if(!confirm('用该云端历史版本覆盖当前数据？（当前数据会先自动本地备份）')) return;
+  try{
+    SYNCING=true; syncStatus('拉取云端历史版本…');
+    const r=await gh('/gists/'+localStorage.getItem(SYNC.GIST)+'/'+b.dataset.hv);
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    const v=await r.json();
+    const content=v.files&&v.files[SYNC.FILE]&&v.files[SYNC.FILE].content;
+    if(!content) throw new Error('该版本无数据文件');
+    const data=JSON.parse(await decAES(sPwd(),content));
+    backupLocal(); applySyncData(data);
+    localStorage.setItem(LS_KEY,JSON.stringify(S));
+    renderLeft(); refreshNumbers(); renderCK(); renderGallery();
+    syncStatus('✅ 已恢复云端历史 '+b.textContent.trim()+'（含当时的勾选状态）');
+    toast('🕓 云端历史已恢复——请核对后重新推送');
+  }catch(err){ syncStatus(/OperationError/.test(err.name+err.message)?'❌ 解密失败：密码不符':'❌ '+err.message); }
   SYNCING=false;
 });
 ['visibilitychange','online'].forEach(ev=>document.addEventListener(ev,()=>{
