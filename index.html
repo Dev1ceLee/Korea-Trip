@@ -326,6 +326,14 @@ footer{padding:26px 0 40px;color:var(--sub);font-size:12px;text-align:center}
 .g-edit{border:none;background:none;color:#adb5c6;font-size:11px;cursor:pointer;padding:0 2px;vertical-align:middle}
 .g-edit:hover{color:var(--blue)}
 .g-del:hover{color:var(--red)}
+/* 页面内弹窗 */
+#ui-modal{position:fixed;inset:0;background:rgba(15,20,35,.45);display:none;align-items:center;justify-content:center;z-index:1750;padding:16px}
+#ui-modal.open{display:flex}
+.ui-box{background:#fff;border-radius:14px;padding:16px 18px;width:min(400px,94vw);box-shadow:0 10px 40px rgba(0,0,0,.25)}
+.ui-title{font-size:14px;font-weight:700;margin-bottom:10px;white-space:pre-wrap}
+.ui-msg{font-size:13px;color:var(--sub);white-space:pre-wrap;margin-bottom:6px}
+#ui-input{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;font-size:13px;font-family:inherit;display:none}
+#ui-input:focus{outline:none;border-color:var(--blue)}
 /* 云同步面板 */
 .sync-box{border-top:1px dashed var(--line);padding-top:10px}
 .sync-box summary{cursor:pointer;font-size:12.5px;color:var(--blue);font-weight:700;list-style:none}
@@ -759,6 +767,12 @@ footer{padding:26px 0 40px;color:var(--sub);font-size:12px;text-align:center}
 
 </div>
 
+<div id="ui-modal"><div class="ui-box">
+  <div class="ui-title" id="ui-title"></div>
+  <div class="ui-msg" id="ui-msg"></div>
+  <input type="text" id="ui-input" autocomplete="off">
+  <div class="cp-btns"><button class="btn ghost" id="ui-cancel">取消</button><button class="btn" id="ui-ok">确定</button></div>
+</div></div>
 <div id="catpick"><div class="cp-box">
   <h4>➕ 新增项目 <span class="cp-when" id="cp-when"></span></h4>
   <div class="cp-lab">① 选择大类（默认：📦 其他）</div>
@@ -1066,7 +1080,7 @@ document.getElementById('calc-left').addEventListener('input',e=>{
   if(c==='cat'){ S.cat[id]=t.value; save(); renderLeft(); refreshNumbers(); toast('已移动到「'+t.value+'」'); return; }
   save(); refreshNumbers();
 });
-document.getElementById('calc-left').addEventListener('click',e=>{
+document.getElementById('calc-left').addEventListener('click',async e=>{
   const addBtn=e.target.closest('button[data-addsup]');
   if(addBtn){
     const sp=SUPERS.find(s=>s.id===addBtn.dataset.addsup); if(!sp) return;
@@ -1082,7 +1096,7 @@ document.getElementById('calc-left').addEventListener('click',e=>{
   const nsBtn=e.target.closest('button[data-newsub]');
   if(nsBtn){
     const sp=SUPERS.find(s=>s.id===nsBtn.dataset.newsub); if(!sp) return;
-    const name=prompt('新建小类名称（归属「'+sp.name+'」）\n例：海云台花销、给对象买礼物、退税采购');
+    const name=await uiPrompt('新建小类名称（归属「'+sp.name+'」）\n例：海云台花销、给对象买礼物、退税采购');
     if(name===null) return;
     const nm=name.trim().replace(/["<>]/g,'').slice(0,20);
     if(!nm){ toast('名称不能为空'); return; }
@@ -1096,7 +1110,7 @@ document.getElementById('calc-left').addEventListener('click',e=>{
   if(dsBtn){
     e.preventDefault();
     const nm=dsBtn.dataset.delsub;
-    if(confirm('删除小类「'+nm+'」？其中的项目会退回所属大类本级（不会被删除）。')){
+    if(await uiConfirm('删除小类「'+nm+'」？其中的项目会退回所属大类本级（不会被删除）。')){
       S.subcats=S.subcats.filter(x=>x.name!==nm);
       Object.keys(S.cat).forEach(k=>{ if(S.cat[k]===nm) delete S.cat[k]; });
       save(); renderLeft(); refreshNumbers(); toast('已删除小类，项目已退回大类');
@@ -1109,7 +1123,7 @@ document.getElementById('calc-left').addEventListener('click',e=>{
     const nm=cdBtn.dataset.catdel;
     const src=ITEMS.find(x=>x.id===cdBtn.dataset.id);
     const sp=src?supOfItem(src):null; if(!sp) return;
-    if(confirm('删除小类「'+nm+'」？\n小类下的项目不会被删除，会变成「'+sp.name+'」大类里未归类的项目。')){
+    if(await uiConfirm('删除小类「'+nm+'」？\n小类下的项目不会被删除，会变成「'+sp.name+'」大类里未归类的项目。')){
       S.subcats=S.subcats.filter(x=>x.name!==nm);
       Object.keys(S.cat).forEach(k=>{ if(S.cat[k]===nm) delete S.cat[k]; });
       if(sp.cats.includes(nm)) S.hiddenCats[nm]=sp.id;      // 内置小类→隐藏（重置可恢复）
@@ -1124,8 +1138,8 @@ document.getElementById('calc-left').addEventListener('click',e=>{
   if(c==='paid'){ S.paid[id]=!vPaid(it); save(); renderLeft(); refreshNumbers(); toast(S.paid[id]?'💰 已标记「已付」，右栏实时联动':'已标记「未付」'); }
   if(c==='cur'){ S.cur[id]=vCur(it)==='KRW'?'CNY':'KRW'; save(); renderLeft(); refreshNumbers(); }
   if(c==='del'){
-    if(it.custom){ if(confirm('删除「'+vName(it)+'」？')){ S.custom=S.custom.filter(x=>x.id!==id); ITEMS=BASE_ITEMS.concat(S.custom); } }
-    else{ if(confirm('从清单移除「'+vName(it)+'」？（点左栏底部「重置」可恢复）')){ S.deleted[id]=true; } }
+    if(it.custom){ if(await uiConfirm('删除「'+vName(it)+'」？')){ S.custom=S.custom.filter(x=>x.id!==id); ITEMS=BASE_ITEMS.concat(S.custom); } }
+    else{ if(await uiConfirm('从清单移除「'+vName(it)+'」？（点左栏底部「重置」可恢复）')){ S.deleted[id]=true; } }
     save(); renderLeft(); refreshNumbers(); toast('已移除');
   }
 });
@@ -1135,7 +1149,7 @@ function setAllDetails(open){ document.querySelectorAll('#calc-left details.sup,
 /* 汇率 / 重置 / 复制 */
 document.getElementById('rate').value=S.rate;
 document.getElementById('rate').addEventListener('input',e=>{ S.rate=+e.target.value||207; save(); refreshNumbers(); });
-document.getElementById('reset-calc').onclick=()=>{ if(confirm('重置所有勾选/数量/价格，恢复已移除的预置项和已删除的内置小类？（自定义项与自定义小类保留）')){ S.checked={};S.qty={};S.price={};S.deleted={};S.hiddenCats={}; BASE_ITEMS.forEach(i=>i.price=BASE_PRICE[i.id]); save(); renderLeft(); refreshNumbers(); toast('已重置'); } };
+document.getElementById('reset-calc').onclick=async()=>{ if(await uiConfirm('重置所有勾选/数量/价格，恢复已移除的预置项和已删除的内置小类？（自定义项与自定义小类保留）')){ S.checked={};S.qty={};S.price={};S.deleted={};S.hiddenCats={}; BASE_ITEMS.forEach(i=>i.price=BASE_PRICE[i.id]); save(); renderLeft(); refreshNumbers(); toast('已重置'); } };
 document.getElementById('copy-sum').onclick=async()=>{
   const lines=[...document.querySelectorAll('#sum-rows .sum-row')].map(r=>r.innerText.replace(/\n/g,' : '));
   try{ await navigator.clipboard.writeText('【韩国国庆之旅·费用摘要】\n'+lines.join('\n')); toast('📋 已复制到剪贴板'); }catch(e){ toast('复制失败，请手动截图'); }
@@ -1404,12 +1418,12 @@ document.getElementById('plan').addEventListener('change',e=>{
   const t=e.target;
   if(t.classList.contains('tl-name')){ const id=t.dataset.id; S.name[id]=t.value; save(); renderLeft(); refreshNumbers(); toast('名称已同步到左栏'); }
 });
-document.getElementById('plan').addEventListener('click',e=>{
+document.getElementById('plan').addEventListener('click',async e=>{
   const del=e.target.closest('button.tl-del');
   if(del){
     const id=del.dataset.id; const it=ITEMS.find(i=>i.id===id); if(!it) return;
-    if(it.custom){ if(confirm('从清单删除「'+vName(it)+'」？')){ S.custom=S.custom.filter(x=>x.id!==id); ITEMS=BASE_ITEMS.concat(S.custom); } else return; }
-    else{ if(confirm('从行程和清单移除「'+vName(it)+'」？（左栏「重置」可恢复）')){ S.deleted[id]=true; } else return; }
+    if(it.custom){ if(await uiConfirm('从清单删除「'+vName(it)+'」？')){ S.custom=S.custom.filter(x=>x.id!==id); ITEMS=BASE_ITEMS.concat(S.custom); } else return; }
+    else{ if(await uiConfirm('从行程和清单移除「'+vName(it)+'」？（左栏「重置」可恢复）')){ S.deleted[id]=true; } else return; }
     save(); renderTimeline(); renderLeft(); refreshNumbers(); toast('已移除');
     return;
   }
@@ -1527,34 +1541,34 @@ function renderCK(){
   document.getElementById('ck-count').innerText=`已完成 ${done} / ${total} 项`;
   document.querySelectorAll('.ck-txt').forEach(t=>{ t.style.height='auto'; t.style.height=(t.scrollHeight+2)+'px'; });   /* 自动换行增高 */
 }
-document.getElementById('ck-addcat').onclick=()=>{
-  const n=prompt('新大类名称（如：🧳 出发前一晚）'); if(n===null) return;
+document.getElementById('ck-addcat').onclick=async()=>{
+  const n=await uiPrompt('新大类名称（如：🧳 出发前一晚）'); if(n===null) return;
   const nm=n.trim(); if(!nm) return toast('名称不能为空');
   S.ckData.push({cat:nm,items:[]}); save(); renderCK(); toast('✅ 大类「'+nm+'」已创建，点 ➕ 加条目');
 };
-document.getElementById('ck-reset').onclick=()=>{
-  if(!confirm('将清单恢复为完整模板（8 大类 44 项）？\n你自建的大类/条目会保留，勾选状态保留。')) return;
+document.getElementById('ck-reset').onclick=async()=>{
+  if(!await uiConfirm('将清单恢复为完整模板（8 大类 44 项）？\n你自建的大类/条目会保留，勾选状态保留。')) return;
   const seed=CHECKLIST.map(ckNorm);
   const keep=S.ckData.filter(c=>!seed.some(s=>s.cat===c.cat));
   S.ckData=seed.concat(keep); save(); renderCK();
   toast('✅ 完整清单已恢复（'+seed.reduce((a,c)=>a+c.items.length,0)+' 项）——勾选过的请重新打勾');
 };
-document.getElementById('ck-grid').addEventListener('click',e=>{
+document.getElementById('ck-grid').addEventListener('click',async e=>{
   const b=e.target.closest('button[data-act]'); if(!b) return;
   const {act}=b.dataset, ci=+b.dataset.ci, ii=+b.dataset.ii;
   const c=S.ckData[ci]; if(!c) return;
   if(act==='additem'){
-    const t=prompt('新增条目（默认标记为必办）：'); if(t===null) return;
+    const t=await uiPrompt('新增条目（默认标记为必办）：'); if(t===null) return;
     if(!t.trim()) return toast('内容不能为空');
     c.items.push({id:'k'+Date.now()+Math.floor(Math.random()*99),txt:t.trim(),must:true});
     save(); renderCK(); toast('➕ 已添加到「'+c.cat+'」');
   }
   if(act==='rencat'){
-    const n=prompt('重命名大类：',c.cat); if(n===null) return;
+    const n=await uiPrompt('重命名大类：',c.cat); if(n===null) return;
     if(n.trim()){ c.cat=n.trim(); save(); renderCK(); }
   }
   if(act==='delcat'){
-    if(confirm('删除大类「'+c.cat+'」及其 '+c.items.length+' 条条目？')){ S.ckData.splice(ci,1); save(); renderCK(); toast('已删除大类'); }
+    if(await uiConfirm('删除大类「'+c.cat+'」及其 '+c.items.length+' 条条目？')){ S.ckData.splice(ci,1); save(); renderCK(); toast('已删除大类'); }
   }
   if(act==='must'){ c.items[ii].must=!c.items[ii].must; save(); renderCK(); }
   if(act==='delitem'){ c.items.splice(ii,1); save(); renderCK(); }
@@ -1604,14 +1618,14 @@ document.getElementById('gal-up').addEventListener('change',async e=>{
 document.getElementById('gallery-grid').addEventListener('click',async e=>{
   const ed=e.target.closest('button.g-edit');
   if(ed){ const k=ed.dataset.gcap; const cur=(S.galCap&&S.galCap[k])||'';
-    const t=prompt('修改票据说明（清空则恢复默认，随云同步）：',cur); if(t===null) return;
+    const t=await uiPrompt('修改票据说明（清空则恢复默认，随云同步）：',cur); if(t===null) return;
     if(t.trim()) S.galCap[k]=t.trim(); else delete S.galCap[k];
     save(); renderGallery(); toast('✏️ 说明已更新'); return; }
   const b=e.target.closest('button.g-del'); if(!b) return;
   e.stopPropagation();
-  if(b.dataset.gdel){ if(confirm('从票据页隐藏这张？（文件夹原文件不受影响）')){ S.galHide[b.dataset.gdel]=1; save(); renderGallery(); toast('已从票据页隐藏（可在控制台清 localStorage 恢复）'); } }
+  if(b.dataset.gdel){ if(await uiConfirm('从票据页隐藏这张？（文件夹原文件不受影响）')){ S.galHide[b.dataset.gdel]=1; save(); renderGallery(); toast('已从票据页隐藏（可在控制台清 localStorage 恢复）'); } }
   if(b.dataset.udel){
-    if(confirm('删除这张上传的图片？（会同步从云端移除，其他设备也不再显示）')){
+    if(await uiConfirm('删除这张上传的图片？（会同步从云端移除，其他设备也不再显示）')){
       const id=b.dataset.udel;
       S.imgDel[id]=1; save();
       try{                                                        /* 同步从云端移除该图 */
@@ -1741,6 +1755,37 @@ function exportICS(){
   toast('📥 日历已生成（含自定义项）<br>iPhone 导入方法见按钮下方说明');
 }
 
+/* ================= 页面内弹窗（替代系统 prompt/confirm，全端可用） ================= */
+let uiResolve=null;
+function uiPrompt(title,def){ def=def||'';
+  return new Promise(res=>{ uiResolve=res;
+    const m=document.getElementById('ui-modal');
+    document.getElementById('ui-title').textContent=title;
+    const msg=document.getElementById('ui-msg'); msg.style.display='none'; msg.textContent='';
+    const inp=document.getElementById('ui-input'); inp.style.display='block'; inp.value=def;
+    m.classList.add('open'); setTimeout(()=>{ inp.focus(); if(inp.select) inp.select(); },60);
+  });
+}
+function uiConfirm(msg){
+  return new Promise(res=>{ uiResolve=res;
+    const m=document.getElementById('ui-modal');
+    document.getElementById('ui-title').textContent='请确认';
+    const box=document.getElementById('ui-msg'); box.style.display='block'; box.textContent=msg;
+    document.getElementById('ui-input').style.display='none';
+    m.classList.add('open');
+  });
+}
+function uiClose(val){ const m=document.getElementById('ui-modal');
+  if(m.classList.contains('open')){ m.classList.remove('open');
+    if(uiResolve){ uiResolve(val); uiResolve=null; } } }
+document.getElementById('ui-ok').onclick=()=>{ const inp=document.getElementById('ui-input');
+  uiClose(inp.style.display!=='none'?inp.value:true); };
+document.getElementById('ui-cancel').onclick=()=>uiClose(null);
+document.getElementById('ui-modal').addEventListener('click',e=>{ if(e.target.id==='ui-modal') uiClose(null); });
+document.getElementById('ui-input').addEventListener('keydown',e=>{
+  if(e.key==='Enter') uiClose(e.target.value);
+  if(e.key==='Escape') uiClose(null); });
+
 /* ================= ☁️ 云同步（私有 Gist + AES-256-GCM 端到端加密） ================= */
 const SYNC={TKN:'krtip_sync_token',PWD:'krtip_sync_pass',AUTO:'krtip_sync_auto',GIST:'krtip_gist_id',PULL:'krtip_last_pull',PUSH:'krtip_last_push',MT:'krtip_mtime',BAK:'krtip_bak_',FILE:'krtip-sync.enc',DESC:'krtip-sync',API:'https://api.github.com',IMG_PRE:'krtip-img-',IMGS:'krtip_imgs_pushed'};
 let SYNCING=false, autoPushTimer=null;
@@ -1858,8 +1903,8 @@ async function syncPush(silent){
       const g=await cur.json();
       const remoteNew=Date.parse(g.updated_at||0)>lastSyncMark();
       const localDirty=(+localStorage.getItem(SYNC.MT)||0)>lastSyncMark();
-      if(remoteNew&&!localDirty&&!silent&&!confirm('云端有另一设备推送的更新版本，继续推送将覆盖它。\n（建议先「从云端恢复」）\n仍要覆盖？')){ SYNCING=false; syncStatus('已取消（云端较新）'); return; }
-      if(remoteNew&&localDirty&&!silent&&!confirm('云端和本地都有新改动，推送会覆盖云端版本（本地已自动备份）。继续？')){ SYNCING=false; syncStatus('已取消'); return; }
+      if(remoteNew&&!localDirty&&!silent&&!await uiConfirm('云端有另一设备推送的更新版本，继续推送将覆盖它。\n（建议先「从云端恢复」）\n仍要覆盖？')){ SYNCING=false; syncStatus('已取消（云端较新）'); return; }
+      if(remoteNew&&localDirty&&!silent&&!await uiConfirm('云端和本地都有新改动，推送会覆盖云端版本（本地已自动备份）。继续？')){ SYNCING=false; syncStatus('已取消'); return; }
     }
     backupLocal();
     const r=await gh('/gists/'+id,{method:'PATCH',body:JSON.stringify({description:SYNC.DESC,files:{[SYNC.FILE]:{content:payload}}})});
@@ -1888,7 +1933,7 @@ async function syncPull(silent){
     const localDirty=(+localStorage.getItem(SYNC.MT)||0)>lastSyncMark();
     if(silent&&!remoteNew){ syncStatus('云端无更新'); SYNCING=false; return; }
     if(silent&&localDirty){ syncStatus('⏸️ 云端较新，但本地有未同步修改——已跳过自动覆盖，请手动「⬆️推送」或「⬇️恢复」'); SYNCING=false; return; }
-    if(localDirty&&!silent&&!confirm('本地有未同步的修改，恢复云端会覆盖本地（已自动备份）。继续？')){ syncStatus('已取消'); SYNCING=false; return; }
+    if(localDirty&&!silent&&!await uiConfirm('本地有未同步的修改，恢复云端会覆盖本地（已自动备份）。继续？')){ syncStatus('已取消'); SYNCING=false; return; }
     if(localDirty) backupLocal();
     const plain=await decAES(sPwd(),content);
     const data=JSON.parse(plain);
@@ -1929,9 +1974,9 @@ function showBaks(){
   el.innerHTML=ks.length?ks.map(b=>{ let n=''; try{ const d=JSON.parse(localStorage.getItem(b.k)||'{}'); n=((d.ckData||[]).reduce((a,c)=>a+(c.items||[]).length,0))+' 项清单'; }catch(e){} return '<button class="bak-item" data-bk="'+b.k+'">🕘 '+new Date(b.t).toLocaleString()+' · '+n+'</button>'; }).join(''):'<div class="muted" style="font-size:10.5px">无本地备份（每次覆盖前自动产生，最多 10 份）</div>';
 }
 document.getElementById('sync-baks')?.addEventListener('click',()=>{ showBaks(); const bx=document.getElementById('sync-box'); if(bx) bx.open=true; });
-document.getElementById('sync-baks-list')?.addEventListener('click',e=>{
+document.getElementById('sync-baks-list')?.addEventListener('click',async e=>{
   const b=e.target.closest('button[data-bk]'); if(!b) return;
-  if(!confirm('用这份备份覆盖当前数据？（当前数据也会先自动备份）')) return;
+  if(!await uiConfirm('用这份备份覆盖当前数据？（当前数据也会先自动备份）')) return;
   backupLocal();
   try{
     SYNCING=true;
@@ -1959,7 +2004,7 @@ async function showHist(){
 document.getElementById('sync-hist')?.addEventListener('click',showHist);
 document.getElementById('sync-hist-list')?.addEventListener('click',async e=>{
   const b=e.target.closest('button[data-hv]'); if(!b) return;
-  if(!confirm('用该云端历史版本覆盖当前数据？（当前数据会先自动本地备份）')) return;
+  if(!await uiConfirm('用该云端历史版本覆盖当前数据？（当前数据会先自动本地备份）')) return;
   try{
     SYNCING=true; syncStatus('拉取云端历史版本…');
     const r=await gh('/gists/'+localStorage.getItem(SYNC.GIST)+'/'+b.dataset.hv);
