@@ -713,10 +713,11 @@ footer{padding:26px 0 40px;color:var(--sub);font-size:12px;text-align:center}
   <section id="gallery" class="tabpane">
     <h2 class="sec">🎫 票据文件夹</h2>
     <p class="sec-desc" id="gallery-desc">文件夹票据 + 手机上传的截图，集中在这里。点图片放大。</p>
-    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px">
-      <label class="btn green" for="gal-up" style="cursor:pointer">📤 上传图片（可多选）</label>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px">
+      <button class="btn green" onclick="document.getElementById('gal-up').click()">📤 上传图片</button>
+      <button class="btn ghost" onclick="galUnhideAll()">👁 显示全部（含隐藏）</button>
       <input type="file" id="gal-up" accept="image/*" multiple hidden>
-      <span class="muted">上传的图保存在本机浏览器（IndexedDB），换电脑需重新上传；文件夹原图只做展示/隐藏，文件不会被改动。</span>
+      <span class="muted" id="gal-hint">上传的票据加密同步全端；文件夹原图仅本机展示；点图放大。</span>
     </div>
     <div class="gallery" id="gallery-grid"></div>
   </section>
@@ -1598,16 +1599,28 @@ async function dbPut(rec){ const db=await dbGet(); if(!db) return;
   db.transaction('imgs','readwrite').objectStore('imgs').put(rec); }
 async function dbDel(id){ const db=await dbGet(); if(!db) return;
   db.transaction('imgs','readwrite').objectStore('imgs').delete(id); }
+function galUnhideAll(){
+  const n=Object.keys(S.galHide||{}).length;
+  S.galHide={}; save(); renderGallery();
+  toast(n?'👁 已恢复 '+n+' 张隐藏票据':'当前没有隐藏的票据');
+}
 async function renderGallery(){
+  try{ await renderGalleryInner(); }
+  catch(e){ const g=document.getElementById('gallery-grid'); if(g) g.innerHTML='<div class="card" style="color:var(--red)">⚠️ 票据加载失败：'+e.message+'</div>'; }
+}
+async function renderGalleryInner(){
   galUrls.forEach(u=>URL.revokeObjectURL(u)); galUrls=[];
-  const ups=await dbAll();
+  let ups=[]; try{ ups=await dbAll(); }catch(e){}
+  const hidden=GALLERY.filter(f=>S.galHide[f.src]).length;
   const files=GALLERY.filter(f=>!S.galHide[f.src]);
   const capOf=(k,def)=>(S.galCap&&S.galCap[k])?S.galCap[k]:def;
   document.getElementById('gallery-grid').innerHTML=
     files.map(f=>`<div class="g-item"><img class="ticket-img" src="${f.src}" data-cap="${escV(capOf(f.src,f.full))}" alt=""><div class="cap">${escV(capOf(f.src,f.cap))}<button class="g-edit" data-gcap="${escV(f.src)}" title="修改说明（随云同步）">✏️</button><button class="g-del" data-gdel="${f.src}" title="从票据页隐藏（不动原文件）">🗑</button></div></div>`).join('')+
     ups.map(u=>{ const url=URL.createObjectURL(u.blob); galUrls.push(url); const k='u:'+u.id;
       return `<div class="g-item"><img class="ticket-img" src="${url}" data-cap="${escV(capOf(k,u.name||'上传图片'))}" alt=""><div class="cap">📤 ${escV(capOf(k,(u.name||'图片').slice(0,18)))}<button class="g-edit" data-gcap="${escV(k)}" title="修改说明（随云同步）">✏️</button><button class="g-del" data-udel="${u.id}" title="删除（云端同步移除）">🗑</button></div></div>`; }).join('');
-  document.getElementById('gallery-desc').textContent=`文件夹票据 ${files.length} 张 + 上传 ${ups.length} 张 · 📤上传 ✏️改说明 🗑删除 点图放大`;
+  const tot=files.length+ups.length;
+  document.getElementById('gallery-desc').innerHTML=(tot?'':'⚠️ 当前没有可显示的票据——点上方「📤 上传图片」添加，或「👁 显示全部」恢复隐藏的图。<br>')+
+    '文件夹票据 '+files.length+' 张 + 上传 '+ups.length+' 张'+(hidden?'（'+hidden+' 张已隐藏）':'')+' · 图下方 ✏️ 改说明、🗑 删除/隐藏';
 }
 document.getElementById('gal-up').addEventListener('change',async e=>{
   for(const f of e.target.files){
