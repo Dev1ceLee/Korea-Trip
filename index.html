@@ -335,6 +335,9 @@ footer{padding:26px 0 40px;color:var(--sub);font-size:12px;text-align:center}
 .sync-row{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--sub);margin:6px 0}
 .sync-row input{accent-color:var(--blue)}
 .sync-btns{display:flex;gap:6px}
+.baks-list{margin-top:6px;max-height:150px;overflow:auto}
+.bak-item{display:block;width:100%;margin:2px 0;padding:3px 8px;border:1px solid var(--line);border-radius:6px;background:#fff;font-size:11px;cursor:pointer;text-align:left;font-family:inherit}
+.bak-item:hover{border-color:var(--blue);color:var(--blue)}
 @media(max-width:1180px){
   .app-grid{grid-template-columns:280px minmax(0,1fr)}
   .rail-right{grid-column:1/-1;position:static;max-height:none}
@@ -738,8 +741,10 @@ footer{padding:26px 0 40px;color:var(--sub);font-size:12px;text-align:center}
           <div class="sync-btns">
             <button class="btn sm" id="sync-push">⬆️ 推送上云</button>
             <button class="btn ghost sm" id="sync-pull">⬇️ 从云端恢复</button>
+            <button class="btn ghost sm" id="sync-baks">🕘 备份</button>
           </div>
           <div class="muted" id="sync-status" style="font-size:11px;margin-top:6px">未同步</div>
+          <div id="sync-baks-list" class="baks-list"></div>
           <div class="hint">数据在本机用 AES-256-GCM 加密后才写入你的<b>私有 Gist</b>，GitHub 只见密文；主数据+票据图片全部同步（图片自动压缩至≤900px 后逐张加密）。Token/密码只存本机，绝不上传。<b>密码遗忘 = 数据无法解密</b>。每次覆盖前自动本地备份最近 10 版。</div>
         </div>
       </details>
@@ -1850,16 +1855,13 @@ async function syncPull(silent){
     if(!content){ syncStatus('云端文件为空'); SYNCING=false; return; }
     const remoteNew=Date.parse(g.updated_at||0)>lastSyncMark();
     const localDirty=(+localStorage.getItem(SYNC.MT)||0)>lastSyncMark();
-    if(silent&&!remoteNew){ syncStatus('云端无更新'); SYNCING=false; return; }          /* 自动拉取：无新则跳过 */
+    if(silent&&!remoteNew){ syncStatus('云端无更新'); SYNCING=false; return; }
+    if(silent&&localDirty){ syncStatus('⏸️ 云端较新，但本地有未同步修改——已跳过自动覆盖，请手动「⬆️推送」或「⬇️恢复」'); SYNCING=false; return; }
     if(localDirty&&!silent&&!confirm('本地有未同步的修改，恢复云端会覆盖本地（已自动备份）。继续？')){ syncStatus('已取消'); SYNCING=false; return; }
     if(localDirty) backupLocal();
     const plain=await decAES(sPwd(),content);
     const data=JSON.parse(plain);
-    Object.keys(S).forEach(k=>delete S[k]);
-    Object.assign(S,data);
-    /* 重建内存数据（修复：恢复后左栏/时间轴/自定义项不刷新的 bug） */
-    BASE_ITEMS.forEach(it=>{ it.price=BASE_PRICE[it.id]; if(S.price[it.id]!=null) it.price=S.price[it.id]; });
-    ITEMS=BASE_ITEMS.concat(Array.isArray(S.custom)?S.custom:[]);
+    applySyncData(data);
     localStorage.setItem(LS_KEY,JSON.stringify(S));
     localStorage.setItem(SYNC.PULL,String(Date.now()));
     syncStatus('恢复票据图片…');
@@ -1884,6 +1886,32 @@ function wireSyncUI(){
   document.getElementById('sync-pull').onclick=()=>syncPull(false);
   wireSyncUI.done=true;
 }
+function applySyncData(data){
+  Object.keys(S).forEach(k=>delete S[k]);
+  Object.assign(S,data);
+  BASE_ITEMS.forEach(it=>{ it.price=BASE_PRICE[it.id]; if(S.price[it.id]!=null) it.price=S.price[it.id]; });
+  ITEMS=BASE_ITEMS.concat(Array.isArray(S.custom)?S.custom:[]);
+}
+function showBaks(){
+  const el=document.getElementById('sync-baks-list'); if(!el) return;
+  const ks=Object.keys(localStorage).filter(k=>k.startsWith(SYNC.BAK)).map(k=>({k,t:+k.slice(SYNC.BAK.length)})).sort((a,b)=>b.t-a.t).slice(0,10);
+  el.innerHTML=ks.length?ks.map(b=>{ let n=''; try{ const d=JSON.parse(localStorage.getItem(b.k)||'{}'); n=((d.ckData||[]).reduce((a,c)=>a+(c.items||[]).length,0))+' 项清单'; }catch(e){} return '<button class="bak-item" data-bk="'+b.k+'">🕘 '+new Date(b.t).toLocaleString()+' · '+n+'</button>'; }).join(''):'<div class="muted" style="font-size:10.5px">无本地备份（每次覆盖前自动产生，最多 10 份）</div>';
+}
+document.getElementById('sync-baks')?.addEventListener('click',()=>{ showBaks(); const bx=document.getElementById('sync-box'); if(bx) bx.open=true; });
+document.getElementById('sync-baks-list')?.addEventListener('click',e=>{
+  const b=e.target.closest('button[data-bk]'); if(!b) return;
+  if(!confirm('用这份备份覆盖当前数据？（当前数据也会先自动备份）')) return;
+  backupLocal();
+  try{
+    SYNCING=true;
+    applySyncData(JSON.parse(localStorage.getItem(b.dataset.bk)||'{}'));
+    localStorage.setItem(LS_KEY,JSON.stringify(S));
+    renderLeft(); refreshNumbers(); renderCK(); renderGallery();
+    syncStatus('✅ 已恢复备份，请尽快「⬆️推送」上云');
+    toast('🕘 备份已恢复——记得重新推送');
+  }catch(err){ syncStatus('❌ 备份损坏'); }
+  SYNCING=false;
+});
 ['visibilitychange','online'].forEach(ev=>document.addEventListener(ev,()=>{
   if(ev==='visibilitychange'&&document.visibilityState!=='visible') return;
   if(localStorage.getItem(SYNC.AUTO)==='1'&&sTok()&&sPwd()&&!SYNCING&&wireSyncUI.done) syncPull(true);
