@@ -1599,6 +1599,28 @@ async function dbPut(rec){ const db=await dbGet(); if(!db) return;
   db.transaction('imgs','readwrite').objectStore('imgs').put(rec); }
 async function dbDel(id){ const db=await dbGet(); if(!db) return;
   db.transaction('imgs','readwrite').objectStore('imgs').delete(id); }
+async function galEditKey(k){
+  const cur=(S.galCap&&S.galCap[k])||'';
+  const t=await uiPrompt('修改票据说明（清空恢复默认，随云同步）：',cur);
+  if(t===null) return;
+  if(t.trim()) S.galCap[k]=t.trim(); else delete S.galCap[k];
+  save(); renderGallery(); toast('✏️ 说明已更新');
+}
+async function galHideKey(src){
+  if(!(await uiConfirm('从票据页隐藏这张？（文件夹原文件不受影响，点「👁 显示全部」可恢复）'))) return;
+  S.galHide[src]=1; save(); renderGallery(); toast('已隐藏');
+}
+async function galDelUpload(id){
+  if(!(await uiConfirm('删除这张上传的图片？（会同步从云端移除，其他设备也不再显示）'))) return;
+  S.imgDel[id]=1; save();
+  try{
+    const pushed=JSON.parse(localStorage.getItem(SYNC.IMGS)||'{}');
+    delete pushed[id]; localStorage.setItem(SYNC.IMGS,JSON.stringify(pushed));
+    const gid=localStorage.getItem(SYNC.GIST);
+    if(gid&&sTok()&&sPwd()) gh('/gists/'+gid,{method:'PATCH',body:JSON.stringify({files:{[SYNC.IMG_PRE+id]:{content:null}}})}).catch(()=>{});
+  }catch(e){}
+  await dbDel(id); renderGallery(); toast('🗑 已删除（云端同步移除）');
+}
 function galUnhideAll(){
   const n=Object.keys(S.galHide||{}).length;
   S.galHide={}; save(); renderGallery();
@@ -1615,9 +1637,9 @@ async function renderGalleryInner(){
   const files=GALLERY.filter(f=>!S.galHide[f.src]);
   const capOf=(k,def)=>(S.galCap&&S.galCap[k])?S.galCap[k]:def;
   document.getElementById('gallery-grid').innerHTML=
-    files.map(f=>`<div class="g-item"><img class="ticket-img" src="${f.src}" data-cap="${escV(capOf(f.src,f.full))}" alt=""><div class="cap">${escV(capOf(f.src,f.cap))}<button class="g-edit" data-gcap="${escV(f.src)}" title="修改说明（随云同步）">✏️</button><button class="g-del" data-gdel="${f.src}" title="从票据页隐藏（不动原文件）">🗑</button></div></div>`).join('')+
+    files.map(f=>`<div class="g-item"><img class="ticket-img" src="${f.src}" data-cap="${escV(capOf(f.src,f.full))}" alt=""><div class="cap">${escV(capOf(f.src,f.cap))}<button class="g-edit" onclick="galEditKey(this.dataset.k)" data-k="${escV(f.src)}" title="修改说明">✏️</button><button class="g-del" onclick="galHideKey(this.dataset.k)" data-k="${f.src}" title="从票据页隐藏（不动原文件）">🗑</button></div></div>`).join('')+
     ups.map(u=>{ const url=URL.createObjectURL(u.blob); galUrls.push(url); const k='u:'+u.id;
-      return `<div class="g-item"><img class="ticket-img" src="${url}" data-cap="${escV(capOf(k,u.name||'上传图片'))}" alt=""><div class="cap">📤 ${escV(capOf(k,(u.name||'图片').slice(0,18)))}<button class="g-edit" data-gcap="${escV(k)}" title="修改说明（随云同步）">✏️</button><button class="g-del" data-udel="${u.id}" title="删除（云端同步移除）">🗑</button></div></div>`; }).join('');
+      return `<div class="g-item"><img class="ticket-img" src="${url}" data-cap="${escV(capOf(k,u.name||'上传图片'))}" alt=""><div class="cap">📤 ${escV(capOf(k,(u.name||'图片').slice(0,18)))}<button class="g-edit" onclick="galEditKey(this.dataset.k)" data-k="${escV(k)}" title="修改说明">✏️</button><button class="g-del" onclick="galDelUpload(this.dataset.k)" data-k="${u.id}" title="删除（云端同步移除）">🗑</button></div></div>`; }).join('');
   const tot=files.length+ups.length;
   document.getElementById('gallery-desc').innerHTML=(tot?'':'⚠️ 当前没有可显示的票据——点上方「📤 上传图片」添加，或「👁 显示全部」恢复隐藏的图。<br>')+
     '文件夹票据 '+files.length+' 张 + 上传 '+ups.length+' 张'+(hidden?'（'+hidden+' 张已隐藏）':'')+' · 图下方 ✏️ 改说明、🗑 删除/隐藏';
@@ -1628,29 +1650,7 @@ document.getElementById('gal-up').addEventListener('change',async e=>{
   }
   e.target.value=''; renderGallery(); toast('📤 已上传 '+e.target.files.length+' 张（保存在本机浏览器）');
 });
-document.getElementById('gallery-grid').addEventListener('click',async e=>{
-  const ed=e.target.closest('button.g-edit');
-  if(ed){ const k=ed.dataset.gcap; const cur=(S.galCap&&S.galCap[k])||'';
-    const t=await uiPrompt('修改票据说明（清空则恢复默认，随云同步）：',cur); if(t===null) return;
-    if(t.trim()) S.galCap[k]=t.trim(); else delete S.galCap[k];
-    save(); renderGallery(); toast('✏️ 说明已更新'); return; }
-  const b=e.target.closest('button.g-del'); if(!b) return;
-  e.stopPropagation();
-  if(b.dataset.gdel){ if(await uiConfirm('从票据页隐藏这张？（文件夹原文件不受影响）')){ S.galHide[b.dataset.gdel]=1; save(); renderGallery(); toast('已从票据页隐藏（可在控制台清 localStorage 恢复）'); } }
-  if(b.dataset.udel){
-    if(await uiConfirm('删除这张上传的图片？（会同步从云端移除，其他设备也不再显示）')){
-      const id=b.dataset.udel;
-      S.imgDel[id]=1; save();
-      try{                                                        /* 同步从云端移除该图 */
-        const pushed=JSON.parse(localStorage.getItem(SYNC.IMGS)||'{}');
-        delete pushed[id]; localStorage.setItem(SYNC.IMGS,JSON.stringify(pushed));
-        const gid=localStorage.getItem(SYNC.GIST);
-        if(gid&&sTok()&&sPwd()) gh('/gists/'+gid,{method:'PATCH',body:JSON.stringify({files:{[SYNC.IMG_PRE+id]:{content:null}}})}).catch(()=>{});
-      }catch(e){}
-      await dbDel(id); renderGallery(); toast('🗑 已删除（云端同步移除）');
-    }
-  }
-});
+/* 票据按钮已改为 onclick 直调 */
 
 /* ================= Tab 页切换 ================= */
 function switchTab(id){
