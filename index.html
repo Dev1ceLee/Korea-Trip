@@ -1747,7 +1747,7 @@ async function findOrCreateGist(content){
     if(hit){ localStorage.setItem(SYNC.GIST,hit.id); return hit.id; }
   }
   const r=await gh('/gists',{method:'POST',body:JSON.stringify({description:SYNC.DESC,public:false,files:{[SYNC.FILE]:{content}}})});
-  if(!r.ok){ const e=r.status===401?'Token 无效或未勾 gist 权限':r.status===403?'Token 权限不足/被限流':'HTTP '+r.status; throw new Error('创建 Gist 失败：'+e); }
+  if(!r.ok){ const e=r.status===401?'Token 无效：请检查复制是否完整；Fine-grained token 不支持 Gist，请用 Classic token（只勾 gist 权限）':r.status===403?'权限不足或被限流（Fine-grained token 请改用 Classic）':'HTTP '+r.status; throw new Error('创建Gist失败：'+e); }
   const g=await r.json(); localStorage.setItem(SYNC.GIST,g.id); return g.id;
 }
 function backupLocal(){
@@ -1763,7 +1763,8 @@ async function syncPush(silent){
   if(!crypto.subtle){ syncStatus('当前环境不支持加密，请用在线版'); return; }
   SYNCING=true; syncStatus('加密并推送中…');
   try{
-    const id=await findOrCreateGist('');                    /* 确保拿到 gist id */
+    const payload=await encAES(sPwd(),JSON.stringify(S));   /* 先加密，用真密文创建/定位 Gist */
+    const id=await findOrCreateGist(payload);
     const cur=await gh('/gists/'+id);
     if(cur.ok){                                              /* 冲突检测：云端比上次同步新 且 本地无新改动 → 提醒 */
       const g=await cur.json();
@@ -1773,13 +1774,12 @@ async function syncPush(silent){
       if(remoteNew&&localDirty&&!silent&&!confirm('云端和本地都有新改动，推送会覆盖云端版本（本地已自动备份）。继续？')){ SYNCING=false; syncStatus('已取消'); return; }
     }
     backupLocal();
-    const payload=await encAES(sPwd(),JSON.stringify(S));
     const r=await gh('/gists/'+id,{method:'PATCH',body:JSON.stringify({description:SYNC.DESC,files:{[SYNC.FILE]:{content:payload}}})});
-    if(!r.ok){ const e=r.status===401?'Token 无效':'HTTP '+r.status; throw new Error('推送失败：'+e); }
+    if(!r.ok){ const e=r.status===401?'Token 无效（Fine-grained 请改用 Classic）':r.status===403?'权限不足或被限流':'HTTP '+r.status; throw new Error('推送失败：'+e); }
     localStorage.setItem(SYNC.PUSH,String(Date.now()));
     syncStatus('✅ 已推送 '+new Date().toLocaleTimeString());
     if(!silent) toast('☁️ 已加密推送到你的私有 Gist');
-  }catch(e){ syncStatus('❌ '+e.message); if(!silent) toast('❌ '+e.message); }
+  }catch(e){ const msg=/Failed to fetch|NetworkError|Load failed/i.test(e.message)?'网络连不上 api.github.com（国内常见）：挂梯子后再点一次即可，页面本身不受影响':e.message; syncStatus('❌ '+msg); if(!silent) toast('❌ '+msg); }
   SYNCING=false;
 }
 async function syncPull(silent){
