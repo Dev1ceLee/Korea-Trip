@@ -21,19 +21,10 @@ a{color:var(--blue);text-decoration:none}
 a:hover{text-decoration:underline}
 .wrap{max-width:1560px;margin:0 auto;padding:0 16px}
 
-/* nav */
-nav{position:sticky;top:0;z-index:900;background:rgba(255,255,255,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
-nav .wrap{display:flex;gap:4px;overflow-x:auto;padding:0 12px}
-nav a{padding:11px 12px;white-space:nowrap;font-size:14px;color:var(--sub);border-bottom:2px solid transparent}
-nav a:hover{color:var(--blue);text-decoration:none;border-color:var(--blue)}
-
 /* hero */
 header.hero{background:linear-gradient(135deg,#20306b 0%,#2f6df6 60%,#6ea8ff 100%);color:#fff;padding:38px 0 80px}
 .hero h1{font-size:28px;margin-bottom:8px}
 .hero p.sub{opacity:.92;font-size:15px}
-.hero .stats{display:flex;flex-wrap:wrap;gap:12px;margin-top:20px}
-.hero .stat{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);border-radius:12px;padding:8px 16px;font-size:13.5px}
-.hero .stat b{font-size:18px;display:block}
 .todo-banner{background:#fff;color:var(--ink);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px 20px;margin-top:-54px}
 .todo-banner h3{font-size:15.5px;margin-bottom:8px}
 .todo-banner ul{list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:6px;font-size:13.5px}
@@ -289,9 +280,14 @@ table.alt thead th{background:#f0f4ff}
 
 /* 图片墙 */
 .gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:12px}
-.g-item{background:#fff;border-radius:12px;border:1px solid var(--line);padding:8px;cursor:zoom-in}
-.g-item img{width:100%;border-radius:8px;display:block}
-.g-item .cap{font-size:12px;color:var(--sub);padding:6px 2px 2px}
+.g-item{background:#fff;border-radius:12px;border:1px solid var(--line);cursor:zoom-in;overflow:hidden}
+.g-bar{display:flex;align-items:center;gap:4px;padding:7px 10px;background:#f6f8fc;border-bottom:1px solid var(--line)}
+.g-nm{flex:1;min-width:0;font-size:12.5px;font-weight:600;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.g-acts{display:flex;gap:1px;flex:none}
+.g-act{border:none;background:none;color:#b3bccb;font-size:13px;line-height:1;cursor:pointer;padding:3px 5px;border-radius:6px;text-decoration:none}
+.g-act:hover{background:#e9f0fb;color:var(--blue)}
+.g-act.g-del:hover{background:#fdeeee;color:var(--red)}
+.g-item img{width:100%;display:block}
 
 /* lightbox / toast */
 #lightbox{position:fixed;inset:0;background:rgba(15,20,35,.9);display:none;align-items:center;justify-content:center;z-index:2000;flex-direction:column;padding:24px}
@@ -325,16 +321,10 @@ footer{padding:26px 0 40px;color:var(--sub);font-size:12px;text-align:center}
 .mustb.on{background:var(--red);color:#fff}
 .ck-item.done .mustb{opacity:.45}
 /* 票据删除按钮 */
-.g-del{border:none;background:none;color:#adb5c6;font-size:11px;cursor:pointer;padding:0 2px;vertical-align:middle}
-.g-edit{border:none;background:none;color:#adb5c6;font-size:11px;cursor:pointer;padding:0 2px;vertical-align:middle}
-.g-edit:hover{color:var(--blue)}
-a.g-edit,a.g-del{text-decoration:none}
-.g-del:hover{color:var(--red)}
 .g-item.g-file{cursor:default}
-.g-filecard{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:150px;border:1.5px dashed var(--line);border-radius:8px;padding:14px 10px;cursor:pointer;transition:border-color .15s}
+.g-filecard{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:130px;margin:8px;border:1.5px dashed var(--line);border-radius:8px;padding:14px 10px;cursor:pointer;transition:border-color .15s}
 .g-filecard:hover{border-color:var(--blue)}
 .g-fico{font-size:34px;line-height:1}
-.g-fnm{font-size:12px;color:var(--txt);text-align:center;word-break:break-all;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .g-fmt{font-size:11px;color:var(--sub)}
 /* 页面内弹窗 */
 #ui-modal{position:fixed;inset:0;background:rgba(15,20,35,.45);display:none;align-items:center;justify-content:center;z-index:1750;padding:16px}
@@ -381,19 +371,9 @@ a.g-edit,a.g-del{text-decoration:none}
 </head>
 <body>
 
-<nav><div class="wrap">
-  <a href="#overview">概览</a><a href="#plan">🗓 行程规划</a><a href="#map">🗺 地图</a><a href="#weather">🌤 天气</a><a href="#arrival">🛂 入境卡教程</a><a href="#checklist">✅ 出发清单</a><a href="#alt">🆚 比价参考</a><a href="#gallery">🎫 票据原件</a>
-</div></nav>
-
 <header class="hero" id="overview"><div class="wrap">
   <h1>🇰🇷 韩国国庆之旅 · 双人 6 天 5 晚</h1>
   <p class="sub">2026.10.1（周四）广州出发 → 首尔 · 明洞 5 晚 → 10.4 釜山 CLUBD OASIS 一日往返 → 10.6（周二）返广州　｜　左侧勾选/新增项目 → 自动进入行程与费用，右上可导出苹果日历</p>
-  <div class="stats">
-    <div class="stat"><b>10/1 – 10/6</b>行程日期</div>
-    <div class="stat"><b>2 人</b>双人出行</div>
-    <div class="stat"><b>索拉戈明洞</b>忠武路站7号口·步行2分钟</div>
-    <div class="stat"><b id="hero-paid">≈ ¥13,600</b>已付大项合计</div>
-  </div>
 </div></header>
 
 <div class="wrap"><div class="todo-banner">
@@ -474,7 +454,6 @@ a.g-edit,a.g-del{text-decoration:none}
 
   <section id="plan" class="tabpane">
     <h2 class="sec">🗓 逐日行程规划（安全优先 · 避开人流高峰）</h2>
-    <p class="sec-desc"><b>时间轴为 0:00–24:00 连续网格（苹果日历式）</b>：按住任意蓝色项目上下拖动，光标停在哪个时间就落到哪个时间（5 分钟吸附，可自由插入固定项之间）；松手后时间写回左栏。灰色为固定流程项（<b>时间锁定不可拖</b>，但可穿越、可与项目重叠排布）。项目上的时间/名称可直接编辑，✕ 移除，每天底部可 ➕ 新增。机票/酒店/KTX/CLUBD 日期锁定。安全原则：不去梨泰院等事故/高人流区域。</p>
     <div style="margin-bottom:14px">
       <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
         <button class="btn green" onclick="exportICS()">📥 一键导出苹果日历(.ics)</button>
@@ -729,12 +708,10 @@ a.g-edit,a.g-del{text-decoration:none}
   <!-- 票据文件夹 -->
   <section id="gallery" class="tabpane">
     <h2 class="sec">🎫 票据文件夹</h2>
-    <p class="sec-desc" id="gallery-desc">文件夹票据 + 手机上传的截图，集中在这里。点图片放大。</p>
     <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px">
       <button class="btn green" onclick="document.getElementById('gal-up').click()">📤 上传文件</button>
-      <button class="btn ghost" onclick="galUnhideAll()">👁 显示全部（含隐藏）</button>
+      <button class="btn ghost" onclick="galUnhideAll()">👁 显示全部</button>
       <input type="file" id="gal-up" accept="image/*,application/pdf" multiple hidden>
-      <span class="muted" id="gal-hint">支持多选；图片自动压缩，PDF 等文件单个 ≤10MB（同步时自动分块）；上传后加密同步全端。文件夹原件仅本机展示。</span>
     </div>
     <div class="gallery" id="gallery-grid"></div>
   </section>
@@ -1103,7 +1080,6 @@ function refreshNumbers(){
   rows.push(`<div class="sum-row"><span>人均（÷2）</span><b>${fmtCNY(total/2)}</b></div>`);
   rows.push(`<div class="sum-row total"><span>合计（2人）</span><b>${fmtCNY(total)}<span style="font-size:11px;font-weight:400"> ≈ ${fmtKRW(total*(+S.rate||207))}</span></b></div>`);
   document.getElementById('sum-rows').innerHTML=rows.join('');
-  document.getElementById('hero-paid').textContent='≈ '+fmtCNY(paidSum);
   renderRailSum(); renderTimeline(); updateMarkers();
 }
 function renderRailSum(){
@@ -1697,35 +1673,33 @@ async function renderGalleryInner(){
   let ups=[]; try{ ups=await dbAll(); }catch(e){}
   const probe=await probeFolder();
   const avail=GALLERY.filter(f=>probe[f.src]&&probe[f.src].ok);
-  const missing=GALLERY.length-avail.length;
-  const hidden=avail.filter(f=>S.galHide[f.src]).length;
   const files=avail.filter(f=>!S.galHide[f.src]);
   const capOf=(k,def)=>(S.galCap&&S.galCap[k])?S.galCap[k]:def;
-  document.getElementById('gallery-grid').innerHTML=
+  const bar=(nm,full,k,dl,del)=>`<div class="g-bar"><span class="g-nm" title="${escV(full)}">${escV(nm)}</span><span class="g-acts"><button class="g-act" onclick="galEditKey(this.dataset.k)" data-k="${escV(k)}" title="修改说明">✏️</button>${dl||''}<button class="g-act g-del" onclick="${del.fn}(this.dataset.k)" data-k="${escV(del.k)}" title="${del.t}">🗑</button></span></div>`;
+  const html=
     files.map(f=>{
-      if(/\.pdf$/i.test(f.src)){                              /* 文件夹 PDF：文件卡片，点开查看 / ⬇️ 直链下载 */
-        return `<div class="g-item g-file"><div class="g-filecard" onclick="galOpenUrl('${encodeURI(f.src)}')" title="点开查看（新标签页）">
-          <div class="g-fico">📄</div><div class="g-fnm">${escV(capOf(f.src,f.full))}</div>
-          <div class="g-fmt">PDF${probe[f.src].size?' · '+galSz(probe[f.src].size):''}</div></div>
-          <div class="cap">📁 ${escV(capOf(f.src,f.cap))}<button class="g-edit" onclick="galEditKey(this.dataset.k)" data-k="${escV(f.src)}" title="修改说明">✏️</button><a class="g-edit" href="${encodeURI(f.src)}" download title="下载到本机">⬇️</a><button class="g-del" onclick="galHideKey(this.dataset.k)" data-k="${escV(f.src)}" title="从票据页隐藏（不动原文件）">🗑</button></div></div>`;
+      if(/\.pdf$/i.test(f.src)){                              /* 文件夹 PDF：点卡片查看 / ⬇️ 直链下载 */
+        return `<div class="g-item g-file">${bar(capOf(f.src,f.cap),capOf(f.src,f.full),f.src,`<a class="g-act" href="${encodeURI(f.src)}" download title="下载到本机">⬇️</a>`,{fn:'galHideKey',k:f.src,t:'从票据页隐藏（不动原文件）'})}
+          <div class="g-filecard" onclick="galOpenUrl('${encodeURI(f.src)}')" title="点开查看（新标签页）">
+          <div class="g-fico">📄</div>
+          <div class="g-fmt">PDF${probe[f.src].size?' · '+galSz(probe[f.src].size):''}</div></div></div>`;
       }
-      return `<div class="g-item"><img class="ticket-img" src="${encodeURI(f.src)}" data-cap="${escV(capOf(f.src,f.full))}" alt=""><div class="cap">📁 ${escV(capOf(f.src,f.cap))}<button class="g-edit" onclick="galEditKey(this.dataset.k)" data-k="${escV(f.src)}" title="修改说明">✏️</button><button class="g-del" onclick="galHideKey(this.dataset.k)" data-k="${escV(f.src)}" title="从票据页隐藏（不动原文件）">🗑</button></div></div>`;
+      return `<div class="g-item">${bar(capOf(f.src,f.cap),capOf(f.src,f.full),f.src,'',{fn:'galHideKey',k:f.src,t:'从票据页隐藏（不动原文件）'})}
+        <img class="ticket-img" src="${encodeURI(f.src)}" data-cap="${escV(capOf(f.src,f.full))}" alt=""></div>`;
     }).join('')+
     ups.map(u=>{ const k='u:'+u.id;
-      if(!(u.blob&&u.blob.type||'').startsWith('image/')){              /* 非图片（PDF 等）：文件卡片，点开查看/下载 */
+      if(!(u.blob&&u.blob.type||'').startsWith('image/')){              /* 非图片（PDF 等）：点卡片查看 / ⬇️ 下载 */
         const ext=((u.name||'').split('.').pop()||'FILE').toUpperCase();
-        return `<div class="g-item g-file"><div class="g-filecard" onclick="galOpenFile('${u.id}')" title="点开查看（新标签页）；说明栏 ⬇️ 可下载">
+        return `<div class="g-item g-file">${bar(capOf(k,u.name||'上传文件'),u.name||'file',k,`<button class="g-act" onclick="galOpenFile('${u.id}',1)" title="下载到本机">⬇️</button>`,{fn:'galDelUpload',k:u.id,t:'删除（云端同步移除）'})}
+          <div class="g-filecard" onclick="galOpenFile('${u.id}')" title="点开查看（新标签页）">
           <div class="g-fico">${ext==='PDF'?'📄':ext.startsWith('DOC')?'📝':'📎'}</div>
-          <div class="g-fnm">${escV(u.name||'file')}</div>
-          <div class="g-fmt">${escV(ext)} · ${Math.max(1,Math.round((u.blob.size||0)/1024))}KB</div></div>
-          <div class="cap">📤 ${escV((capOf(k,u.name||'上传文件')).slice(0,26))}<button class="g-edit" onclick="galEditKey(this.dataset.k)" data-k="${escV(k)}" title="修改说明">✏️</button><button class="g-edit" onclick="galOpenFile('${u.id}',1)" title="下载到本机">⬇️</button><button class="g-del" onclick="galDelUpload(this.dataset.k)" data-k="${u.id}" title="删除（云端同步移除）">🗑</button></div></div>`;
+          <div class="g-fmt">${escV(ext)} · ${Math.max(1,Math.round((u.blob.size||0)/1024))}KB</div></div></div>`;
       }
       const url=URL.createObjectURL(u.blob); galUrls.push(url);
-      return `<div class="g-item"><img class="ticket-img" src="${url}" data-cap="${escV(capOf(k,u.name||'上传图片'))}" alt=""><div class="cap">📤 ${escV(capOf(k,(u.name||'图片').slice(0,18)))}<button class="g-edit" onclick="galEditKey(this.dataset.k)" data-k="${escV(k)}" title="修改说明">✏️</button><button class="g-del" onclick="galDelUpload(this.dataset.k)" data-k="${u.id}" title="删除（云端同步移除）">🗑</button></div></div>`; }).join('');
-  const tot=files.length+ups.length;
-  document.getElementById('gallery-desc').innerHTML=(tot?'':'⚠️ 当前没有可显示的票据——点上方「📤 上传文件」添加，或「👁 显示全部」恢复隐藏的图。<br>')+
-    '文件夹文件 '+files.length+' 个（仅本机展示，未推送线上）'+(hidden?'，'+hidden+' 个已隐藏':'')+' + 上传 '+ups.length+' 个（加密同步全端）'+
-    (missing?' · 另有 '+missing+' 个文件夹文件此设备不可见（线上未推送）':'')+' · ✏️ 改说明、🗑 隐藏/删除、⬇️ 下载';
+      return `<div class="g-item">${bar(capOf(k,u.name||'上传图片'),u.name||'图片',k,'',{fn:'galDelUpload',k:u.id,t:'删除（云端同步移除）'})}
+        <img class="ticket-img" src="${url}" data-cap="${escV(capOf(k,u.name||'上传图片'))}" alt=""></div>`; }).join('');
+  document.getElementById('gallery-grid').innerHTML=html||
+    '<div class="card" style="grid-column:1/-1">⚠️ 当前没有可显示的票据——点上方「📤 上传文件」添加，或「👁 显示全部」恢复隐藏的项。</div>';
 }
 document.getElementById('gal-up').addEventListener('change',async e=>{
   const fs=[...e.target.files]; let n=0; const skip=[];
@@ -1748,10 +1722,6 @@ function switchTab(id){
 }
 document.getElementById('tabs').addEventListener('click',e=>{
   const b=e.target.closest('button[data-tab]'); if(b) switchTab(b.dataset.tab);
-});
-document.querySelectorAll('nav a[href^="#"]').forEach(a=>{
-  a.addEventListener('click',()=>{ const id=a.getAttribute('href').slice(1);
-    if(document.getElementById(id)&&document.getElementById(id).classList.contains('tabpane')) switchTab(id); });
 });
 switchTab(S.tab&&document.getElementById(S.tab)?S.tab:'plan');
 
