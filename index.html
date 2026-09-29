@@ -899,10 +899,10 @@ const CHECKLIST = [
 
 /* ================= 状态 ================= */
 const LS_KEY='krTrip2026';
-let S = {checked:{}, qty:{}, rate:207, ck:{}, price:{}, paid:{}, cur:{}, name:{}, day:{}, time:{}, eday:{}, etime:{}, note:{}, xhs:{}, deleted:{}, cat:{}, subcats:[], hiddenCats:{}, tlWide:{}, custom:[], ckData:[], galHide:{}, tab:''};
+let S = {checked:{}, qty:{}, rate:207, ck:{}, price:{}, paid:{}, cur:{}, name:{}, day:{}, time:{}, eday:{}, etime:{}, note:{}, xhs:{}, deleted:{}, cat:{}, subcats:[], hiddenCats:{}, tlWide:{}, custom:[], ckData:[], galHide:{}, imgDel:{}, tab:''};
 try{ const raw=localStorage.getItem(LS_KEY); if(raw) S=Object.assign(S,JSON.parse(raw)); }catch(e){}
 if(!S.rate) S.rate=207;
-['price','paid','cur','name','day','time','eday','etime','note','xhs','deleted','cat','hiddenCats','tlWide','galHide'].forEach(k=>S[k]=S[k]||{});
+['price','paid','cur','name','day','time','eday','etime','note','xhs','deleted','cat','hiddenCats','tlWide','galHide','imgDel'].forEach(k=>S[k]=S[k]||{});
 /* Checklist 数据：种子为 [类名,[[id,txt,must],...]] 数组格式 → 统一规范化为对象格式（兼容已损坏的旧持久化） */
 const ckNorm=p=>({cat:(p&&p.cat)||p[0],items:((p&&p.items)||p[1]||[]).map(it=>Array.isArray(it)?{id:it[0],txt:it[1],must:it[2]}:it)});
 if(!Array.isArray(S.ckData)||!S.ckData.length) S.ckData=CHECKLIST.map(ckNorm);
@@ -1602,7 +1602,19 @@ document.getElementById('gallery-grid').addEventListener('click',async e=>{
   const b=e.target.closest('button.g-del'); if(!b) return;
   e.stopPropagation();
   if(b.dataset.gdel){ if(confirm('从票据页隐藏这张？（文件夹原文件不受影响）')){ S.galHide[b.dataset.gdel]=1; save(); renderGallery(); toast('已从票据页隐藏（可在控制台清 localStorage 恢复）'); } }
-  if(b.dataset.udel){ if(confirm('删除这张上传的图片？')){ await dbDel(b.dataset.udel); renderGallery(); toast('已删除'); } }
+  if(b.dataset.udel){
+    if(confirm('删除这张上传的图片？（会同步从云端移除，其他设备也不再显示）')){
+      const id=b.dataset.udel;
+      S.imgDel[id]=1; save();
+      try{                                                        /* 同步从云端移除该图 */
+        const pushed=JSON.parse(localStorage.getItem(SYNC.IMGS)||'{}');
+        delete pushed[id]; localStorage.setItem(SYNC.IMGS,JSON.stringify(pushed));
+        const gid=localStorage.getItem(SYNC.GIST);
+        if(gid&&sTok()&&sPwd()) gh('/gists/'+gid,{method:'PATCH',body:JSON.stringify({files:{[SYNC.IMG_PRE+id]:{content:null}}})}).catch(()=>{});
+      }catch(e){}
+      await dbDel(id); renderGallery(); toast('🗑 已删除（云端同步移除）');
+    }
+  }
 });
 
 /* ================= Tab 页切换 ================= */
@@ -1796,6 +1808,7 @@ async function syncImagesPull(g){
   let n=0;
   for(const f of names){
     const id=f.slice(SYNC.IMG_PRE.length,-4);
+    if(S.imgDel&&S.imgDel[id]) continue;                           /* 已删除的不复活 */
     if(have.has(id)){ pushed[id]='pulled'; n++; continue; }
     const b64=await decAES(sPwd(),g.files[f].content);
     await dbPut({id,name:'img-'+id+'.jpg',blob:b64ToJpegBlob(b64),added:Date.now()});
