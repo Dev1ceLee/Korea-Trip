@@ -702,7 +702,7 @@ footer{padding:26px 0 40px;color:var(--sub);font-size:12px;text-align:center}
     <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px">
       <label class="btn green" for="gal-up" style="cursor:pointer">📤 上传图片（可多选）</label>
       <input type="file" id="gal-up" accept="image/*" multiple hidden>
-      <span class="muted">【在线净版】未打包本地票据图片——点「📤 上传图片」把手机/电脑里的票据截图加进来（存在本机浏览器）。</span>
+      <span class="muted">【在线净版】未打包本地票据图片——从电脑版推送云同步会把上传的票据一并加密同步过来，或点「📤 上传图片」手动添加。</span>
     </div>
     <div class="gallery" id="gallery-grid"></div>
   </section>
@@ -740,7 +740,7 @@ footer{padding:26px 0 40px;color:var(--sub);font-size:12px;text-align:center}
             <button class="btn ghost sm" id="sync-pull">⬇️ 从云端恢复</button>
           </div>
           <div class="muted" id="sync-status" style="font-size:11px;margin-top:6px">未同步</div>
-          <div class="hint">数据在本机用 AES-256-GCM 加密后才写入你的<b>私有 Gist</b>，GitHub 只见密文；Token/密码只存本机，绝不上传。<b>密码遗忘 = 数据无法解密</b>。每次覆盖前自动本地备份最近 10 版。</div>
+          <div class="hint">数据在本机用 AES-256-GCM 加密后才写入你的<b>私有 Gist</b>，GitHub 只见密文；主数据+票据图片全部同步（图片自动压缩至≤900px 后逐张加密）。Token/密码只存本机，绝不上传。<b>密码遗忘 = 数据无法解密</b>。每次覆盖前自动本地备份最近 10 版。</div>
         </div>
       </details>
       <div class="hint">* 韩元项按上方汇率折算人民币汇总；「已付」徽章在左栏点击切换，此处实时联动。KTX 为标准票价估算，可在左栏直接改价。</div>
@@ -1707,7 +1707,7 @@ function exportICS(){
 }
 
 /* ================= ☁️ 云同步（私有 Gist + AES-256-GCM 端到端加密） ================= */
-const SYNC={TKN:'krtip_sync_token',PWD:'krtip_sync_pass',AUTO:'krtip_sync_auto',GIST:'krtip_gist_id',PULL:'krtip_last_pull',PUSH:'krtip_last_push',MT:'krtip_mtime',BAK:'krtip_bak_',FILE:'krtip-sync.enc',DESC:'krtip-sync',API:'https://api.github.com'};
+const SYNC={TKN:'krtip_sync_token',PWD:'krtip_sync_pass',AUTO:'krtip_sync_auto',GIST:'krtip_gist_id',PULL:'krtip_last_pull',PUSH:'krtip_last_push',MT:'krtip_mtime',BAK:'krtip_bak_',FILE:'krtip-sync.enc',DESC:'krtip-sync',API:'https://api.github.com',IMG_PRE:'krtip-img-',IMGS:'krtip_imgs_pushed'};
 let SYNCING=false, autoPushTimer=null;
 const sTok=()=>localStorage.getItem(SYNC.TKN)||'', sPwd=()=>localStorage.getItem(SYNC.PWD)||'';
 function syncStatus(t){ const el=document.getElementById('sync-status'); if(el) el.textContent=t; }
@@ -1736,6 +1736,58 @@ async function decAES(pass,payload){
 }
 function gh(path,opt={}){
   return fetch(SYNC.API+path,{...opt,headers:{Authorization:'token '+sTok(),Accept:'application/vnd.github+json','Content-Type':'application/json',...(opt.headers||{})}});
+}
+/* ---- 票据图片同步：压缩→加密→按文件存入同一 Gist ---- */
+async function imgToB64(blob){                                  /* canvas 压缩到 ≤900px JPEG */
+  const img=await createImageBitmap(blob);
+  const sc=Math.min(1,900/Math.max(img.width,img.height));
+  const c=document.createElement('canvas');
+  c.width=Math.max(1,Math.round(img.width*sc)); c.height=Math.max(1,Math.round(img.height*sc));
+  c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+  const jb=await new Promise(r=>c.toBlob(r,'image/jpeg',0.62));
+  const u=new Uint8Array(await jb.arrayBuffer());
+  let s=''; for(let i=0;i<u.length;i+=8192) s+=String.fromCharCode(...u.subarray(i,i+8192));
+  return btoa(s);
+}
+function b64ToJpegBlob(b64){
+  const bin=atob(b64); const u=Uint8Array.from(bin,ch=>ch.charCodeAt(0));
+  return new Blob([u],{type:'image/jpeg'});
+}
+async function syncImagesPush(id){
+  const ups=await dbAll();
+  const pushed=JSON.parse(localStorage.getItem(SYNC.IMGS)||'{}');
+  const files={};
+  for(const u of ups){
+    const key=u.id+':'+u.blob.size;
+    if(pushed[u.id]===key) continue;                            /* 未变图片跳过（增量） */
+    files[SYNC.IMG_PRE+u.id]={content:await encAES(sPwd(),await imgToB64(u.blob))};
+    pushed[u.id]=key;
+  }
+  const cur=await gh('/gists/'+id);                             /* 删除云端已移除的图片 */
+  if(cur.ok){ const g=await cur.json();
+    Object.keys(g.files||{}).forEach(f=>{ if(f.startsWith(SYNC.IMG_PRE)&&!ups.some(u=>SYNC.IMG_PRE+u.id===f)) files[f]={content:null}; });
+  }
+  if(Object.keys(files).length){
+    const r=await gh('/gists/'+id,{method:'PATCH',body:JSON.stringify({files})});
+    if(!r.ok) throw new Error('图片推送失败 HTTP '+r.status);
+  }
+  localStorage.setItem(SYNC.IMGS,JSON.stringify(pushed));
+}
+async function syncImagesPull(g){
+  const names=Object.keys(g.files||{}).filter(f=>f.startsWith(SYNC.IMG_PRE)&&g.files[f].content);
+  if(!names.length) return 0;
+  const have=new Set((await dbAll()).map(u=>u.id));
+  const pushed=JSON.parse(localStorage.getItem(SYNC.IMGS)||'{}');
+  let n=0;
+  for(const f of names){
+    const id=f.slice(SYNC.IMG_PRE.length,-4);
+    if(have.has(id)){ pushed[id]='pulled'; n++; continue; }
+    const b64=await decAES(sPwd(),g.files[f].content);
+    await dbPut({id,name:'img-'+id+'.jpg',blob:b64ToJpegBlob(b64),added:Date.now()});
+    pushed[id]='pulled'; n++;
+  }
+  localStorage.setItem(SYNC.IMGS,JSON.stringify(pushed));
+  return n;
 }
 async function findOrCreateGist(content){
   const saved=localStorage.getItem(SYNC.GIST); if(saved) return saved;
@@ -1777,8 +1829,11 @@ async function syncPush(silent){
     const r=await gh('/gists/'+id,{method:'PATCH',body:JSON.stringify({description:SYNC.DESC,files:{[SYNC.FILE]:{content:payload}}})});
     if(!r.ok){ const e=r.status===401?'Token 无效（Fine-grained 请改用 Classic）':r.status===403?'权限不足或被限流':'HTTP '+r.status; throw new Error('推送失败：'+e); }
     localStorage.setItem(SYNC.PUSH,String(Date.now()));
-    syncStatus('✅ 已推送 '+new Date().toLocaleTimeString());
-    if(!silent) toast('☁️ 已加密推送到你的私有 Gist');
+    syncStatus('推送票据图片…');
+    let imgWarn='';
+    try{ await syncImagesPush(id); }catch(e){ imgWarn='（⚠️ 图片未推送：'+e.message+'）'; }
+    syncStatus('✅ 已推送 '+new Date().toLocaleTimeString()+imgWarn);
+    if(!silent) toast('☁️ 已加密推送到你的私有 Gist'+(imgWarn?'':'（含票据图片）'));
   }catch(e){ const msg=/Failed to fetch|NetworkError|Load failed/i.test(e.message)?'网络连不上 api.github.com（国内常见）：挂梯子后再点一次即可，页面本身不受影响':e.message; syncStatus('❌ '+msg); if(!silent) toast('❌ '+msg); }
   SYNCING=false;
 }
@@ -1802,11 +1857,17 @@ async function syncPull(silent){
     const data=JSON.parse(plain);
     Object.keys(S).forEach(k=>delete S[k]);
     Object.assign(S,data);
+    /* 重建内存数据（修复：恢复后左栏/时间轴/自定义项不刷新的 bug） */
+    BASE_ITEMS.forEach(it=>{ it.price=BASE_PRICE[it.id]; if(S.price[it.id]!=null) it.price=S.price[it.id]; });
+    ITEMS=BASE_ITEMS.concat(Array.isArray(S.custom)?S.custom:[]);
     localStorage.setItem(LS_KEY,JSON.stringify(S));
     localStorage.setItem(SYNC.PULL,String(Date.now()));
+    syncStatus('恢复票据图片…');
+    let imgN=0;
+    try{ imgN=await syncImagesPull(g); }catch(e){}
     renderLeft(); refreshNumbers(); renderCK(); renderGallery(); if(S.tab) switchTab(S.tab);
-    syncStatus('✅ 已恢复 '+new Date(g.updated_at).toLocaleString());
-    toast('⬇️ 已从云端恢复（解密成功）');
+    syncStatus('✅ 已恢复 '+new Date(g.updated_at).toLocaleString()+(imgN?' · 票据图片 '+imgN+' 张':''));
+    toast('⬇️ 已从云端恢复（解密成功'+(imgN?'，含 '+imgN+' 张票据':'')+'）');
   }catch(e){
     syncStatus(/FormatError|OperationError|JSON/.test(e.name+e.message)?'❌ 解密失败：密码不正确或数据损坏':'❌ '+e.message);
   }
