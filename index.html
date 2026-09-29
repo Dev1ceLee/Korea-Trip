@@ -323,6 +323,8 @@ footer{padding:26px 0 40px;color:var(--sub);font-size:12px;text-align:center}
 .ck-item.done .mustb{opacity:.45}
 /* 票据删除按钮 */
 .g-del{border:none;background:none;color:#adb5c6;font-size:11px;cursor:pointer;padding:0 2px;vertical-align:middle}
+.g-edit{border:none;background:none;color:#adb5c6;font-size:11px;cursor:pointer;padding:0 2px;vertical-align:middle}
+.g-edit:hover{color:var(--blue)}
 .g-del:hover{color:var(--red)}
 /* 云同步面板 */
 .sync-box{border-top:1px dashed var(--line);padding-top:10px}
@@ -706,7 +708,7 @@ footer{padding:26px 0 40px;color:var(--sub);font-size:12px;text-align:center}
     <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px">
       <label class="btn green" for="gal-up" style="cursor:pointer">📤 上传图片（可多选）</label>
       <input type="file" id="gal-up" accept="image/*" multiple hidden>
-      <span class="muted">【在线净版】未打包本地票据图片——从电脑版推送云同步会把上传的票据一并加密同步过来，或点「📤 上传图片」手动添加。</span>
+      <span class="muted">上传的图保存在本机浏览器（IndexedDB），换电脑需重新上传；文件夹原图只做展示/隐藏，文件不会被改动。</span>
     </div>
     <div class="gallery" id="gallery-grid"></div>
   </section>
@@ -899,10 +901,10 @@ const CHECKLIST = [
 
 /* ================= 状态 ================= */
 const LS_KEY='krTrip2026';
-let S = {checked:{}, qty:{}, rate:207, ck:{}, price:{}, paid:{}, cur:{}, name:{}, day:{}, time:{}, eday:{}, etime:{}, note:{}, xhs:{}, deleted:{}, cat:{}, subcats:[], hiddenCats:{}, tlWide:{}, custom:[], ckData:[], galHide:{}, imgDel:{}, tab:''};
+let S = {checked:{}, qty:{}, rate:207, ck:{}, price:{}, paid:{}, cur:{}, name:{}, day:{}, time:{}, eday:{}, etime:{}, note:{}, xhs:{}, deleted:{}, cat:{}, subcats:[], hiddenCats:{}, tlWide:{}, custom:[], ckData:[], galHide:{}, imgDel:{}, galCap:{}, tab:''};
 try{ const raw=localStorage.getItem(LS_KEY); if(raw) S=Object.assign(S,JSON.parse(raw)); }catch(e){}
 if(!S.rate) S.rate=207;
-['price','paid','cur','name','day','time','eday','etime','note','xhs','deleted','cat','hiddenCats','tlWide','galHide','imgDel'].forEach(k=>S[k]=S[k]||{});
+['price','paid','cur','name','day','time','eday','etime','note','xhs','deleted','cat','hiddenCats','tlWide','galHide','imgDel','galCap'].forEach(k=>S[k]=S[k]||{});
 /* Checklist 数据：种子为 [类名,[[id,txt,must],...]] 数组格式 → 统一规范化为对象格式（兼容已损坏的旧持久化） */
 const ckNorm=p=>({cat:(p&&p.cat)||p[0],items:((p&&p.items)||p[1]||[]).map(it=>Array.isArray(it)?{id:it[0],txt:it[1],must:it[2]}:it)});
 if(!Array.isArray(S.ckData)||!S.ckData.length) S.ckData=CHECKLIST.map(ckNorm);
@@ -1586,11 +1588,12 @@ async function renderGallery(){
   galUrls.forEach(u=>URL.revokeObjectURL(u)); galUrls=[];
   const ups=await dbAll();
   const files=GALLERY.filter(f=>!S.galHide[f.src]);
+  const capOf=(k,def)=>(S.galCap&&S.galCap[k])?S.galCap[k]:def;
   document.getElementById('gallery-grid').innerHTML=
-    files.map(f=>`<div class="g-item"><img class="ticket-img" src="${f.src}" data-cap="${escV(f.full)}" alt=""><div class="cap">${f.cap}<button class="g-del" data-gdel="${f.src}" title="从票据页隐藏（不动原文件）">🗑</button></div></div>`).join('')+
-    ups.map(u=>{ const url=URL.createObjectURL(u.blob); galUrls.push(url);
-      return `<div class="g-item"><img class="ticket-img" src="${url}" data-cap="${escV(u.name||'上传图片')}" alt=""><div class="cap">📤 ${escV((u.name||'图片').slice(0,18))}<button class="g-del" data-udel="${u.id}" title="删除上传的图片">🗑</button></div></div>`; }).join('');
-  document.getElementById('gallery-desc').textContent=`文件夹票据 ${files.length} 张 + 上传 ${ups.length} 张，点图片放大。`;
+    files.map(f=>`<div class="g-item"><img class="ticket-img" src="${f.src}" data-cap="${escV(capOf(f.src,f.full))}" alt=""><div class="cap">${escV(capOf(f.src,f.cap))}<button class="g-edit" data-gcap="${escV(f.src)}" title="修改说明（随云同步）">✏️</button><button class="g-del" data-gdel="${f.src}" title="从票据页隐藏（不动原文件）">🗑</button></div></div>`).join('')+
+    ups.map(u=>{ const url=URL.createObjectURL(u.blob); galUrls.push(url); const k='u:'+u.id;
+      return `<div class="g-item"><img class="ticket-img" src="${url}" data-cap="${escV(capOf(k,u.name||'上传图片'))}" alt=""><div class="cap">📤 ${escV(capOf(k,(u.name||'图片').slice(0,18)))}<button class="g-edit" data-gcap="${escV(k)}" title="修改说明（随云同步）">✏️</button><button class="g-del" data-udel="${u.id}" title="删除（云端同步移除）">🗑</button></div></div>`; }).join('');
+  document.getElementById('gallery-desc').textContent=`文件夹票据 ${files.length} 张 + 上传 ${ups.length} 张 · 📤上传 ✏️改说明 🗑删除 点图放大`;
 }
 document.getElementById('gal-up').addEventListener('change',async e=>{
   for(const f of e.target.files){
@@ -1599,6 +1602,11 @@ document.getElementById('gal-up').addEventListener('change',async e=>{
   e.target.value=''; renderGallery(); toast('📤 已上传 '+e.target.files.length+' 张（保存在本机浏览器）');
 });
 document.getElementById('gallery-grid').addEventListener('click',async e=>{
+  const ed=e.target.closest('button.g-edit');
+  if(ed){ const k=ed.dataset.gcap; const cur=(S.galCap&&S.galCap[k])||'';
+    const t=prompt('修改票据说明（清空则恢复默认，随云同步）：',cur); if(t===null) return;
+    if(t.trim()) S.galCap[k]=t.trim(); else delete S.galCap[k];
+    save(); renderGallery(); toast('✏️ 说明已更新'); return; }
   const b=e.target.closest('button.g-del'); if(!b) return;
   e.stopPropagation();
   if(b.dataset.gdel){ if(confirm('从票据页隐藏这张？（文件夹原文件不受影响）')){ S.galHide[b.dataset.gdel]=1; save(); renderGallery(); toast('已从票据页隐藏（可在控制台清 localStorage 恢复）'); } }
