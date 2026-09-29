@@ -110,6 +110,8 @@ details.sub[open] summary .arr{transform:rotate(90deg)}
 .item .r3{margin-top:4px;display:flex;align-items:center;gap:5px}
 .item .r3 select{font-size:11px;border:1px solid var(--line);border-radius:5px;padding:1px 3px;font-family:inherit;background:#fff;color:var(--ink)}
 .daychip.lock{background:#edf0f4;color:#5b6478}
+.lockbtn{font-size:11px;border:none;background:#f1f3f5;border-radius:3px;padding:1px 5px;cursor:pointer;font-family:inherit;flex:none;line-height:1.4}
+.lockbtn.on{background:#ffe8cc}
 .item .r4{margin-top:3px;display:flex;align-items:center;gap:5px}
 .item .r5{display:flex;align-items:center;gap:4px;margin-top:5px;flex-wrap:wrap;font-size:12px}
 .item .r5 input[type=number]{width:62px;padding:2px 4px;border:1px solid var(--line);border-radius:5px;font-size:12px;text-align:right;font-family:inherit}
@@ -185,6 +187,7 @@ p.sec-desc{color:var(--sub);font-size:13px;margin-bottom:16px}
 .tlg-f{position:absolute;left:6px;right:2px;background:#eef1f7;color:#5b6478;border:1px solid #e2e7f0;border-radius:6px;font-size:11px;padding:2px 8px;line-height:1.45;z-index:5}
 .tlg-f .tt{font-weight:700;margin-right:6px;color:#495057}
 .tlg-i{position:absolute;background:#eef4ff;border:1px solid #74a0ff;border-left:3px solid var(--blue);border-radius:7px;padding:2px 5px;display:flex;flex-direction:column;gap:1px;font-size:11px;box-shadow:0 1px 4px rgba(47,109,246,.12);cursor:grab;touch-action:none;z-index:10;overflow:hidden}
+.tlg-i.locked{background:#eef0f3!important;border-color:#adb5bd!important;border-left:3px solid #868e96!important;filter:grayscale(.8);opacity:.7;cursor:not-allowed}
 .tlg-i:active{cursor:grabbing}
 .tlg-i.dragging{opacity:.4}
 .tlg-i.cont{opacity:.85;border-style:dashed;cursor:default}
@@ -956,10 +959,10 @@ const CHECKLIST = [
 
 /* ================= 状态 ================= */
 const LS_KEY='krTrip2026';
-let S = {checked:{}, qty:{}, rate:207, ck:{}, price:{}, paid:{}, cur:{}, name:{}, day:{}, time:{}, eday:{}, etime:{}, note:{}, xhs:{}, deleted:{}, cat:{}, subcats:[], hiddenCats:{}, tlWide:{}, custom:[], ckData:[], galHide:{}, imgDel:{}, galCap:{}, tab:''};
+let S = {checked:{}, qty:{}, rate:207, ck:{}, price:{}, paid:{}, cur:{}, name:{}, day:{}, time:{}, eday:{}, etime:{}, lock:{}, note:{}, xhs:{}, deleted:{}, cat:{}, subcats:[], hiddenCats:{}, tlWide:{}, custom:[], ckData:[], galHide:{}, imgDel:{}, galCap:{}, tab:''};
 try{ const raw=localStorage.getItem(LS_KEY); if(raw) S=Object.assign(S,JSON.parse(raw)); }catch(e){}
 if(!S.rate) S.rate=207;
-['price','paid','cur','name','day','time','eday','etime','note','xhs','deleted','cat','hiddenCats','tlWide','galHide','imgDel','galCap'].forEach(k=>S[k]=S[k]||{});
+['price','paid','cur','name','day','time','eday','etime','lock','note','xhs','deleted','cat','hiddenCats','tlWide','galHide','imgDel','galCap'].forEach(k=>S[k]=S[k]||{});
 /* Checklist 数据：种子为 [类名,[[id,txt,must],...]] 数组格式 → 统一规范化为对象格式（兼容已损坏的旧持久化） */
 const ckNorm=p=>({cat:(p&&p.cat)||p[0],items:((p&&p.items)||p[1]||[]).map(it=>Array.isArray(it)?{id:it[0],txt:it[1],must:it[2]}:it)});
 if(!Array.isArray(S.ckData)||!S.ckData.length) S.ckData=CHECKLIST.map(ckNorm);
@@ -980,6 +983,7 @@ const isOn=it=>S.checked[it.id]!=null?!!S.checked[it.id]:!!(it.def||false);
 const vName=it=>S.name[it.id]!=null?S.name[it.id]:it.name;
 const vDay=it=>S.day[it.id]!=null?S.day[it.id]:(it.day||'');
 const vTime=it=>S.time[it.id]!=null?S.time[it.id]:(it.time||'');
+const vLock=it=>S.lock[it.id]!=null?!!S.lock[it.id]:!!it.lockDay;   /* 锁定=日期时间冻结（机票/KTX默认锁，可手动切换） */
 const vDur=it=>it.dur||60;                                                                  /* 默认时长60分钟 */
 const vETime=it=>{ if(S.etime[it.id]) return S.etime[it.id]; const st=vTime(it); return st?toHM(Math.min(23*60+55,toMin(st)+vDur(it))):''; };
 const vEDay=it=>S.eday[it.id]||'';                                                          /* 空=同开始日 */
@@ -1038,16 +1042,16 @@ function itemRow(it){
   const catOpts=cats.map(sc=>`<option value="${escV(sc)}" ${catShow===sc?'selected':''}>${escV(sc)}</option>`).join('')+
     `<option value="${escV(sp.name)}" ${catShow===sp.name?'selected':''}>（${escV(sp.name)}·未归类）</option>`;
   const catDel=cats.includes(cat)?`<button class="cat-del" data-catdel="${escV(cat)}" data-id="${it.id}" title="删除小类「${escV(cat)}」：项目保留，变为未归类">🗑</button>`:'';
-  const dayEl=it.lockDay
-    ? `<span class="daychip lock" title="机票/KTX 票据：日期与时间固定，不可修改">🔒 ${day||'—'}</span>`
+  const dayEl=vLock(it)
+    ? `<span class="daychip lock" title="已锁定：日期与时间固定（点左栏🔓解锁）">🔒 ${day||'—'}</span>`
     : `<select data-c="day" data-id="${it.id}" title="日期">${'<option value="">无日期</option>'+DAYS.map(d=>`<option ${day===d?'selected':''}>${d}</option>`).join('')}</select>`;
   return `<div class="item" data-id="${it.id}">
     <input type="checkbox" data-c="chk" data-id="${it.id}" ${on?'checked':''}>
     <div class="info">
-      <div class="r1"><input class="inp-name" data-c="name" data-id="${it.id}" value="${escV(vName(it))}" placeholder="项目名称"><button class="del" data-c="del" data-id="${it.id}" title="移除">✕</button></div>
+      <div class="r1"><input class="inp-name" data-c="name" data-id="${it.id}" value="${escV(vName(it))}" placeholder="项目名称"><button class="lockbtn${vLock(it)?' on':''}" data-c="lock" data-id="${it.id}" title="${vLock(it)?'已锁定：中栏对应条目灰掉、不可拖拽改时间，点此解锁':'未锁定：点此锁定（防误拖误改）'}">${vLock(it)?'🔒':'🔓'}</button><button class="del" data-c="del" data-id="${it.id}" title="移除">✕</button></div>
       <div class="r2"><select class="sel-cat" data-c="cat" data-id="${it.id}" title="所属小类（仅本大类下）">${catOpts}</select>${catDel}</div>
-      <div class="r3"><span class="rlab">始</span>${dayEl}${it.lockDay?`<span class="daychip lock" title="机票/KTX 票据时间固定，不可修改">🔒 ${time||'--:--'}</span>`:`<input class="inp-time" type="time" data-c="time" data-id="${it.id}" value="${time}" title="开始时间（选填）">`}</div>
-      <div class="r4"><span class="rlab">终</span><select data-c="eday" data-id="${it.id}" title="结束日期（默认同开始日）"${it.lockDay?' disabled':''}><option value=""${eday?'':' selected'}>同开始日</option>${DAYS.map(d=>`<option${eday===d?' selected':''}>${d}</option>`).join('')}</select>${it.lockDay?`<span class="daychip lock" title="机票/KTX 票据时间固定，不可修改">🔒 ${etime||toHM(toMin(time)+vDur(it))}</span>`:`<input class="inp-time" type="time" data-c="etime" data-id="${it.id}" value="${etime}" title="结束时间（默认=开始+${vDur(it)}分钟）">`}</div>
+      <div class="r3"><span class="rlab">始</span>${dayEl}${vLock(it)?`<span class="daychip lock" title="已锁定：时间固定（点左栏🔓解锁）">🔒 ${time||'--:--'}</span>`:`<input class="inp-time" type="time" data-c="time" data-id="${it.id}" value="${time}" title="开始时间（选填）">`}</div>
+      <div class="r4"><span class="rlab">终</span><select data-c="eday" data-id="${it.id}" title="结束日期（默认同开始日）"${vLock(it)?' disabled':''}><option value=""${eday?'':' selected'}>同开始日</option>${DAYS.map(d=>`<option${eday===d?' selected':''}>${d}</option>`).join('')}</select>${vLock(it)?`<span class="daychip lock" title="已锁定：时间固定（点左栏🔓解锁）">🔒 ${etime||toHM(toMin(time)+vDur(it))}</span>`:`<input class="inp-time" type="time" data-c="etime" data-id="${it.id}" value="${etime}" title="结束时间（默认=开始+${vDur(it)}分钟）">`}</div>
       <div class="r5">
         <button class="curbtn ${cur==='KRW'?'krw':''}" data-c="cur" data-id="${it.id}" title="切换货币单位">${cur==='KRW'?'₩':'¥'}</button>
         <input type="number" min="0" step="any" data-c="price" data-id="${it.id}" value="${vPrice(it)}" title="单价">
@@ -1176,6 +1180,7 @@ document.getElementById('calc-left').addEventListener('click',async e=>{
   const b=e.target.closest('button[data-c]'); if(!b) return;
   const id=b.dataset.id, c=b.dataset.c;
   const it=ITEMS.find(i=>i.id===id); if(!it) return;
+  if(c==='lock'){ S.lock[id]=!vLock(it); save(); renderLeft(); renderTimeline(); toast(S.lock[id]?'🔒 已锁定「'+vName(it)+'」：中栏灰掉、不可拖拽':'🔓 已解锁「'+vName(it)+'」：恢复可拖拽可编辑'); return; }
   if(c==='paid'){ S.paid[id]=!vPaid(it); save(); renderLeft(); refreshNumbers(); toast(S.paid[id]?'💰 已标记「已付」，右栏实时联动':'已标记「未付」'); }
   if(c==='cur'){ S.cur[id]=vCur(it)==='KRW'?'CNY':'KRW'; save(); renderLeft(); refreshNumbers(); }
   if(c==='del'){
@@ -1257,10 +1262,10 @@ function renderTimeline(){
       const i=ev.i, tall=(ev.bot-ev.top)>=34;
       const tr=tall?`${toHM(ev.s)}–${toHM(ev.e)}`:toHM(ev.s);
       if(ev.k==='c'){ h+=`<div class="tlg-i cont" style="${pos}"><div class="row1"><span class="tt">${tr}</span></div><div class="nm">${escV(vName(i))} ↦ ${vEDay(i)}（跨天）</div></div>`; return; }
-      h+=`<div class="tlg-i" data-id="${i.id}" style="${pos}" title="${i.lockDay?'🔒 票据时间固定（机票/KTX），不可拖动调整':'拖动移动（保持时长）· 上下边缘拖动调整起止'}">
+      h+=`<div class="tlg-i${vLock(i)?' locked':''}" data-id="${i.id}" style="${pos}" title="${vLock(i)?'🔒 已锁定（左栏🔓可解锁）：不可拖动调整':'拖动移动（保持时长）· 上下边缘拖动调整起止'}">
             <div class="row1"><span class="tt">${tr}</span><input class="tl-name" data-id="${i.id}" value="${escV(vName(i))}" title="改名称（写回左栏）"><button class="tl-del" data-id="${i.id}" title="移除">✕</button></div>
             ${((ev.bot-ev.top)>=44&&ev.n===1)?`<span class="mt">${i.icon||''}${fmtCNY(itemCNY(i))}·${vPaid(i)?'已付':'未付'}</span>`:''}
-            ${i.lockDay?'':`<div class="rz rz-t" data-rz="t" data-id="${i.id}" title="拖动调整开始时间"></div>
+            ${vLock(i)?'':`<div class="rz rz-t" data-rz="t" data-id="${i.id}" title="拖动调整开始时间"></div>
             <div class="rz rz-b" data-rz="b" data-id="${i.id}" title="拖动调整结束时间"></div>`}
           </div>`;
     });
@@ -1282,7 +1287,7 @@ document.addEventListener('pointerdown',e=>{
   const grid=chip.closest('.tlgrid'); if(!grid) return;
   const inner=grid.querySelector('.tlg-inner');
   const it=ITEMS.find(x=>x.id===chip.dataset.id); if(!it) return;
-  if(it.lockDay) return;                                   /* 机票/KTX 时间固定：不可拖动/调整 */
+  if(vLock(it)) return;                                    /* 已锁定（机票/KTX/手动锁定）：不可拖动/调整 */
   e.preventDefault();
   const mode=rz?rz.dataset.rz:'move';
   const tip=document.createElement('div'); tip.className='tlg-tip'; document.body.appendChild(tip);
@@ -1422,7 +1427,7 @@ document.getElementById('cp-ok').onclick=()=>{
 /* 时间轴上的编辑/删除/新增 */
 document.getElementById('plan').addEventListener('input',e=>{
   const t=e.target;
-  if(t.classList.contains('tl-time')){ const id=t.dataset.id; const it=ITEMS.find(i=>i.id===id); if(it&&it.lockDay){ t.value=vTime(it); toast('🔒 固定票据时间，不可修改'); return; } S.time[id]=t.value; save(); renderTimeline(); renderLeft(); refreshNumbers(); }
+  if(t.classList.contains('tl-time')){ const id=t.dataset.id; const it=ITEMS.find(i=>i.id===id); if(it&&vLock(it)){ t.value=vTime(it); toast('🔒 已锁定，不可修改（左栏🔓解锁）'); return; } S.time[id]=t.value; save(); renderTimeline(); renderLeft(); refreshNumbers(); }
 });
 document.getElementById('plan').addEventListener('change',e=>{
   const t=e.target;
