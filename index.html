@@ -1,0 +1,1836 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>🇰🇷 韩国国庆之旅 · 10/1–10/6 行程规划</title>
+<link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://cdn.bootcdn.net/ajax/libs/leaflet/1.9.4/leaflet.min.js"
+  onerror="var s=document.createElement('script');s.src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';document.head.appendChild(s);"></script>
+<style>
+:root{
+  --bg:#f4f6fb; --card:#ffffff; --ink:#1c2333; --sub:#5b6478; --line:#e6e9f2;
+  --blue:#2f6df6; --blue2:#eaf0fe; --red:#e5484d; --green:#18a058; --amber:#f59e0b;
+  --radius:16px; --shadow:0 2px 12px rgba(28,35,51,.06);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:"Segoe UI","PingFang SC","Microsoft YaHei",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+a{color:var(--blue);text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:1560px;margin:0 auto;padding:0 16px}
+
+/* nav */
+nav{position:sticky;top:0;z-index:900;background:rgba(255,255,255,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;gap:4px;overflow-x:auto;padding:0 12px}
+nav a{padding:11px 12px;white-space:nowrap;font-size:14px;color:var(--sub);border-bottom:2px solid transparent}
+nav a:hover{color:var(--blue);text-decoration:none;border-color:var(--blue)}
+
+/* hero */
+header.hero{background:linear-gradient(135deg,#20306b 0%,#2f6df6 60%,#6ea8ff 100%);color:#fff;padding:38px 0 80px}
+.hero h1{font-size:28px;margin-bottom:8px}
+.hero p.sub{opacity:.92;font-size:15px}
+.hero .stats{display:flex;flex-wrap:wrap;gap:12px;margin-top:20px}
+.hero .stat{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);border-radius:12px;padding:8px 16px;font-size:13.5px}
+.hero .stat b{font-size:18px;display:block}
+.todo-banner{background:#fff;color:var(--ink);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px 20px;margin-top:-54px}
+.todo-banner h3{font-size:15.5px;margin-bottom:8px}
+.todo-banner ul{list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:6px;font-size:13.5px}
+.todo-banner li{padding-left:22px;position:relative;color:var(--sub)}
+.todo-banner li::before{content:"⏰";position:absolute;left:0}
+
+/* ===== 三栏布局 ===== */
+.app-grid{display:grid;grid-template-columns:330px minmax(0,1fr) 300px;gap:16px;align-items:start;padding-top:18px}
+.rail{position:sticky;top:54px;max-height:calc(100vh - 70px);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin}
+.rail::-webkit-scrollbar{width:5px}
+.rail::-webkit-scrollbar-thumb{background:#c9d2e6;border-radius:4px}
+.rail-card{background:var(--card);border-radius:14px;box-shadow:var(--shadow);padding:14px 14px 16px}
+.rail-card h3{font-size:15px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
+.rail-card h3 .mini{font-size:11px;color:var(--sub);font-weight:400}
+#rail-sum{font-size:12px;color:var(--sub);background:#f6f8fd;border-radius:8px;padding:6px 10px;margin-bottom:10px;line-height:1.5}
+#rail-sum b{color:var(--blue)}
+
+/* 左栏：大类 > 小类 两级折叠 */
+details.sup{margin-bottom:10px;border-radius:12px;overflow:hidden;box-shadow:0 1px 4px rgba(28,35,51,.08)}
+details.sup summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:6px;font-size:15.5px;font-weight:800;color:#fff;padding:11px 12px;letter-spacing:.5px}
+details.sup summary::-webkit-details-marker{display:none}
+details.sup summary .arr{font-size:11px;opacity:.85;font-weight:400;margin-right:2px;transition:.15s}
+details.sup[open] summary .arr{transform:rotate(90deg)}
+.sup-sum{font-size:12.5px;color:#fff;background:rgba(255,255,255,.25);border-radius:999px;padding:1px 9px;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+.sup-body{background:#fff;padding:6px 8px 8px}
+details.sub{margin:6px 0;border:1px solid var(--line);border-left-width:4px;border-radius:9px;overflow:hidden}
+details.sub summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-size:12.5px;font-weight:700;color:var(--ink);padding:6px 9px;background:#f7f9fd}
+details.sub summary::-webkit-details-marker{display:none}
+details.sub summary .arr{color:#b6bfd4;font-size:10px;margin-right:4px;transition:.15s}
+details.sub[open] summary .arr{transform:rotate(90deg)}
+.sub-sum{font-size:11px;color:var(--sub);font-weight:600;font-variant-numeric:tabular-nums}
+.sub-body{padding:2px 6px 6px;background:#fff}
+.add-sub-btn{display:block;width:100%;margin-top:6px;border:1px dashed #c4ccdb;background:#fbfcfe;border-radius:8px;cursor:pointer;font-size:12px;color:var(--sub);padding:5px;font-family:inherit}
+.add-sub-btn:hover{color:var(--blue);border-color:var(--blue);background:#f0f5ff}
+.item{display:flex;align-items:flex-start;gap:7px;padding:8px 2px;border-top:1px dashed #eef1f8}
+.item:first-child{border-top:none}
+.item input[type=checkbox]{width:16px;height:16px;margin-top:4px;accent-color:var(--blue);cursor:pointer;flex:none}
+.item .info{flex:1;min-width:0}
+.item .l1{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.item .name{font-size:13.5px;font-weight:700;line-height:1.4}
+.item input.inp-name{font-size:13.5px;font-weight:700;border:none;border-bottom:1px dashed #c6cedd;padding:0 2px;min-width:90px;flex:1;font-family:inherit;color:var(--ink)}
+.item input.inp-name:focus{outline:none;border-bottom-color:var(--blue)}
+.daychip{font-size:10px;background:#fff0dd;color:#9a6700;border-radius:3px;padding:0 5px;font-weight:600}
+.timechip{font-size:10px;background:#e7f5ff;color:#1864ab;border-radius:3px;padding:0 5px;font-weight:600}
+.item select,.item input.inp-time{font-size:11px;border:1px solid var(--line);border-radius:5px;padding:1px 3px;font-family:inherit;color:var(--ink);background:#fff}
+.pb{font-size:10px;border:none;border-radius:3px;padding:1px 7px;font-weight:700;cursor:pointer;font-family:inherit}
+.pb.paid{background:var(--green);color:#fff}
+.pb.unpaid{background:#eef1f8;color:#8b94a8;border:1px dashed #c4ccdb}
+.del{margin-left:auto;border:none;background:#fff0f0;color:var(--red);font-size:11px;border-radius:5px;cursor:pointer;padding:1px 6px;flex:none}
+.del:hover{background:#ffe3e3}
+.item .l2{display:flex;align-items:center;gap:4px;margin-top:5px;flex-wrap:wrap;font-size:12px}
+.curbtn{border:1px solid var(--line);background:#f6f8fd;border-radius:5px;cursor:pointer;font-size:11.5px;font-weight:700;padding:2px 6px;color:var(--ink);font-family:inherit;min-width:30px}
+.curbtn.krw{background:#fff4e6;color:#d9480f;border-color:#ffd8a8}
+.item .l2 input[type=number]{width:66px;padding:2px 4px;border:1px solid var(--line);border-radius:5px;font-size:12px;text-align:right;font-family:inherit}
+.item .l2 input.qty{width:38px}
+.item .l2 .calc{color:#adb5c6;font-size:11px}
+.item .l2 .cny{font-size:13px;color:var(--ink);font-weight:800;font-variant-numeric:tabular-nums;margin-left:auto;white-space:nowrap}
+.item .l3{margin-top:4px;font-size:11px;color:var(--sub);line-height:1.5;white-space:pre-wrap;word-break:break-word}
+.item textarea.inp-note{width:100%;min-height:26px;font-size:11px;color:var(--sub);border:1px solid var(--line);border-radius:6px;padding:3px 6px;font-family:inherit;resize:vertical;line-height:1.5}
+.item textarea.inp-note:focus{outline:none;border-color:var(--blue)}
+.item .l4{margin-top:4px;display:flex;gap:5px;align-items:center}
+.item input.inp-xhs{flex:1;min-width:0;font-size:10.5px;color:#c2255c;border:1px dashed #eebbd0;border-radius:6px;padding:2px 6px;font-family:inherit}
+.item input.inp-xhs:focus{outline:none;border-color:#d6336c}
+.item .l4 a{font-size:10.5px;white-space:nowrap}
+/* 新版条目布局：标题/分类/日期/时间/金额+已付/备注/链接 各自成行 */
+.item .r1{display:flex;gap:5px;align-items:center}
+.item .r1 .inp-name{flex:1;min-width:0;font-size:13.5px;font-weight:700;border:none;border-bottom:1px dashed #c6cedd;padding:0 2px;font-family:inherit;color:var(--ink)}
+.item .r1 .inp-name:focus{outline:none;border-bottom-color:var(--blue)}
+.item .r2{margin-top:4px;display:flex;align-items:center;gap:4px}
+.item .sel-cat{font-size:11px;border:1px solid var(--line);border-radius:5px;padding:1px 3px;font-family:inherit;background:#fff;color:var(--ink);max-width:100%}
+.item .r2 .sel-cat{flex:1;min-width:0}
+.cat-del{border:none;background:#fff0f0;color:var(--red);font-size:11px;border-radius:5px;cursor:pointer;padding:2px 7px;flex:none}
+.cat-del:hover{background:#ffe3e3}
+.item .r3{margin-top:4px;display:flex;align-items:center;gap:5px}
+.item .r3 select{font-size:11px;border:1px solid var(--line);border-radius:5px;padding:1px 3px;font-family:inherit;background:#fff;color:var(--ink)}
+.daychip.lock{background:#edf0f4;color:#5b6478}
+.item .r4{margin-top:3px;display:flex;align-items:center;gap:5px}
+.item .r5{display:flex;align-items:center;gap:4px;margin-top:5px;flex-wrap:wrap;font-size:12px}
+.item .r5 input[type=number]{width:62px;padding:2px 4px;border:1px solid var(--line);border-radius:5px;font-size:12px;text-align:right;font-family:inherit}
+.item .r5 input.qty{width:36px}
+.item .r5 .calc{color:#adb5c6;font-size:11px}
+.item .r5 .cny{font-size:13px;color:var(--ink);font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap;margin-left:auto}
+.item .r6{margin-top:4px;display:flex;gap:5px;align-items:center}
+.item .r6 .inp-xhs{flex:1;min-width:0}
+.direct-items{margin:6px 0}
+.sub-wrap{display:flex;align-items:center;gap:4px}
+.delsub{border:none;background:none;color:#adb5c6;font-size:10px;cursor:pointer;padding:0 3px}
+.delsub:hover{color:var(--red)}
+/* 右栏：大类可展开小类 */
+details.sum-grp{border-bottom:1px dashed var(--line)}
+details.sum-grp summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:6px;font-size:12.5px;padding:5px 0;font-variant-numeric:tabular-nums}
+details.sum-grp summary::-webkit-details-marker{display:none}
+details.sum-grp summary .sg-name{flex:1}
+details.sum-grp summary .arr{color:#b6bfd4;font-size:10px;transition:.15s}
+details.sum-grp[open] summary .arr{transform:rotate(90deg)}
+.sum-subs .sum-row{padding:2px 0 2px 20px;font-size:11.5px;color:var(--sub);border-bottom:none}
+.rate-box{display:flex;align-items:center;gap:6px;font-size:11.5px;margin-top:10px;padding:6px 8px;background:#f8f9fc;border-radius:8px;flex-wrap:wrap}
+.rate-box input{width:52px;padding:2px 4px;border:1px solid var(--line);border-radius:5px;text-align:right}
+.btn{display:inline-block;border:none;cursor:pointer;font-size:12px;border-radius:8px;padding:6px 12px;background:var(--blue);color:#fff}
+.btn.ghost{background:#eef1f8;color:var(--ink)}
+.btn.green{background:var(--green)}
+.btn.sm{font-size:11.5px;padding:5px 10px}
+.hint{font-size:11px;color:var(--sub);margin-top:8px;line-height:1.5}
+
+/* 右栏：汇总 */
+.sum-row{display:flex;justify-content:space-between;font-size:12.5px;padding:5px 0;border-bottom:1px dashed var(--line);font-variant-numeric:tabular-nums}
+.sum-row .dot{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:7px;vertical-align:-.5px}
+.sum-row.total{font-size:15.5px;font-weight:800;color:var(--blue);border-bottom:none;padding-top:8px}
+.sum-row.paid{color:var(--green)}
+.sum-panel .btns{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.legend{display:flex;gap:8px;flex-wrap:wrap;font-size:10.5px;color:var(--sub);margin:0 0 8px}
+.legend span{display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+.legend i{width:10px;height:10px;border-radius:3px;display:inline-block}
+
+/* 中栏 */
+.mid{min-width:0}
+section{padding:26px 0 8px}
+section:first-child{padding-top:8px}
+h2.sec{font-size:22px;margin-bottom:6px}
+p.sec-desc{color:var(--sub);font-size:13px;margin-bottom:16px}
+.card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px 20px;margin-bottom:16px}
+
+/* 行程 */
+.day-card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:16px;overflow:hidden}
+.day-head{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:14px 20px;background:linear-gradient(90deg,#f2f6ff,#ffffff);border-bottom:1px solid var(--line)}
+.day-head .dnum{background:var(--blue);color:#fff;border-radius:9px;padding:3px 11px;font-weight:700;font-size:14px}
+.day-head h3{font-size:16.5px}
+.day-head .w{font-size:12px;color:var(--sub);background:#f4f6fb;border-radius:7px;padding:2px 9px}
+.day-body{padding:14px 20px}
+.tl{list-style:none}
+.tl li{position:relative;padding:0 0 12px 92px;font-size:13.5px}
+.tl li::before{content:"";position:absolute;left:72px;top:8px;bottom:-4px;width:2px;background:var(--line)}
+.tl li:last-child::before{display:none}
+.tl li::after{content:"";position:absolute;left:66px;top:6px;width:12px;height:12px;border-radius:50%;background:#fff;border:3px solid var(--blue)}
+.tl .t{position:absolute;left:0;top:0;font-weight:700;font-size:12.5px;color:var(--blue);width:60px;text-align:right}
+.tl b{color:#123}
+.warn{background:#fff4f4;border-left:4px solid var(--red);border-radius:6px;padding:7px 11px;font-size:12.5px;margin:7px 0}
+.tip{background:#f3fbf6;border-left:4px solid var(--green);border-radius:6px;padding:7px 11px;font-size:12.5px;margin:7px 0}
+.self-box{background:linear-gradient(90deg,#fff8e6,#fffdf6);border:1px solid #f0d9a0;border-radius:10px;padding:8px 12px;margin:10px 0;font-size:12.5px;display:none}
+.self-box.show{display:block}
+.self-box .lab{font-weight:700;color:#9a6700;margin-right:6px}
+.chip-sel{display:inline-block;background:#fff;border:1px solid #e8c37a;color:#7a5a00;border-radius:999px;padding:1px 9px;font-size:11.5px;margin:2px 4px 2px 0}
+.chip-sel .tt{color:#1864ab;font-weight:700}
+/* 时间轴：苹果日历式 0-24h 连续网格，拖拽=改时间（固定项仅锁时间数值） */
+.tlgrid{position:relative;margin:4px 0 6px 50px;user-select:none;-webkit-user-select:none}
+.tlg-inner{position:relative;border-left:2px solid #dbe3f0}
+.tlg-inner .hr{position:absolute;left:0;right:0;border-top:1px solid #f0f3f9}
+.tlg-inner .hrlbl{position:absolute;left:-48px;width:42px;text-align:right;font-size:10px;color:#9aa3b5;transform:translateY(-6px);font-variant-numeric:tabular-nums}
+.tlg-f{position:absolute;left:6px;right:2px;background:#eef1f7;color:#5b6478;border:1px solid #e2e7f0;border-radius:6px;font-size:11px;padding:2px 8px;line-height:1.45;z-index:5}
+.tlg-f .tt{font-weight:700;margin-right:6px;color:#495057}
+.tlg-i{position:absolute;background:#eef4ff;border:1px solid #74a0ff;border-left:3px solid var(--blue);border-radius:7px;padding:2px 5px;display:flex;flex-direction:column;gap:1px;font-size:11px;box-shadow:0 1px 4px rgba(47,109,246,.12);cursor:grab;touch-action:none;z-index:10;overflow:hidden}
+.tlg-i:active{cursor:grabbing}
+.tlg-i.dragging{opacity:.4}
+.tlg-i.cont{opacity:.85;border-style:dashed;cursor:default}
+.tlg-i .row1{display:flex;align-items:center;gap:5px;min-height:15px;flex:1}
+.tlg-i .tt{color:#1864ab;font-weight:700;font-size:10px;white-space:nowrap;flex:none}
+.tlg-i .nm{font-size:10.5px;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tlg-i input.tl-name{flex:1;min-width:0;border:none;border-bottom:1px dashed #d5dbe8;font-family:inherit;font-size:11px;font-weight:700;color:var(--ink);padding:0;background:transparent}
+.tlg-i input.tl-name:focus{outline:none;background:#fff}
+.tlg-i .mt{color:#5b6478;font-size:9.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tlg-i .tl-del{border:none;background:#fff0f0;color:var(--red);font-size:9px;border-radius:4px;cursor:pointer;padding:0 4px;flex:none;line-height:1.4}
+.tlg-i .tl-del:hover{background:#ffe3e3}
+.tlg-i .rz{position:absolute;left:0;right:0;height:9px;cursor:ns-resize;z-index:20}
+.tlg-i .rz-t{top:-3px}
+.tlg-i .rz-b{bottom:-3px}
+.tlg-i .rz::after{content:'';display:block;margin:2px auto 0;width:22px;height:3px;border-radius:2px;background:rgba(47,109,246,.4);opacity:0;transition:.15s}
+.tlg-i:hover .rz::after{opacity:1}
+.tlg-pool .tlg-i{position:static;flex-direction:row;align-items:center;gap:5px;width:auto;overflow:visible}
+.tlg-pool .tlg-i .row1{display:contents}
+.tlg-pool .tlg-i .rz{display:none}
+.tlg-pool .tlg-i input.tl-time{width:56px;font-size:10.5px;border:1px solid var(--line);border-radius:4px;font-family:inherit;color:var(--blue);font-weight:700;background:#f8faff;padding:0 2px}
+.tlg-pool .tlg-i input.tl-name{flex:1;min-width:50px}
+.tlg-ghost{position:absolute;left:6px;right:2px;height:22px;border:2px dashed var(--blue);border-radius:8px;background:rgba(47,109,246,.08);pointer-events:none;z-index:40}
+.tlg-tip{position:fixed;z-index:1600;background:#1c2333;color:#fff;font-size:12px;font-weight:700;padding:2px 9px;border-radius:6px;pointer-events:none;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+.tlg-pool{margin:8px 0 2px;padding:6px 8px;background:#f8f9fc;border:1px dashed #cdd5e4;border-radius:8px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.tlg-pool .tlg-i{position:static;max-width:none}
+.pool-lab{font-size:10.5px;color:var(--sub)}
+.tl-add{width:auto;margin:6px 0 4px 0;display:inline-block}
+/* 折叠条 / 长按提示 / 新增弹窗 */
+.tlg-fold{margin:0 0 2px;padding:4px 10px;background:#f1f4fa;border:1px dashed #c4cfe2;border-radius:7px;font-size:10.5px;color:#5b6478;cursor:pointer;text-align:center}
+.tlg-fold:hover{color:var(--blue);border-color:var(--blue)}
+.tlg-fold.wide{background:#eafaf0;border-color:#9adbb5;color:#187a45}
+.tlg-fold.wide:hover{border-color:var(--green);color:#0f6b38}
+.tlg-fold.on{background:#e7efff;border-color:var(--blue);color:var(--blue);font-weight:700}
+.lp-hint{position:fixed;z-index:1500;background:#1c2333;color:#fff;font-size:11px;padding:4px 10px;border-radius:7px;pointer-events:none;overflow:hidden}
+.lp-hint i{display:block;height:3px;background:var(--green);width:0;animation:lpbar 1s linear forwards;margin-top:3px;border-radius:2px}
+@keyframes lpbar{to{width:100%}}
+#catpick{position:fixed;inset:0;background:rgba(15,20,35,.45);display:none;align-items:center;justify-content:center;z-index:1700;padding:16px}
+#catpick.open{display:flex}
+.cp-box{background:#fff;border-radius:14px;padding:16px 18px;width:min(430px,94vw);box-shadow:0 10px 40px rgba(0,0,0,.25)}
+.cp-box h4{font-size:15px;margin-bottom:10px}
+.cp-when{font-size:11.5px;color:var(--blue);font-weight:700}
+.cp-lab{font-size:11.5px;color:var(--sub);margin:8px 0 5px}
+.cp-sups{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:6px}
+.cp-sup{border:1.5px solid var(--line);border-radius:8px;padding:6px 4px;font-size:12px;cursor:pointer;text-align:center;font-family:inherit;background:#fff}
+.cp-sup.on{border-color:var(--blue);background:var(--blue2);color:var(--blue);font-weight:700}
+#cp-cat{width:100%;font-size:13px;padding:6px 8px;border:1px solid var(--line);border-radius:8px;font-family:inherit}
+.cp-btns{display:flex;gap:8px;margin-top:12px;justify-content:flex-end}
+.tickets-inline{display:flex;flex-wrap:wrap;gap:10px;margin:10px 0}
+.tickets-inline img{width:84px;height:auto;border-radius:8px;border:1px solid var(--line);cursor:zoom-in;object-fit:cover}
+
+/* 地图 */
+.map-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.map-card h3{font-size:14.5px;margin-bottom:8px}
+#map-seoul,#map-busan{height:420px;border-radius:12px;border:1px solid var(--line);z-index:1;background:#eef2f8}
+.cn-label{background:rgba(255,255,255,.94);border:1px solid #d8deeb;color:#1c2333;font-size:11px;font-weight:700;padding:1px 7px;border-radius:7px;box-shadow:0 1px 4px rgba(0,0,0,.18)}
+.leaflet-tooltip-top.cn-label:before{border-top-color:#d8deeb}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 12px}
+.chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:4px 12px;font-size:12.5px;cursor:pointer;color:var(--sub)}
+.chip.on{background:var(--blue);color:#fff;border-color:var(--blue)}
+
+/* 天气 */
+table.weather{width:100%;border-collapse:collapse;font-size:13.5px;background:#fff;border-radius:12px;overflow:hidden;box-shadow:var(--shadow)}
+table.weather th,table.weather td{border:1px solid var(--line);padding:8px 10px;text-align:center;font-variant-numeric:tabular-nums}
+table.weather thead th{background:#20306b;color:#fff;font-size:13.5px}
+table.weather td.date{font-weight:700;white-space:nowrap;background:#f8f9fc}
+table.weather .wx{font-size:18px}
+.rainy-cell{background:#eef6ff}
+.hot-cell{background:#fff3ef}
+
+/* 入境卡 */
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+.step{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px;box-shadow:var(--shadow)}
+.step .n{display:inline-flex;width:24px;height:24px;border-radius:50%;background:var(--blue);color:#fff;align-items:center;justify-content:center;font-weight:700;font-size:13px;margin-bottom:7px}
+.step h4{font-size:14px;margin-bottom:7px}
+.step .mock{background:#f7f9fd;border:1px solid var(--line);border-radius:10px;padding:10px;font-size:12px;color:var(--sub);margin-bottom:7px}
+.mock .f{display:flex;justify-content:space-between;border-bottom:1px dashed #dfe5f0;padding:3px 2px}
+.mock .f b{color:#33415c;font-weight:600}
+.mock .btnline{margin-top:7px;text-align:center}
+.mock .btnline span{background:var(--blue);color:#fff;border-radius:6px;padding:3px 14px;display:inline-block;font-size:11.5px}
+.arrival-links a{display:inline-block;margin:3px 7px 3px 0;font-size:13px}
+
+/* checklist */
+.ck-progress{height:9px;background:#e9edf6;border-radius:999px;overflow:hidden;margin:8px 0 12px}
+.ck-progress i{display:block;height:100%;background:linear-gradient(90deg,#2f6df6,#18a058);width:0;transition:width .3s}
+.ck-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px}
+.ck-cat{background:#fff;border-radius:12px;border:1px solid var(--line);padding:12px 14px}
+.ck-cat h4{font-size:13.5px;margin-bottom:6px}
+.ck-item{display:flex;gap:7px;align-items:flex-start;padding:4px 0;font-size:12.5px;flex-wrap:wrap}
+.ck-item input[type="checkbox"]{accent-color:var(--green);width:15px;height:15px;margin-top:3px;flex:none;cursor:pointer}
+.ck-item.done .ck-txt{text-decoration:line-through;color:#9aa3b5}
+.ck-item.done label{text-decoration:line-through;color:#9aa3b5}
+.ck-item .must{color:var(--red);font-size:10.5px;border:1px solid var(--red);border-radius:4px;padding:0 3px;margin-left:4px}
+
+/* 比价 */
+table.alt{width:100%;border-collapse:collapse;font-size:13px;background:#fff;border-radius:12px;overflow:hidden;box-shadow:var(--shadow);margin-bottom:12px}
+table.alt th,table.alt td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+table.alt thead th{background:#f0f4ff}
+.own-row td{background:#f3fbf6}
+
+/* 图片墙 */
+.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:12px}
+.g-item{background:#fff;border-radius:12px;border:1px solid var(--line);padding:8px;cursor:zoom-in}
+.g-item img{width:100%;border-radius:8px;display:block}
+.g-item .cap{font-size:12px;color:var(--sub);padding:6px 2px 2px}
+
+/* lightbox / toast */
+#lightbox{position:fixed;inset:0;background:rgba(15,20,35,.9);display:none;align-items:center;justify-content:center;z-index:2000;flex-direction:column;padding:24px}
+#lightbox.open{display:flex}
+#lightbox img{max-width:92vw;max-height:82vh;border-radius:10px}
+#lightbox .cap{color:#dfe6ff;margin-top:12px;font-size:13.5px}
+#lightbox .close{position:absolute;top:16px;right:24px;font-size:30px;color:#fff;cursor:pointer}
+#toast{position:fixed;right:20px;bottom:24px;background:#123;border-radius:10px;color:#fff;padding:10px 16px;font-size:13px;z-index:1500;opacity:0;transform:translateY(8px);transition:.25s;pointer-events:none;max-width:320px}
+#toast.show{opacity:1;transform:none}
+
+footer{padding:26px 0 40px;color:var(--sub);font-size:12px;text-align:center}
+.muted{color:var(--sub);font-size:12px}
+/* Tab 页 */
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 14px;position:sticky;top:50px;z-index:800;background:var(--bg);padding:8px 0;border-bottom:1px solid var(--line)}
+.tabs button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 14px;font-size:13px;cursor:pointer;color:var(--sub);font-family:inherit}
+.tabs button.on{background:var(--blue);color:#fff;border-color:var(--blue);font-weight:700}
+.tabpane{display:none}
+.tabpane.on{display:block}
+/* Checklist CRUD */
+.ck-cat h4{display:flex;justify-content:space-between;align-items:center;gap:6px}
+.ck-tools{display:flex;gap:3px}
+.ckb{border:1px solid var(--line);background:#fff;border-radius:5px;cursor:pointer;font-size:11px;padding:1px 6px;font-family:inherit}
+.ckb:hover{border-color:var(--blue)}
+.ckb.danger{background:#fff0f0;color:var(--red)}
+.ckb.danger:hover{background:#ffe3e3;border-color:var(--red)}
+.ck-txt{flex:1;min-width:120px;width:100%;height:auto;margin:0;border:none;border-bottom:1px dashed transparent;font-size:12.5px;font-family:inherit;color:var(--ink);padding:0 0 1px;background:transparent;resize:none;overflow:hidden;line-height:1.5;white-space:pre-wrap;word-break:break-word}
+.ck-ops{display:flex;gap:4px;flex:none;align-items:flex-start}
+.ck-txt:hover{border-bottom-color:#cdd5e4}
+.ck-txt:focus{outline:none;border-bottom-color:var(--blue)}
+.mustb{border:1px solid var(--red);color:var(--red);background:#fff;border-radius:4px;font-size:10px;padding:0 5px;cursor:pointer;font-family:inherit;flex:none}
+.mustb.on{background:var(--red);color:#fff}
+.ck-item.done .mustb{opacity:.45}
+/* 票据删除按钮 */
+.g-del{border:none;background:none;color:#adb5c6;font-size:11px;cursor:pointer;padding:0 2px;vertical-align:middle}
+.g-del:hover{color:var(--red)}
+/* 云同步面板 */
+.sync-box{border-top:1px dashed var(--line);padding-top:10px}
+.sync-box summary{cursor:pointer;font-size:12.5px;color:var(--blue);font-weight:700;list-style:none}
+.sync-box summary::-webkit-details-marker{display:none}
+.sync-body{margin-top:8px}
+.sync-lab{display:block;font-size:10.5px;color:var(--sub);margin-bottom:6px}
+.sync-lab input{display:block;width:100%;margin-top:2px;padding:4px 8px;border:1px solid var(--line);border-radius:7px;font-size:12px;font-family:inherit}
+.sync-lab input:focus{outline:none;border-color:var(--blue)}
+.sync-row{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--sub);margin:6px 0}
+.sync-row input{accent-color:var(--blue)}
+.sync-btns{display:flex;gap:6px}
+@media(max-width:1180px){
+  .app-grid{grid-template-columns:280px minmax(0,1fr)}
+  .rail-right{grid-column:1/-1;position:static;max-height:none}
+}
+@media(max-width:860px){
+  .app-grid{grid-template-columns:1fr}
+  .rail{position:static;max-height:none}
+  .map-grid{grid-template-columns:1fr}
+  .tl li{padding-left:66px}
+  .tl li::before{left:48px}
+  .tl li::after{left:42px}
+  .tl .t{width:42px;font-size:11.5px}
+  .tlgrid{margin-left:38px;margin-right:2px}
+  .tlg-inner .hrlbl{left:-36px;width:32px;font-size:9px}
+  .tlg-i{font-size:10.5px;padding:1px 4px}
+  .tlg-i .tt{font-size:9px}
+  .tlg-i input.tl-name{font-size:10px}
+  .tlg-f{font-size:10px}
+}
+</style>
+</head>
+<body>
+
+<nav><div class="wrap">
+  <a href="#overview">概览</a><a href="#plan">🗓 行程规划</a><a href="#map">🗺 地图</a><a href="#weather">🌤 天气</a><a href="#arrival">🛂 入境卡教程</a><a href="#checklist">✅ 出发清单</a><a href="#alt">🆚 比价参考</a><a href="#gallery">🎫 票据原件</a>
+</div></nav>
+
+<header class="hero" id="overview"><div class="wrap">
+  <h1>🇰🇷 韩国国庆之旅 · 双人 6 天 5 晚</h1>
+  <p class="sub">2026.10.1（周四）广州出发 → 首尔 · 明洞 5 晚 → 10.4 釜山 CLUBD OASIS 一日往返 → 10.6（周二）返广州　｜　左侧勾选/新增项目 → 自动进入行程与费用，右上可导出苹果日历</p>
+  <div class="stats">
+    <div class="stat"><b>10/1 – 10/6</b>行程日期</div>
+    <div class="stat"><b>2 人</b>双人出行</div>
+    <div class="stat"><b>索拉戈明洞</b>忠武路站7号口·步行2分钟</div>
+    <div class="stat"><b id="hero-paid">≈ ¥13,600</b>已付大项合计</div>
+  </div>
+</div></header>
+
+<div class="wrap"><div class="todo-banner">
+  <h3>⏰ 出发前必办（倒计时 3 天）</h3>
+  <ul>
+    <li><b style="color:var(--red)">🔴 电子入境卡还没填！</b>今天（9/28）下午起 72h 窗口正好覆盖 10/1 落地，<a href="#arrival">见下方教程</a></li>
+    <li>🎯 木洞射击场建议提前预约：电话 02-2646-9993 或 Naver 预约（购票有折扣），当天必须带护照原件</li>
+    <li>🛡 旅行保险（含水上游乐），韩元现金 + eSIM 激活测试</li>
+    <li>🏊 帽子和<b>戏水专用鞋</b>（拖鞋/洞洞鞋不行！）×2 必带，CLUBD QR 码截图离线保存</li>
+  </ul>
+</div></div>
+
+<div class="app-grid wrap">
+
+  <!-- ============ 左栏：勾选/新增清单（悬浮） ============ -->
+  <aside class="rail rail-left" id="pick">
+    <div class="rail-card">
+      <h3>☑️ 行程费用清单 <span class="mini">勾选→行程+费用</span></h3>
+      <div id="rail-sum">…</div>
+      <div style="display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap">
+        <button class="btn ghost sm" onclick="setAllDetails(true)">▼ 全展开</button>
+        <button class="btn ghost sm" onclick="setAllDetails(false)">▲ 全折叠</button>
+      </div>
+      <div id="calc-left"></div>
+      <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">
+        <button class="btn ghost sm" id="reset-calc">↺ 重置勾选</button>
+      </div>
+      <div class="hint">项目行格式：①名称 ②小类（仅本大类；🗑删小类）③开始（日期+时间；机票/酒店/KTX/CLUBD🔒）④结束（日期默认同开始+时间，默认=开始+1小时）⑤单价（¥/₩）×数量=总价+已付/未付 ⑥备注 ⑦链接。日历里：拖动=移动（保持时长），上下边缘=延展，重叠自动左右并排。</div>
+    </div>
+  </aside>
+
+  <!-- ============ 中栏 ============ -->
+  <main class="mid">
+
+  <div class="tabs" id="tabs"><button data-tab="plan" class="on">🗓 行程</button><button data-tab="map">🗺 地图</button><button data-tab="weather">🌤 天气</button><button data-tab="arrival">🛂 入境卡</button><button data-tab="checklist">✅ 清单</button><button data-tab="tips">💡 TIPS</button><button data-tab="alt">🆚 比价</button><button data-tab="gallery">🎫 票据</button></div>
+
+  <section id="tips" class="tabpane">
+    <h2 class="sec">💡 TIPS</h2>
+    <div id="tips-body">
+      <details class="card">
+        <summary style="cursor:pointer;font-size:14px;font-weight:700;color:var(--blue)">📱 iPhone 日历导入方法（3 种方式任选）</summary>
+        <div class="tip" style="margin-top:8px">
+          <b>方式一（推荐）：微信传输</b>——在电脑上生成 .ics → 微信“文件传输助手”发给自己 → iPhone 微信里点开文件 → 右上角「···」→「用其他应用打开」→「添加到日历 / 添加全部」。<br>
+          <b>方式二：Safari 直接下载</b>——本 HTML 传到 iPhone 用 <b>Safari 打开</b>（不要用微信内置浏览器）→ 点导出 → 「文件」App → 下载项里点开 .ics → 日历预览 → 添加全部。<br>
+          <b>方式三：邮件附件</b>——发给自己邮箱 → iPhone 邮件里点附件 → 添加到日历。<br>
+          ⚠️ 显示为文本而非日历预览：后缀被改成 .ics.txt，重命名回 <b>.ics</b> 即可。
+        </div>
+      </details>
+
+      <div class="card">
+        <h3 style="font-size:16px;margin-bottom:10px">🚇 交通卡怎么选？——按你们的行程算过账</h3>
+        <p class="sec-desc" style="margin-bottom:10px">你们的地铁使用量估算（2人）：10/2 ≈5–6 次/人、10/3 ≈5–6 次/人、10/5 ≈2–3 次/人，其余天坐出租/AREX/KTX。<b>合计约 12–16 次/人 ≈ ₩20,000–25,000</b>（首尔地铁交通卡单次 ₩1,550）。</p>
+        <div style="overflow-x:auto">
+        <table class="alt">
+          <thead><tr><th style="width:130px">卡种</th><th>价格</th><th>说明</th><th style="width:190px">对你们是否划算</th></tr></thead>
+          <tbody>
+            <tr class="own-row"><td><b>T-money</b><br>（推荐 ✅）</td><td>卡费约 ₩2,500–4,000/张<br>（充值使用）</td><td>便利店/机场随处可买；首尔单次 ₩1,550；<b>全韩通用（釜山地铁也能刷）</b>；便利店购物可刷；余额可退（收少量手续费）</td><td><b>最合算省心</b>：两人各充 ₩25,000 足够全程（含釜山机动）</td></tr>
+            <tr><td>气候卡<br>기후동행카드<br>30日券</td><td>₩62,000/人</td><td>30 天内首尔地铁+巴士无限坐；<b>不含 AREX、京畿道区间、广域巴士</b>。※ 2026年9月起并入政府「모두의카드」体系，价格档不变</td><td><b>❌ 不划算</b>：需坐约 40 次/人才回本，你们仅约 13–16 次 → 净亏 ₩37,000+/人</td></tr>
+            <tr><td>气候卡·观光短期券<br>（若能买到）</td><td>1日 ₩5,000<br>2日 ₩8,000<br>7日 ₩20,000</td><td>游客短期无限次券；购买渠道有限（主要 Mobile T-money App 等）；仅限首尔线路，釜山不能用</td><td>⚖️ 可选优化：仅 10/2、10/3 单日超 ₩5,000（两天合计省约 ₩7,000/人）；嫌折腾就直接 T-money</td></tr>
+            <tr><td>WOWPASS<br>（进阶选项）</td><td>卡费约 ₩2,500 起<br>（部分为可退押金）</td><td>换汇+支付+交通三合一外国人卡；<b>可用支付宝/微信充值成韩币</b>（汇率好）；Pay 与交通余额互转；机场有办理点</td><td>💡 想少带现金 → 1 张 WOWPASS 替代 1 张 T-money</td></tr>
+            <tr><td>现金单程票</td><td>比交通卡贵<br>（约 ₩1,700）</td><td>每次售票机排队购买</td><td>❌ 麻烦又贵，不考虑</td></tr>
+          </tbody>
+        </table>
+        </div>
+        <div class="tip" style="margin-top:10px">📌 <b>结论：办 2 张 T-money（每张充 ₩25,000）+ AREX 用直达列车</b>。釜山当天以出租为主（已预算）。想要支付宝/微信直接充值的便利，就 1 张 T-money + 1 张 WOWPASS。气候卡是通勤族产品，你们用不上。</div>
+      </div>
+
+      <div class="card">
+        <h3 style="font-size:16px;margin-bottom:8px">🇰🇷 其他实用 TIPS</h3>
+        <div class="tip">☎️ 紧急电话：韩国报警 112 / 火警·急救 119 / 中国驻韩使馆领事保护 +82-2-755-0572 / 外交部全球领保 +86-10-12308</div>
+        <div class="tip">💬 翻译：Papago（韩语最准）；Naver Map 导航（Google 地图在韩国不能步行导航）</div>
+        <div class="tip">💳 退税：OLIVE YOUNG 等满 ₩15,000 当场退税；机场托运前先找退税机/海关盖章（T1 出发层）</div>
+        <div class="warn">⚠️ 安全：护照/手机放胸前包；夜间走主干道+地铁；不去梨泰院等高人流区；22:30 前回酒店</div>
+      </div>
+    </div>
+  </section>
+
+
+  <section id="plan" class="tabpane">
+    <h2 class="sec">🗓 逐日行程规划（安全优先 · 避开人流高峰）</h2>
+    <p class="sec-desc"><b>时间轴为 0:00–24:00 连续网格（苹果日历式）</b>：按住任意蓝色项目上下拖动，光标停在哪个时间就落到哪个时间（5 分钟吸附，可自由插入固定项之间）；松手后时间写回左栏。灰色为固定流程项（<b>时间锁定不可拖</b>，但可穿越、可与项目重叠排布）。项目上的时间/名称可直接编辑，✕ 移除，每天底部可 ➕ 新增。机票/酒店/KTX/CLUBD 日期锁定。安全原则：不去梨泰院等事故/高人流区域。</p>
+    <div style="margin-bottom:14px">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <button class="btn green" onclick="exportICS()">📥 一键导出苹果日历(.ics)</button>
+        <span class="muted">生成 korea-trip-101-106.ics；勾选项写入对应日期事件描述，带时间项目生成独立日历事件。iPhone 导入方法见 TIPS 页。</span>
+      </div>
+    </div>
+
+  <div class="day-card">
+    <div class="day-head"><span class="dnum">10/1 周四</span><h3>广州 ✈️ 首尔 · 抵达明洞</h3><span class="w">广州 ⛈️ 26~36°C · 首尔 ☁️ 12~21°C</span></div>
+    <div class="self-box" id="self-10/1"></div>
+    <div class="day-body">
+      <div class="tlgrid" id="tl-10/1"></div>
+      <button class="add-sub-btn tl-add" data-tlday="10/1">➕ 新增到 10/1（自动带日期时间）</button>
+    </div>
+  </div>
+
+  <div class="day-card">
+    <div class="day-head"><span class="dnum">10/2 周五</span><h3>🎯 木洞射击场 + 广藏市场 + 松坡（韩国工作日，人少）</h3><span class="w">首尔 ☀️ 10~20°C · 全天晴</span></div>
+    <div class="self-box" id="self-10/2"></div>
+    <div class="day-body">
+      <div class="tlgrid" id="tl-10/2"></div>
+      <button class="add-sub-btn tl-add" data-tlday="10/2">➕ 新增到 10/2（自动带日期时间）</button>
+      <div class="tip">✅ 备选：若木洞场当日满员，可改 <b>江南实弹射击场</b>（松坡 Park Habio · 8号线长旨站 4号口 · ₩93,800/人起）。两家都需护照。</div>
+    </div>
+  </div>
+
+  <div class="day-card">
+    <div class="day-head"><span class="dnum">10/3 周六</span><h3>🍂 低密度休闲日 · 麻浦三洞 + 汉江（韩国公休日·避开全城高峰）</h3><span class="w">首尔 ☀️ 10~23°C</span></div>
+    <div class="self-box" id="self-10/3"></div>
+    <div class="day-body">
+      <div class="tlgrid" id="tl-10/3"></div>
+      <button class="add-sub-btn tl-add" data-tlday="10/3">➕ 新增到 10/3（自动带日期时间）</button>
+      <div class="warn">⚠️ 今日为韩国公休日+周六：避开景福宫、北村、弘大步行街、梨泰院、明洞主街白天高峰；晚间出行走大路+地铁，22:30 前回酒店。</div>
+    </div>
+  </div>
+
+  <div class="day-card">
+    <div class="day-head"><span class="dnum">10/4 周日</span><h3>🌊 釜山 CLUBD OASIS 水上乐园一日往返</h3><span class="w">釜山 ☁️ 16~25°C · 首尔 🌧 13~23°C</span></div>
+    <div class="self-box" id="self-10/4"></div>
+    <div class="day-body">
+      <div class="tlgrid" id="tl-10/4"></div>
+      <button class="add-sub-btn tl-add" data-tlday="10/4">➕ 新增到 10/4（自动带日期时间）</button>
+      <div class="tip">✅ 你的票是「9-10月联票」有效期票：9~10 月任意一天入园，<b>无需预约具体日期</b>。10/4 是周日人多，热门滑梯排队久，室内温泉区相对宽松。</div>
+      <div class="warn">⚠️ CLUBD 着装硬规定（官方 FAQ）：<b>① 帽子必戴</b>——泳帽或桶帽，空顶帽不行；<b>② 必须穿戏水专用鞋</b>——拖鞋、洞洞鞋、凉鞋、人字拖都不行！③ Body Slide 滑道禁穿防晒衣和带金属扣泳衣。</div>
+      <div class="tip">✅ 入场流程：自助机扫码取票 → <b>发券后 20 分钟内必须过闸机</b>（鞋柜左=女/右=男）→ 场内消费<b>刷锁柜钥匙记账，出场统一结算</b>。联票每人<b>免费 2 条毛巾 + 1 套汗蒸服</b>；6F 汗蒸房必须穿汗蒸服。<b>使用当日不可退票</b>（客服 1566-8007）。</div>
+      <div class="warn">⚠️ KTX 上没有正餐，提前便利店买饭团；<b>锁柜钥匙别弄丢</b>（赔锁费很贵），钱包手机锁进柜子。</div>
+    </div>
+  </div>
+
+  <div class="day-card">
+    <div class="day-head"><span class="dnum">10/5 周一</span><h3>🏯 古宫韩屋日 · 景福宫—北村—仁寺洞（工作日，早到避开旅行团）</h3><span class="w">首尔 🌧 13~19°C · 可能毛毛雨，带伞</span></div>
+    <div class="self-box" id="self-10/5"></div>
+    <div class="day-body">
+      <div class="tlgrid" id="tl-10/5"></div>
+      <button class="add-sub-btn tl-add" data-tlday="10/5">➕ 新增到 10/5（自动带日期时间）</button>
+      <div class="tip">✅ 景福宫<b>周二闭馆</b>——古宫行程放周一（10/5）而不是 10/6。</div>
+    </div>
+  </div>
+
+  <div class="day-card">
+    <div class="day-head"><span class="dnum">10/6 周二</span><h3>✈️ 返程日 · 首尔 → 广州</h3><span class="w">首尔 ☀️ 12~21°C · 广州 ⛅ 22~29°C</span></div>
+    <div class="self-box" id="self-10/6"></div>
+    <div class="day-body">
+      <div class="tlgrid" id="tl-10/6"></div>
+      <button class="add-sub-btn tl-add" data-tlday="10/6">➕ 新增到 10/6（自动带日期时间）</button>
+    </div>
+  </div>
+  </section>
+
+  <!-- 地图 -->
+  <section id="map" class="tabpane">
+    <h2 class="sec">🗺 行程地图（首尔 & 釜山 · Esri 瓦片国内直连）</h2>
+    <p class="sec-desc">蓝点=固定行程点、彩点=勾选项目（自动出现），<b>所有点位都有中文常驻标签</b>；点击标记看详情与 <b>高德/Naver/Google</b> 导航入口。底图说明：国内直连且含韩国数据的底图源（Esri）路名为英文/韩文——已用中文标签覆盖全部行程点位；城市概览用街道图，放大到街区自动切换卫星影像，右上角可手动切换。</p>
+    <div class="chips" id="map-chips">
+      <button class="chip on" data-f="all">全部</button>
+      <button class="chip" data-f="🎯 景点·射击">🎯 射击·景点</button>
+      <button class="chip" data-f="🍜 美食·小吃">🍜 美食</button>
+      <button class="chip" data-f="📸 打卡体验">📸 打卡</button>
+      <button class="chip" data-f="🛍️ 购物·其他">🛍️ 购物</button>
+    </div>
+    <div class="map-grid">
+      <div class="map-card card"><h3>📍 首尔 · 明洞周边</h3><div id="map-seoul"></div><div id="seoul-links" class="hint"></div></div>
+      <div class="map-card card"><h3>📍 釜山 · 10/4 当日</h3><div id="map-busan"></div><div id="busan-links" class="hint"></div></div>
+    </div>
+  </section>
+
+  <!-- 天气 -->
+  <section id="weather" class="tabpane">
+    <h2 class="sec">🌤 国庆期间天气预报（10/1–10/6）</h2>
+    <p class="sec-desc">数据来源 Open-Meteo 气象 API · 获取时间 2026-09-28 · 出行前 1–2 天建议再核对一次（韩国气象厅 weather.go.kr）。</p>
+    <div style="overflow-x:auto">
+    <table class="weather">
+      <thead><tr><th>日期</th><th>🏙 广州（出发/返回）</th><th>🏙 首尔（主行程）</th><th>🏙 釜山（10/4）</th></tr></thead>
+      <tbody>
+        <tr><td class="date">10/1 周四<br><span class="muted">出发日</span></td>
+          <td class="hot-cell"><span class="wx">⛈️</span> 雷阵雨<br>26.5 ~ 35.7°C · 降水 77%</td>
+          <td><span class="wx">☁️</span> 阴<br>12.0 ~ 20.8°C · 降水 18%</td>
+          <td><span class="wx">☁️</span> 阴<br>14.7 ~ 22.7°C · 降水 0%</td></tr>
+        <tr><td class="date">10/2 周五</td>
+          <td class="hot-cell"><span class="wx">⛈️</span> 雷阵雨（冷空气，骤降 6°C）<br>24.8 ~ 29.5°C · 降水 82%</td>
+          <td><span class="wx">☀️</span> 晴<br>9.7 ~ 19.7°C · 降水 0%</td>
+          <td><span class="wx">☁️</span> 阴<br>11.7 ~ 22.5°C · 降水 0%</td></tr>
+        <tr><td class="date">10/3 周六<br><span class="muted">韩国公休日</span></td>
+          <td class="rainy-cell"><span class="wx">⛈️</span> 雷阵雨<br>23.9 ~ 28.3°C · 降水 80%</td>
+          <td><span class="wx">☀️</span> 晴<br>9.9 ~ 22.7°C · 降水 9%</td>
+          <td><span class="wx">☁️</span> 阴<br>10.9 ~ 22.5°C · 降水 4%</td></tr>
+        <tr><td class="date">10/4 周日<br><span class="muted">釜山日</span></td>
+          <td class="rainy-cell"><span class="wx">🌦️</span> 毛毛雨<br>23.9 ~ 28.6°C · 降水 76%</td>
+          <td class="rainy-cell"><span class="wx">🌦️</span> 毛毛雨<br>12.7 ~ 23.2°C · 降水 59%</td>
+          <td><span class="wx">☁️</span> 阴（室内水乐园无碍）<br>15.6 ~ 24.7°C · 降水 14%</td></tr>
+        <tr><td class="date">10/5 周一</td>
+          <td class="rainy-cell"><span class="wx">🌦️</span> 毛毛雨<br>23.5 ~ 28.8°C · 降水 50%</td>
+          <td class="rainy-cell"><span class="wx">🌦️</span> 毛毛雨（带伞）<br>12.7 ~ 19.2°C · 降水 15%</td>
+          <td><span class="wx">🌤️</span> 多云转晴<br>14.6 ~ 23.7°C · 降水 9%</td></tr>
+        <tr><td class="date">10/6 周二<br><span class="muted">返回日</span></td>
+          <td><span class="wx">⛅</span> 局部多云<br>21.6 ~ 28.8°C · 降水 22%</td>
+          <td><span class="wx">☀️</span> 晴<br>11.7 ~ 20.9°C · 降水 2%</td>
+          <td><span class="wx">☀️</span> 晴<br>12.6 ~ 22.9°C · 降水 2%</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <div class="card" style="margin-top:12px">
+      <b>📌 天气提示</b><br>
+      · <b style="color:var(--red)">10/1 广州雷雨+35.7°C 高温</b>：雷雨概率 77%，存在航班延误风险，提早到机场、盯紧 CZ3061 动态；广州 10/2 起冷空气降温 6°C。<br>
+      · <b>首尔早晚只有 10–13°C</b>：早晚必须带轻薄外套/风衣。<br>
+      · <b>釜山 10/4 阴 24.7°C</b>：CLUBD 以室内为主不受影响。<br>
+      · 首尔 10/4–10/5 有毛毛雨可能，<b>折叠伞放包里</b>。
+    </div>
+  </section>
+
+  <!-- 入境卡 -->
+  <section id="arrival" class="tabpane">
+    <h2 class="sec">🛂 韩国电子入境卡（e-Arrival Card）填写教程</h2>
+    <p class="sec-desc">2026 年起韩国全面取消纸质入境卡，持签证、无 K-ETA 的外国旅客<b>必须</b>在入境前 <b>72 小时内</b>在线申报。<b style="color:var(--red)">你们 10/1 15:25 落地 → 9/28 下午起即可提交，现在就能填！</b>完全免费，谨防收费钓鱼网站。</p>
+    <div class="arrival-links card">
+      🔗 官方直达（只认 go.kr 域名）：<a href="https://www.e-arrivalcard.go.kr/" target="_blank">www.e-arrivalcard.go.kr</a>（右上角可切换 中文/English）<br>
+      🔗 小红书图文教程：站内搜索 <a href="https://www.xiaohongshu.com/search_result?keyword=%E9%9F%A9%E5%9B%BD%E7%94%B5%E5%AD%90%E5%85%A5%E5%A2%83%E5%8D%A1%E5%A1%AB%E5%86%99%E6%95%99%E7%A8%8B" target="_blank">「韩国电子入境卡填写教程」</a> / <a href="https://www.xiaohongshu.com/search_result?keyword=e-arrivalcard%20%E6%95%99%E7%A8%8B" target="_blank">「e-arrivalcard 教程」</a>（小红书图片有登录墙与防盗链，无法直接嵌入本页，点链接在 App 内查看）<br>
+      <span class="muted">* 若官网打开缓慢，可挂梯子或用手机浏览器；提交后截图保存确认页/邮件。</span>
+    </div>
+    <div class="steps">
+      <div class="step"><span class="n">1</span><h4>进入官网 · 语言选择</h4>
+        <div class="mock">
+          <div class="f"><span>🌐 Language</span><b>中文（简体）</b></div>
+          <div class="f"><span>e-Arrival card 导航仪</span><b>是否为申报对象？→ 是</b></div>
+          <div class="f"><span>所持证件</span><b>签证 ✅（无 K-ETA）</b></div>
+          <div class="btnline"><span>开始申报</span></div>
+        </div>
+        首页「导航仪」自检：选「签证 / 无 K-ETA」→ 确认属于申报对象。同意条款后进入。
+      </div>
+      <div class="step"><span class="n">2</span><h4>邮箱验证</h4>
+        <div class="mock">
+          <div class="f"><span>邮箱 Email</span><b>your@mail.com</b></div>
+          <div class="f"><span>验证码</span><b>••••••</b></div>
+          <div class="btnline"><span>发送验证码 → 确认</span></div>
+        </div>
+        填常用邮箱（两人只填一个主邮箱，后面可添加同行人）。
+      </div>
+      <div class="step"><span class="n">3</span><h4>个人信息（与护照完全一致）</h4>
+        <div class="mock">
+          <div class="f"><span>姓名（大写拼音）</span><b>旅客姓名（大写拼音）</b></div>
+          <div class="f"><span>性别 / 国籍</span><b>按护照 / CHINA</b></div>
+          <div class="f"><span>出生日期</span><b>YYYY-MM-DD</b></div>
+          <div class="f"><span>护照号码</span><b>E/EX…（可拍照 OCR）</b></div>
+        </div>
+        逐字核对姓名与护照号，这是最容易出错的环节。
+      </div>
+      <div class="step"><span class="n">4</span><h4>航班与入境信息</h4>
+        <div class="mock">
+          <div class="f"><span>入境日期</span><b>2026-10-01</b></div>
+          <div class="f"><span>航班号</span><b>CZ3061</b></div>
+          <div class="f"><span>出发地</span><b>广州 GUANGZHOU</b></div>
+          <div class="f"><span>座位号</span><b>值机后补填或留空</b></div>
+        </div>
+        提交后仍可通过「查询·修改」更新座位号。
+      </div>
+      <div class="step"><span class="n">5</span><h4>住宿信息 · 提交</h4>
+        <div class="mock">
+          <div class="f"><span>住宿名称</span><b>Sollago Myeongdong H&R</b></div>
+          <div class="f"><span>地址</span><b>9, Chungmu-ro 2-gil, Jung-gu, Seoul</b></div>
+          <div class="f"><span>电话</span><b>+82-2-2263-7979</b></div>
+          <div class="f"><span>同行旅客</span><b>+ 添加（一次申报 2 人）</b></div>
+          <div class="btnline"><span>提交 → 截图保存</span></div>
+        </div>
+        韩文地址备用：서울특별시 중구 충무로2길 9（04556）。
+      </div>
+    </div>
+    <div class="card" style="margin-top:12px">
+      <b>⚠️ 高频踩坑</b><br>
+      · <b>只能提前 72 小时内提交</b>——填早了失效，9/28 下午～10/1 之间提交都有效；<br>
+      · <b>只认 www.e-arrivalcard.go.kr</b>，要付款的都是假网站；<br>
+      · 姓名顺序、护照号必须与护照一致；<br>
+      · 你们持 C-3 签证、无 K-ETA，<b>需要填</b>；<br>
+      · 提交后建议<b>截图</b>确认页备查。
+    </div>
+  </section>
+
+  <!-- checklist -->
+  <section id="checklist" class="tabpane">
+    <h2 class="sec">✅ 出发前 Checklist（增删改查 · 自动保存）</h2>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:6px">
+      <div class="ck-progress" style="flex:1;min-width:160px;margin:0"><i id="ck-bar"></i></div>
+      <span class="muted" id="ck-count"></span>
+      <button class="btn sm" id="ck-addcat">➕ 新增大类</button>
+    </div>
+    <p class="muted" style="margin-bottom:10px">每个大类可 ➕ 加条目、✏️ 改名、🗑 删除；条目文字可直接编辑，「必办/选办」点击切换，✕ 删除。</p>
+    <div class="ck-grid" id="ck-grid"></div>
+  </section>
+
+  <!-- 比价 -->
+  <section id="alt" class="tabpane">
+    <h2 class="sec">🆚 机票 / 酒店替代方案（具体航班·时刻·价格）</h2>
+    <p class="sec-desc">广州白云(CAN) ⇄ 首尔仁川(ICN) 直飞共 3 家航司、每天约 6 班。以下时刻为 <b>2026-09-28 检索</b>的班表（当地时间，含 1 小时时差），价格为国庆档参考区间——<b>点每行的链接可查当日实时价</b>。你已购：CZ3061/3062 往返 ¥7,740（≈¥3,870/人），处于合理区间。</p>
+
+    <table class="alt">
+      <thead><tr><th style="width:120px">航班</th><th style="width:150px">起飞 → 到达</th><th style="width:90px">在途*</th><th style="width:170px">国庆参考价/人</th><th>链接</th></tr></thead>
+      <tbody><tr><td colspan="5" style="background:#f0f4ff;font-weight:700">去程 · 10/1（周四）广州 T2 → 仁川 T1</td></tr>
+      <tr><td>KE864 大韩航空</td><td>01:30 → 约05:30</td><td>约4h00m</td><td>¥1,900–2,600（红眼）</td><td><a href="https://www.trip.com/flights/status-ke864/" target="_blank">航班动态</a> · <a href="https://www.koreanair.com" target="_blank">大韩官网</a></td></tr>
+      <tr><td>CZ337 南航</td><td>09:35 → 约13:00–14:00**</td><td>约4h20m</td><td>¥1,600–2,400</td><td><a href="https://www.trip.com/flights/status-cz337/" target="_blank">航班动态</a> · <a href="https://www.csair.com" target="_blank">南航官网</a></td></tr>
+      <tr class="own-row"><td><b>CZ3061 南航</b><br>✅已购</td><td><b>10:50 → 15:25</b></td><td>4h35m<br><span class="muted">飞行3h35m</span></td><td>含于往返 ¥7,740</td><td>南航 APP 值机</td></tr>
+      <tr><td>OZ370 韩亚航空<br><span class="muted">A330 宽体</span></td><td>12:25 → 16:22</td><td>3h57m</td><td>¥1,800–2,500</td><td><a href="https://www.trip.com/flights/status-oz370" target="_blank">航班动态</a> · <a href="https://www.flyasiana.com" target="_blank">韩亚官网</a></td></tr>
+      <tr><td>CZ339 南航</td><td>17:20 → 21:45</td><td>4h25m</td><td>¥1,600–2,400</td><td><a href="https://www.trip.com/flights/status-cz339/" target="_blank">航班动态</a> · <a href="https://www.csair.com" target="_blank">南航官网</a></td></tr>
+      <tr><td colspan="5" style="background:#f0f4ff;font-weight:700">回程 · 10/6（周二）仁川 T1 → 广州 T2</td></tr>
+      <tr><td>OZ369 韩亚航空</td><td>08:40 → 约11:15</td><td>2h35m</td><td>¥1,800–2,500</td><td><a href="https://www.trip.com/flights/status-oz369/" target="_blank">航班动态</a> · <a href="https://www.flyasiana.com" target="_blank">韩亚官网</a></td></tr>
+      <tr><td>CZ340 南航<br><span class="muted">A321</span></td><td>约10:55 → 13:50**</td><td>2h55m</td><td>¥1,600–2,400</td><td><a href="https://www.trip.com/flights/status-cz340/" target="_blank">航班动态</a> · <a href="https://www.csair.com" target="_blank">南航官网</a></td></tr>
+      <tr><td>CZ338 南航</td><td>约14:50 → 18:00**</td><td>3h10m</td><td>¥1,600–2,400</td><td><a href="https://www.trip.com/flights/status-cz338/" target="_blank">航班动态</a> · <a href="https://www.csair.com" target="_blank">南航官网</a></td></tr>
+      <tr class="own-row"><td><b>CZ3062 南航</b><br>✅已购</td><td><b>16:45 → 19:25</b></td><td>2h40m<br><span class="muted">飞行3h40m</span></td><td>含于往返 ¥7,740</td><td>南航 APP 值机</td></tr>
+      </tbody>
+    </table>
+    <p class="muted">* 在途 = 起飞到到达的当地时刻差（含 1 小时时差）；飞行 = 票面实际飞行时长。** 航季时刻有波动，以「航班动态」链接实时查询为准。实时比价：<a href="https://flights.ctrip.com/online/list/oneway-can-icn?depdate=2026-10-01&cabin=y_s&adult=2" target="_blank">携程·去程10/1</a> · <a href="https://flights.ctrip.com/online/list/oneway-icn-can?depdate=2026-10-06&cabin=y_s&adult=2" target="_blank">携程·回程10/6</a> · <a href="https://www.skyscanner.net/transport/flights/can/icn/261001/?adults=2" target="_blank">Skyscanner 去程</a> · <a href="https://www.skyscanner.net/transport/flights/icn/can/261006/?adults=2" target="_blank">Skyscanner 回程</a></p>
+
+    <table class="alt">
+      <thead><tr><th style="width:170px">酒店（明洞片区）</th><th>说明</th><th style="width:150px">参考价/晚</th><th style="width:180px">链接</th></tr></thead>
+      <tbody>
+        <tr class="own-row"><td><b>已订</b> 索拉戈明洞酒店&公寓<br><span class="muted">솔라고 명동 H&R</span></td><td>忠武路站 7 号口步行 2 分钟，4 星，公寓式，你的均价 <b>¥881/晚</b>（5 晚 ¥4,406 含早）</td><td><b>¥881</b>（已付均价）</td><td><a href="http://sollagohotel.com" target="_blank">酒店官网</a></td></tr>
+        <tr><td>索拉利亚西铁酒店<br>Solaria Nishitetsu<br><span class="muted">4.5/5</span></td><td>明洞站旁、2025 年翻新、日系服务；Agoda 均价约 $160/晚，旺季明显上浮</td><td>≈ ¥1,150<br><span class="muted">旺季 ¥2,300+</span></td><td><a href="https://www.booking.com/hotel/kr/solaria-nishitetsu-seoul.zh-cn.html" target="_blank">Booking 详情</a></td></tr>
+        <tr><td>九树帕那斯明洞 2 号店<br>Nine Tree by Parnas<br><span class="muted">8.8/10 · 8400+条</span></td><td>2017 年开业、距地铁口 3 分钟、性价比高</td><td>≈ ¥1,000–1,170</td><td><a href="https://hotels.ctrip.com/hotels/detail?hotelId=6651308" target="_blank">携程 详情</a> · <a href="https://m.ctrip.com/html5/hotel/hoteldetail/6651308.html" target="_blank">手机版</a></td></tr>
+        <tr><td>首尔明洞世宗酒店<br>Sejong Hotel<br><span class="muted">4.0/5</span></td><td>明洞站 10 号口即到、1966 年老牌、部分房间看南山塔</td><td>≈ ¥780<br><span class="muted">10月约 ¥1,340</span></td><td><a href="https://hotels.ctrip.com/hotels/detail?hotelId=988675" target="_blank">携程 详情</a> · <a href="https://m.ctrip.com/html5/hotel/hoteldetail/988675.html" target="_blank">手机版</a></td></tr>
+        <tr><td>Hotel PJ 明洞<br><span class="muted">4.3/5</span></td><td>乙支路 4 街站 350m、房间宽敞、免费班车；早餐评价一般</td><td>≈ ¥730–760<br><span class="muted">₩145,132 起</span></td><td><a href="https://www.booking.com/searchresults.zh-cn.html?ss=Hotel+PJ+Myeongdong&checkin=2026-10-01&checkout=2026-10-06&group_adults=2" target="_blank">Booking 查价</a></td></tr>
+      </tbody>
+    </table>
+    <p class="muted">综合比价入口：<a href="https://www.trip.com/hotels/list?city=382&checkin=2026-10-01&checkout=2026-10-06" target="_blank">Trip.com 明洞酒店（已填日期）</a> · <a href="https://www.booking.com/searchresults.zh-cn.html?ss=%EB%AA%85%EB%8F%99+Myeongdong&checkin=2026-10-01&checkout=2026-10-06&group_adults=2" target="_blank">Booking 明洞搜索</a>（价格实时变动，以上为 2026-09-28 检索参考）</p>
+  </section>
+
+  <!-- 票据文件夹 -->
+  <section id="gallery" class="tabpane">
+    <h2 class="sec">🎫 票据文件夹</h2>
+    <p class="sec-desc" id="gallery-desc">文件夹票据 + 手机上传的截图，集中在这里。点图片放大。</p>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px">
+      <label class="btn green" for="gal-up" style="cursor:pointer">📤 上传图片（可多选）</label>
+      <input type="file" id="gal-up" accept="image/*" multiple hidden>
+      <span class="muted">【在线净版】未打包本地票据图片——点「📤 上传图片」把手机/电脑里的票据截图加进来（存在本机浏览器）。</span>
+    </div>
+    <div class="gallery" id="gallery-grid"></div>
+  </section>
+    <footer style="padding-top:20px">本页面由行程票据与 2026-09-28 联网检索数据生成 · 天气:Open-Meteo · 地图:Leaflet+Esri · 价格标注「≈」均为参考值<br>祝你们国庆韩国之行顺利愉快！🇰🇷✈️ · 安全第一，财物随身放胸前包</footer>
+
+  </main>
+
+  <!-- ============ 右栏：费用汇总（悬浮） ============ -->
+  <aside class="rail rail-right" id="calc">
+    <div class="rail-card sum-panel">
+      <h3>📊 费用汇总（2人）</h3>
+      <div class="rate-box">💱 汇率 1 CNY = <input type="number" id="rate" step="0.5" min="1"> KRW<span class="muted">(默认207)</span></div>
+      <div class="legend">
+        <span><i style="background:#1864ab"></i>交通</span>
+        <span><i style="background:#0c8599"></i>住宿</span>
+        <span><i style="background:#f08c00"></i>美食</span>
+        <span><i style="background:#e03131"></i>玩乐</span>
+        <span><i style="background:#d6336c"></i>打卡</span>
+        <span><i style="background:#7048e8"></i>购物</span>
+        <span><i style="background:#495057"></i>其他</span>
+      </div>
+      <div id="sum-rows"></div>
+      <div class="btns">
+        <button class="btn sm" id="copy-sum">📋 复制摘要</button>
+        <button class="btn green sm" onclick="exportICS()">📥 导出日历</button>
+      </div>
+      <details class="sync-box" id="sync-box" style="margin-top:12px">
+        <summary>☁️ 云同步（端到端加密）</summary>
+        <div class="sync-body">
+          <label class="sync-lab">GitHub Token（只勾 gist 权限）<input type="password" id="sync-token" placeholder="ghp_… / github_pat_…" autocomplete="off"></label>
+          <label class="sync-lab">同步密码（加密钥匙，务必牢记）<input type="password" id="sync-pass" placeholder="自定义密码" autocomplete="off"></label>
+          <label class="sync-row"><input type="checkbox" id="sync-auto"> 自动同步（改动 3 秒后推 / 打开时拉）</label>
+          <div class="sync-btns">
+            <button class="btn sm" id="sync-push">⬆️ 推送上云</button>
+            <button class="btn ghost sm" id="sync-pull">⬇️ 从云端恢复</button>
+          </div>
+          <div class="muted" id="sync-status" style="font-size:11px;margin-top:6px">未同步</div>
+          <div class="hint">数据在本机用 AES-256-GCM 加密后才写入你的<b>私有 Gist</b>，GitHub 只见密文；Token/密码只存本机，绝不上传。<b>密码遗忘 = 数据无法解密</b>。每次覆盖前自动本地备份最近 10 版。</div>
+        </div>
+      </details>
+      <div class="hint">* 韩元项按上方汇率折算人民币汇总；「已付」徽章在左栏点击切换，此处实时联动。KTX 为标准票价估算，可在左栏直接改价。</div>
+    </div>
+  </aside>
+
+</div>
+
+<div id="catpick"><div class="cp-box">
+  <h4>➕ 新增项目 <span class="cp-when" id="cp-when"></span></h4>
+  <div class="cp-lab">① 选择大类（默认：📦 其他）</div>
+  <div class="cp-sups" id="cp-sups"></div>
+  <div class="cp-lab">② 选择小类</div>
+  <select id="cp-cat"></select>
+  <div class="cp-btns"><button class="btn ghost" id="cp-cancel">取消</button><button class="btn" id="cp-ok">创建</button></div>
+</div></div>
+<div id="lightbox"><span class="close" onclick="document.getElementById('lightbox').classList.remove('open')">×</span><img id="lb-img" src="" alt=""><div class="cap" id="lb-cap"></div></div>
+<div id="toast"></div>
+
+<script>
+/* ================= 固定数据 ================= */
+const FIXED = {
+  hotel:   {name:'🏨 索拉戈明洞酒店&公寓', ll:[37.5612,126.9941], q:'솔라고 명동 호텔 앤 레지던스', note:'忠武路站7号口步行2分钟'},
+  icn:     {name:'✈️ 仁川机场 T1', ll:[37.4602,126.7407], q:'인천공항 T1', note:'AREX 机场快线 B1'},
+  seoulst: {name:'🚉 首尔站（KTX/AREX）', ll:[37.5559,126.9723], q:'서울역', note:'10/4 出发/到达'},
+  busanst: {name:'🚉 釜山站', ll:[35.1152,129.0420], q:'부산역', note:'10/4 往返'},
+  haeundae:{name:'🚇 海云台站', ll:[35.1587,129.1604], q:'해운대역', note:'2号线·步行至LCT'},
+  clubd:   {name:'🎟️ CLUBD OASIS（LCT 3-6F）', ll:[35.1510,129.1558], q:'클럽디 오아시스', note:'水上乐园+SPA 联票7h'}
+};
+
+const BASE_ITEMS = [
+  {id:'flight', cat:'✈️ 机票', name:'往返机票 CZ3061 / CZ3062', sub:'10/1 广州10:50→仁川15:25 · 10/6 仁川16:45→广州19:25 · 双人往返已出票', price:7740, cur:'CNY', qty:1, dur: 275, paid:true, def:true, day:'10/1', time:'10:50', lockDay:true},
+  {id:'hotel',  cat:'🏨 酒店', name:'索拉戈明洞酒店&公寓 ×5晚', sub:'10/1–10/6 标准大床房·含早 · 已付', price:4406, cur:'CNY', qty:1, dur:120, paid:true, def:true, day:'10/1', time:'18:00', lockDay:true},
+  {id:'ktx',    cat:'🚄 KTX高铁', name:'首尔⇄釜山 往返 ×2人', sub:'去程青龙021 08:58→11:16 · 返程KTX072 20:23→23:06 · ₩59,800/人/程估算', price:239200, cur:'KRW', qty:1, dur: 138, paid:true, def:true, day:'10/4', time:'08:58', lockDay:true},
+  {id:'clubd',  cat:'🎟️ CLUBD门票', name:'CLUBD OASIS 联票(7小时) ×2', sub:'9-10月任意日期·无需预约 · 已付', price:312.31, cur:'CNY', qty:1, dur:405, paid:true, def:true, day:'10/4', time:'12:15', lockDay:true},
+
+  {id:'shoot',  cat:'🎯 景点·射击', name:'木洞射击场 实弹体验', sub:'5号线五木桥站 · 电话02-2646-9993预约 · 必带护照 · 平日10:30开门,12-13点午休', price:27000, cur:'KRW', qty:2, dur:90, def:true, day:'10/2', time:'10:30', ll:[37.5290,126.8740], q:'목동사격장', icon:'🎯'},
+  {id:'sky',    cat:'🎯 景点·射击', name:'乐天世界塔 SEOUL SKY', sub:'555m 观景台 · 蚕室站', price:31000, cur:'KRW', qty:2, dur:60, def:true, day:'10/2', time:'14:30', ll:[37.5086,127.1004], q:'롯데월드타워 서울스카이', icon:'🗼'},
+  {id:'palace', cat:'🎯 景点·射击', name:'景福宫门票', sub:'成人₩3,000 · 穿韩服免票 · 周二闭馆', price:3000, cur:'KRW', qty:2, dur:90, def:true, day:'10/5', time:'09:00', ll:[37.5796,126.9770], q:'경복궁', icon:'🏯'},
+  {id:'hanbok', cat:'🎯 景点·射击', name:'韩服租赁 2小时（含发型）', sub:'景福宫韩服街 · 押金₩10,000或护照 · 攻略见10/5行程小红书链接', price:20000, cur:'KRW', qty:2, dur:120, def:true, day:'10/5', time:'09:00', ll:[37.5805,126.9748], q:'경복궁 한복租赁', icon:'👑'},
+  {id:'ntower', cat:'🎯 景点·射击', name:'南山首尔塔（缆车+展望台）', sub:'10/5 雨停备选', price:31000, cur:'KRW', qty:2, dur:90, day:'10/5', time:'16:30', ll:[37.5511,126.9882], q:'남산서울타워', icon:'🌃'},
+
+  {id:'mdgyoja',cat:'🍜 美食·小吃', name:'明洞饺子（刀削面）', sub:'米其林必比登 · 10/1 晚餐首选', price:11000, cur:'KRW', qty:2, dur:60, def:true, day:'10/1', time:'19:00', ll:[37.5633,126.9867], q:'명동교자', icon:'🍜'},
+  {id:'mdstreet',cat:'🍜 美食·小吃', name:'明洞街头小吃拼盘', sub:'糖饼/辣炒年糕/鸡蛋面包 · 19:00后出摊', price:10000, cur:'KRW', qty:1, dur:60, def:true, day:'10/1', time:'20:00', ll:[37.5636,126.9827], q:'명洞街頭小吃', icon:'🍢'},
+  {id:'gwangjang',cat:'🍜 美食·小吃', name:'广藏市场（绿豆煎饼+生牛肉）', sub:'工作日白天人少 · 周日多数歇业', price:15000, cur:'KRW', qty:2, dur:90, def:true, day:'10/2', time:'13:00', ll:[37.5700,126.9995], q:'광장시장', icon:'🥞'},
+  {id:'bhc',    cat:'🍜 美食·小吃', name:'BHC 炸鸡 + 啤酒', sub:'明洞店 · 夜宵快乐水', price:21000, cur:'KRW', qty:1, dur:60, def:true, day:'10/2', time:'18:30', ll:[37.5641,126.9852], q:'BHC치킨 명동', icon:'🍗'},
+  {id:'mangwon',cat:'🍜 美食·小吃', name:'望远市场小吃', sub:'糖饼/薯饼/炸鸡 · 10/3 早午餐', price:8000, cur:'KRW', qty:2, dur:60, def:true, day:'10/3', time:'09:30', ll:[37.5561,126.9107], q:'망원시장', icon:'🍩'},
+  {id:'oriori', cat:'🍜 美食·小吃', name:'延南洞 오리오리 意面', sub:'超人气意式 · 牛排松露意面', price:18000, cur:'KRW', qty:2, dur:75, def:true, day:'10/3', time:'11:30', ll:[37.5578,126.9253], q:'연남동 오리오리', icon:'🍝'},
+  {id:'picnic', cat:'🍜 美食·小吃', name:'汉江便利店野餐（拉面+紫菜包饭）', sub:'汝矣岛汉江公园 · 看日落', price:9000, cur:'KRW', qty:2, dur:90, def:true, day:'10/3', time:'16:30', ll:[37.5295,126.9325], q:'여의도한강공원', icon:'🍜'},
+  {id:'bbq',    cat:'🍜 美食·小吃', name:'끼로끼로 부엉이 烤肉（新村本店）', sub:'炭火烤肉·招牌猪肋排/牛小排 · 沙拉吧无限量 · 11:00–24:00 · 预约02-332-5154', price:18000, cur:'KRW', qty:2, dur:90, def:true, day:'10/3', time:'19:30', ll:[37.5567,126.9345], q:'끼로끼로 부엉이 신촌본점', icon:'🥓'},
+  {id:'sulbing',cat:'🍜 美食·小吃', name:'雪冰/甜品下午茶', sub:'圣水洞/延南洞咖啡街区', price:9000, cur:'KRW', qty:2, dur:45, def:true, day:'10/3', time:'15:00', ll:[37.5443,127.0558], q:'설빙', icon:'🍧'},
+  {id:'tosok',  cat:'🍜 美食·小吃', name:'土俗村参鸡汤', sub:'景福宫旁 · 米其林推荐 · 一人一只', price:23000, cur:'KRW', qty:2, dur:60, def:true, day:'10/5', time:'12:30', ll:[37.5795,126.9735], q:'토속촌삼계탕', icon:'🍲'},
+  {id:'budae',  cat:'🍜 美食·小吃', name:'部队锅（备选）', sub:'下雨/想喝热汤时的 Plan B', price:12000, cur:'KRW', qty:2, dur:60, day:'10/5', time:'19:00', ll:[37.5630,126.9880], q:'明洞부대찌개', icon:'🍲'},
+  {id:'breakfast',cat:'🍜 美食·小吃', name:'便利店/咖啡早餐', sub:'人均×5天（酒店含早可减半）', price:5000, cur:'KRW', qty:10},
+
+  {id:'forest', cat:'📸 打卡体验', name:'首尔林（免费）', sub:'工作日安静 · 拍照散步', price:0, cur:'KRW', qty:2, dur:60, def:true, day:'10/2', time:'16:30', ll:[37.5443,127.0464], q:'서울숲', icon:'🌳'},
+  {id:'seongsu',cat:'📸 打卡体验', name:'圣水洞咖啡厂区（免费）', sub:'工业风改造街区 · 室内为主', price:0, cur:'KRW', qty:2, dur:90, day:'10/3', time:'14:00', ll:[37.5443,127.0558], q:'성수동 카페거리', icon:'☕'},
+  {id:'insadong',cat:'📸 打卡体验', name:'仁寺洞漫步（免费）', sub:'韩纸文创·传统茶屋 · 雨天友好', price:0, cur:'KRW', qty:2, dur:90, def:true, day:'10/5', time:'14:00', ll:[37.5745,126.9859], q:'인사동', icon:'🏮'},
+  {id:'photo',  cat:'📸 打卡体验', name:'人生四格拍立得', sub:'明洞 · 韩国特色照片亭', price:8000, cur:'KRW', qty:1, dur:20, day:'10/5', time:'17:30', ll:[37.5636,126.9830], q:'인생네컷 명동', icon:'📷'},
+  {id:'hanok',  cat:'📸 打卡体验', name:'北村韩屋村（免费）', sub:'工作日上午安静 · 居民区轻声慢行', price:0, cur:'KRW', qty:2, dur:60, def:true, day:'10/5', time:'11:00', ll:[37.5826,126.9840], q:'북촌한옥마을', icon:'🏚️'},
+
+  {id:'arex',   cat:'🚇 交通·通信', name:'AREX 机场快线往返 ×2人', sub:'直达₩11,000/人/程；普通约₩5,000/程可刷T-money', price:44000, cur:'KRW', qty:1, def:true},
+  {id:'tmoney', cat:'🚇 交通·通信', name:'T-money ×2 + 充值', sub:'卡费₩2,500–4,000/张 + 各充₩25,000 · 釜山通用', price:60000, cur:'KRW', qty:1, def:true},
+  {id:'taxi',   cat:'🚇 交通·通信', name:'釜山当日出租（釜山站⇄海云台往返）', sub:'单程约₩18,000–25,000/车', price:50000, cur:'KRW', qty:1, def:true},
+  {id:'taxiseoul',cat:'🚇 交通·通信', name:'首尔市内出租机动', sub:'行李/夜间/赶车场景', price:30000, cur:'KRW', qty:1},
+  {id:'esim',   cat:'🚇 交通·通信', name:'eSIM 流量卡 7天 ×2（已购好）', sub:'落地激活 · 见到达后必办', price:45, cur:'CNY', qty:2, def:true, paid:true},
+  {id:'insur',  cat:'🚇 交通·通信', name:'旅行保险 ×2（含水上游乐）', sub:'支付宝/携程均可购', price:60, cur:'CNY', qty:2, def:true},
+
+  {id:'oy',     cat:'🛍️ 购物·其他', name:'OLIVE YOUNG + 伴手礼预算', sub:'面膜/彩妆/零食 · 满额可退税', price:300, cur:'CNY', qty:1, dur:30, def:true, day:'10/6', time:'10:30'},
+  {id:'dutyfree',cat:'🛍️ 购物·其他', name:'机场免税店机动预算', sub:'仁川T1 出境后', price:500, cur:'CNY', qty:1, dur:60, def:true, day:'10/6', time:'15:00'}
+];
+
+/* 七大类 → 小类 两级结构（左栏/右栏一一对应） */
+const SUPERS=[
+  {id:'s1',name:'🚗 交通',color:'#1864ab',cats:['✈️ 机票','🚄 KTX高铁','🚇 交通·通信']},
+  {id:'s2',name:'🏨 住宿',color:'#0c8599',cats:['🏨 酒店']},
+  {id:'s3',name:'🍜 美食',color:'#f08c00',cats:['🍜 美食·小吃']},
+  {id:'s4',name:'🎡 玩乐',color:'#e03131',cats:['🎟️ CLUBD门票','🎯 景点·射击']},
+  {id:'s5',name:'📸 打卡',color:'#d6336c',cats:['📸 打卡体验']},
+  {id:'s6',name:'🛍️ 购物',color:'#7048e8',cats:['🛍️ 购物·其他']},
+  {id:'s7',name:'📦 其他',color:'#495057',cats:[]}
+];
+const CAT_COLORS={'✈️ 机票':'#1c7ed6','🚄 KTX高铁':'#228be6','🚇 交通·通信':'#74c0fc','🏨 酒店':'#0c8599','🍜 美食·小吃':'#f59f00','🎯 景点·射击':'#f76707','🎟️ CLUBD门票':'#e8590c','📸 打卡体验':'#d63384','🛍️ 购物·其他':'#9775fa'};
+const DAYS=['10/1','10/2','10/3','10/4','10/5','10/6'];
+
+const CHECKLIST = [
+  ['🔴 出发前必办（在线）',[
+    ['eac','填写电子入境卡（e-arrivalcard.go.kr）— 9/28下午起72h窗口内，两人信息一次填完，截图确认页',1],
+    ['checkin','南航 APP 在线值机（起飞前1–2天开放，选座）',0],
+    ['shootbook','木洞射击场预约：电话 02-2646-9993 或 Naver 预约（10/2 上午·平日10:30开门）',1],
+    ['esimbuy','eSIM 已提前购好 ✓ 保存好激活教程/客服方式，落地再激活（见下方「到达后必办」）',0],
+    ['insure','购买旅行保险（覆盖 10/1–10/6 + 水上游乐项目）',1],
+    ['cash','兑换韩元现金（建议 ₩200,000–300,000/2人，明洞兑换所汇率好于机场）',1]
+  ]],
+  ['🛬 到达后必办（仁川机场/首尔）',[
+    ['esim_act','激活已备好的 eSIM：落地连机场免费 Wi-Fi → 激活 → 测试 Naver/Google 地图可用',1],
+    ['arex_buy','AREX 机场快线购票：直达 ₩11,000/人（51分·专座·行李架）或普通约 ₩5,000/人（66分站站停）→ 首尔站换 4 号线 3 站到忠武路（酒店）',1],
+    ['tmoney_buy','购买 T-money ×2（机场到达层/便利店，卡费 ₩2,500–4,000）→ 每张充 ₩25,000',1],
+    ['cash_ex','现金不够时：明洞「大使馆街」一带兑换所换韩元（汇率好于机场）',0],
+    ['hotel_card','前台拿酒店名片（서울 중구 충무로2길 9）+ 免费地图，打车/问路备用',0],
+    ['bus_card','KTX 车票 & CLUBD QR 码截图离线可用（出发前一晚再检查一遍）',1]
+  ]],
+  ['📄 证件与票据',[
+    ['passport','护照 ×2（有效期 > 2027年4月，随身携带）',1],
+    ['visa','韩国签证 ×2（核对有效期/停留期/入境次数）',1],
+    ['idcard','身份证 ×2（国内交通/酒店）',0],
+    ['flightpic','机票行程单截图 + 纸质备份',0],
+    ['hotelpic','酒店订单截图（含韩文地址 · +82 2-2263-7979）',1],
+    ['ktxpic','KTX 车票截图 ×4（korail 确认邮件，离线保存）',1],
+    ['clubdpic','CLUBD QR 码截图 ×2 张票（离线保存到相册）',1],
+    ['photos','白底证件照 ×2（补办证件备用）',0]
+  ]],
+  ['💰 支付与现金',[
+    ['credit','VISA / 万事达信用卡（开通境外支付）',1],
+    ['unionpay','银联卡（明洞商户多数支持）',0],
+    ['wowpass','WOWPASS 或 T-money 卡 ×2（机场/便利店有售）',1],
+    ['rmb','少量人民币现金（应急）',0]
+  ]],
+  ['🔌 电子设备',[
+    ['charger','充电宝 ≤20000mAh（随身携带，不能托运）',1],
+    ['plug','转换插头 ×2（韩国 220V 双圆孔 C型，与德标通用）',1],
+    ['cable','充电线 ×2 + 充电头',0],
+    ['phonecase','手机挂绳/胸前包（水上乐园可留储物柜）',0]
+  ]],
+  ['🧥 衣物与个护（首尔早晚10–13°C）',[
+    ['jacket','轻薄外套/风衣 ×2（早晚必穿）',1],
+    ['umbrella','折叠伞（首尔 10/4–10/5 可能毛毛雨）',1],
+    ['sunscreen','防晒霜（广州出发高温+首尔晴天）',0],
+    ['medicine','常用药：肠胃药/感冒药/创可贴/晕车药',1],
+    ['comfy','舒适步行鞋（每天步行 1.5 万步+）',0],
+    ['mask','口罩、纸巾、湿巾',0]
+  ]],
+  ['🏊 水上乐园装备（10/4 CLUBD 官方规定）',[
+    ['swimcap','帽子 ×2（泳帽或桶帽；空顶帽不行）',1],
+    ['swimsuit','泳衣 ×2（普通分体/连体；Body Slide 禁防晒衣和金属扣款）',1],
+    ['aqua','戏水专用鞋（水鞋）×2（强制！拖鞋/洞洞鞋/凉鞋一律不可）',1],
+    ['goggles','泳镜（选带）',0],
+    ['wpouch','防水手机袋（拍无边泳池海景）',0],
+    ['quickdry','速干浴巾（选带：联票每人免费 2 条毛巾）',0]
+  ]],
+  ['🎒 其他实用',[
+    ['neckpillow','颈枕（KTX + 飞机）',0],
+    ['lock','行李锁 / 密封袋 / 垃圾袋',0],
+    ['bag','折叠购物袋（明洞采购）',0],
+    ['thermos','保温杯（选带）',0]
+  ]]
+];
+
+/* ================= 状态 ================= */
+const LS_KEY='krTrip2026';
+let S = {checked:{}, qty:{}, rate:207, ck:{}, price:{}, paid:{}, cur:{}, name:{}, day:{}, time:{}, eday:{}, etime:{}, note:{}, xhs:{}, deleted:{}, cat:{}, subcats:[], hiddenCats:{}, tlWide:{}, custom:[], ckData:[], galHide:{}, tab:''};
+try{ const raw=localStorage.getItem(LS_KEY); if(raw) S=Object.assign(S,JSON.parse(raw)); }catch(e){}
+if(!S.rate) S.rate=207;
+['price','paid','cur','name','day','time','eday','etime','note','xhs','deleted','cat','hiddenCats','tlWide','galHide'].forEach(k=>S[k]=S[k]||{});
+/* Checklist 数据：种子为 [类名,[[id,txt,must],...]] 数组格式 → 统一规范化为对象格式（兼容已损坏的旧持久化） */
+const ckNorm=p=>({cat:(p&&p.cat)||p[0],items:((p&&p.items)||p[1]||[]).map(it=>Array.isArray(it)?{id:it[0],txt:it[1],must:it[2]}:it)});
+if(!Array.isArray(S.ckData)||!S.ckData.length) S.ckData=CHECKLIST.map(ckNorm);
+else S.ckData=S.ckData.map(ckNorm);
+S.subcats=Array.isArray(S.subcats)?S.subcats:[];
+S.custom=Array.isArray(S.custom)?S.custom:[];
+const BASE_PRICE={}; BASE_ITEMS.forEach(it=>BASE_PRICE[it.id]=it.price);
+BASE_ITEMS.forEach(it=>{ if(S.price[it.id]!=null) it.price=S.price[it.id]; });
+let ITEMS = BASE_ITEMS.concat(S.custom);
+const save=()=>{ try{localStorage.setItem(LS_KEY,JSON.stringify(S)); localStorage.setItem('krtip_mtime',String(Date.now())); scheduleAutoPush();}catch(e){} };
+
+/* 取值（所有字段均可被用户编辑覆盖，统一走覆盖表） */
+const vPrice=it=>S.price[it.id]!=null?S.price[it.id]:it.price;
+const vCur=it=>S.cur[it.id]||it.cur||'CNY';
+const vQty=it=>S.qty[it.id]!=null?S.qty[it.id]:(it.qty!=null?it.qty:1);
+const vPaid=it=>S.paid[it.id]!=null?!!S.paid[it.id]:!!it.paid;
+const isOn=it=>S.checked[it.id]!=null?!!S.checked[it.id]:!!(it.def||false);
+const vName=it=>S.name[it.id]!=null?S.name[it.id]:it.name;
+const vDay=it=>S.day[it.id]!=null?S.day[it.id]:(it.day||'');
+const vTime=it=>S.time[it.id]!=null?S.time[it.id]:(it.time||'');
+const vDur=it=>it.dur||60;                                                                  /* 默认时长60分钟 */
+const vETime=it=>{ if(S.etime[it.id]) return S.etime[it.id]; const st=vTime(it); return st?toHM(Math.min(23*60+55,toMin(st)+vDur(it))):''; };
+const vEDay=it=>S.eday[it.id]||'';                                                          /* 空=同开始日 */
+const vNote=it=>S.note[it.id]!=null?S.note[it.id]:(it.note!=null?it.note:(it.sub||''));
+const vXhs=it=>S.xhs[it.id]!=null?S.xhs[it.id]:(it.xhs||'');
+const isGone=it=>!!S.deleted[it.id];
+const krw2cny=v=>v/(+S.rate||207);
+const itemCNY=it=>(vCur(it)==='KRW'?krw2cny(vPrice(it)):vPrice(it))*vQty(it);
+const fmtCNY=v=>'¥'+(Math.round(v*100)/100).toLocaleString('zh-CN',{maximumFractionDigits:2});
+const fmtKRW=v=>'₩'+Math.round(v).toLocaleString('zh-CN');
+const vCat=it=>S.cat[it.id]||it.cat;                                   // 小类可改（限本大类内）
+const subcatsOf=sp=>sp.cats.filter(c=>!S.hiddenCats[c]).concat(S.subcats.filter(x=>x.sup===sp.id).map(x=>x.name));
+const supOfItem=it=>{ const c=vCat(it);
+  if(S.hiddenCats[c]) return SUPERS.find(s=>s.id===S.hiddenCats[c])||SUPERS[6];   // 已删除的内置小类→回原大类本级
+  return SUPERS.find(s=>subcatsOf(s).includes(c))||SUPERS.find(s=>s.name===c)||SUPERS[6]; };
+const escV=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+
+/* toast */
+let toastTimer=null;
+function toast(msg){ const t=document.getElementById('toast'); t.innerHTML=msg; t.classList.add('show');
+  clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),2200); }
+
+/* ================= 左栏渲染（结构性变更时才全量重建） ================= */
+const daySortKey=it=>{ const d=DAYS.indexOf(vDay(it)); return d<0?99:d; };
+const sortItems=arr=>arr.slice().sort((a,b)=>(daySortKey(a)-daySortKey(b))||String(vTime(a)||'99:99').localeCompare(String(vTime(b)||'99:99')));
+function renderLeft(){
+  const prevSup={}, prevSub={};
+  document.querySelectorAll('#calc-left details.sup').forEach(d=>prevSup[d.dataset.sid]=d.open);
+  document.querySelectorAll('#calc-left details.sub').forEach(d=>prevSub[d.dataset.cat]=d.open);
+  const box=document.getElementById('calc-left');
+  box.innerHTML=SUPERS.map(sp=>{
+    const itemsOf=ITEMS.filter(i=>!isGone(i)&&supOfItem(i)===sp);
+    const sum=itemsOf.filter(isOn).reduce((s,it)=>s+itemCNY(it),0);
+    const has=itemsOf.some(isOn);
+    const open=prevSup[sp.id]!==undefined?(prevSup[sp.id]?' open':''):(has?' open':'');
+    const subsHtml=subcatsOf(sp).map(sc=>{
+      const items=sortItems(itemsOf.filter(i=>vCat(i)===sc));
+      if(!items.length) return '';
+      const ssum=items.filter(isOn).reduce((s,it)=>s+itemCNY(it),0);
+      const sop=prevSub[sc]!==undefined?(prevSub[sc]?' open':''):(items.some(isOn)?' open':'');
+      const isCustom=S.subcats.some(x=>x.name===sc);
+      return `<details class="sub" data-cat="${escV(sc)}" style="border-left-color:${CAT_COLORS[sc]||sp.color}"${sop}><summary><span><span class="arr">▸</span>${sc} <span style="font-weight:400;color:#98a1b5;font-size:10.5px">${items.length}</span></span><span class="sub-wrap"><span class="sub-sum">${fmtCNY(ssum)}</span>${isCustom?`<button class="delsub" data-delsub="${escV(sc)}" title="删除此小类（项目退回大类本级）">✕</button>`:''}</span></summary><div class="sub-body">${items.map(itemRow).join('')}</div></details>`;
+    }).join('');
+    const directs=sortItems(itemsOf.filter(i=>!subcatsOf(sp).includes(vCat(i))));
+    const directHtml=directs.length?`<div class="direct-items">${directs.map(itemRow).join('')}</div>`:'';
+    return `<details class="sup" data-sid="${sp.id}"${open}><summary style="background:${sp.color}"><span><span class="arr">▶</span>${sp.name} <span style="font-weight:400;font-size:11px;opacity:.8">${itemsOf.length}</span></span><span class="sup-sum">${fmtCNY(sum)}</span></summary><div class="sup-body">${subsHtml}${directHtml}<button class="add-sub-btn" data-addsup="${sp.id}">➕ 新增项目到「${sp.name}」</button><button class="add-sub-btn" data-newsub="${sp.id}" style="margin-top:4px">🗂 新建小类（自由组合项目）</button></div></details>`;
+  }).join('');
+  autosizeNotes();
+}
+function itemRow(it){
+  const on=isOn(it), paid=vPaid(it), cur=vCur(it), day=vDay(it), time=vTime(it), xhs=vXhs(it), cat=vCat(it);
+  const eday=vEDay(it), etime=vETime(it);
+  const sp=supOfItem(it);
+  const cats=subcatsOf(sp);                          // 只显示本大类下的小类
+  const catShow=cats.includes(cat)||cat===sp.name?cat:sp.name;   // 小类已删除→显示为未归类
+  const catOpts=cats.map(sc=>`<option value="${escV(sc)}" ${catShow===sc?'selected':''}>${escV(sc)}</option>`).join('')+
+    `<option value="${escV(sp.name)}" ${catShow===sp.name?'selected':''}>（${escV(sp.name)}·未归类）</option>`;
+  const catDel=cats.includes(cat)?`<button class="cat-del" data-catdel="${escV(cat)}" data-id="${it.id}" title="删除小类「${escV(cat)}」：项目保留，变为未归类">🗑</button>`:'';
+  const dayEl=it.lockDay
+    ? `<span class="daychip lock" title="票据固定日期，不可修改">🔒 ${day||'—'}</span>`
+    : `<select data-c="day" data-id="${it.id}" title="日期">${'<option value="">无日期</option>'+DAYS.map(d=>`<option ${day===d?'selected':''}>${d}</option>`).join('')}</select>`;
+  return `<div class="item" data-id="${it.id}">
+    <input type="checkbox" data-c="chk" data-id="${it.id}" ${on?'checked':''}>
+    <div class="info">
+      <div class="r1"><input class="inp-name" data-c="name" data-id="${it.id}" value="${escV(vName(it))}" placeholder="项目名称"><button class="del" data-c="del" data-id="${it.id}" title="移除">✕</button></div>
+      <div class="r2"><select class="sel-cat" data-c="cat" data-id="${it.id}" title="所属小类（仅本大类下）">${catOpts}</select>${catDel}</div>
+      <div class="r3"><span class="rlab">始</span>${dayEl}<input class="inp-time" type="time" data-c="time" data-id="${it.id}" value="${time}" title="开始时间（选填）"></div>
+      <div class="r4"><span class="rlab">终</span><select data-c="eday" data-id="${it.id}" title="结束日期（默认同开始日）"><option value=""${eday?'':' selected'}>同开始日</option>${DAYS.map(d=>`<option${eday===d?' selected':''}>${d}</option>`).join('')}</select><input class="inp-time" type="time" data-c="etime" data-id="${it.id}" value="${etime}" title="结束时间（默认=开始+${vDur(it)}分钟）"></div>
+      <div class="r5">
+        <button class="curbtn ${cur==='KRW'?'krw':''}" data-c="cur" data-id="${it.id}" title="切换货币单位">${cur==='KRW'?'₩':'¥'}</button>
+        <input type="number" min="0" step="any" data-c="price" data-id="${it.id}" value="${vPrice(it)}" title="单价">
+        <span class="calc">×</span>
+        <input type="number" min="0" step="1" class="qty" data-c="qty" data-id="${it.id}" value="${vQty(it)}" title="数量">
+        <span class="calc">=</span>
+        <span class="cny" data-id="${it.id}">${on?fmtCNY(itemCNY(it)):fmtCNY(0)}</span>
+        <button class="pb ${paid?'paid':'unpaid'}" data-c="paid" data-id="${it.id}">${paid?'已付':'未付'}</button>
+      </div>
+      <textarea class="inp-note" data-c="note" data-id="${it.id}" rows="1" placeholder="备注（自动换行）">${escV(vNote(it))}</textarea>
+      <div class="r6"><input class="inp-xhs" data-c="xhs" data-id="${it.id}" value="${escV(xhs)}" placeholder="链接（选填）">${xhs?`<a href="${escV(xhs)}" target="_blank" rel="noopener" title="打开链接">↗</a>`:''}</div>
+    </div>
+  </div>`;
+}
+function autosizeNotes(){ document.querySelectorAll('.inp-note').forEach(t=>{ t.style.height='auto'; t.style.height=(t.scrollHeight+2)+'px'; }); }
+
+/* ================= 数值刷新（不重建 DOM，不打断输入） ================= */
+function refreshNumbers(){
+  // 每行总价
+  ITEMS.forEach(it=>{ const el=document.querySelector(`.cny[data-id="${it.id}"]`); if(el) el.textContent=fmtCNY(isOn(it)?itemCNY(it):0); });
+  // 小类/大类小计
+  const catSums={}, spSums={};
+  SUPERS.forEach(sp=>spSums[sp.id]=0);
+  ITEMS.forEach(it=>{ if(isGone(it)||!isOn(it)) return; const s=itemCNY(it); const sc=vCat(it); catSums[sc]=(catSums[sc]||0)+s; spSums[supOfItem(it).id]+=s; });
+  document.querySelectorAll('#calc-left details.sub').forEach(d=>{ const el=d.querySelector('.sub-sum'); if(el) el.textContent=fmtCNY(catSums[d.dataset.cat]||0); });
+  document.querySelectorAll('#calc-left details.sup').forEach(d=>{ const el=d.querySelector('.sup-sum'); if(el) el.textContent=fmtCNY(spSums[d.dataset.sid]||0); });
+  // 右栏：大类可展开小类（保留展开状态）
+  const prevOpen={}; document.querySelectorAll('#sum-rows details.sum-grp').forEach(d=>prevOpen[d.dataset.sid]=d.open);
+  const rows=[]; let total=0, paidSum=0;
+  SUPERS.forEach(sp=>{
+    const onItems=ITEMS.filter(i=>!isGone(i)&&isOn(i)&&supOfItem(i)===sp);
+    if(!onItems.length) return;
+    const s=onItems.reduce((a,it)=>a+itemCNY(it),0);
+    total+=s; paidSum+=onItems.filter(vPaid).reduce((a,it)=>a+itemCNY(it),0);
+    const subMap={}; onItems.forEach(i=>{ const c=vCat(i); subMap[c]=(subMap[c]||0)+itemCNY(i); });
+    const ordered=subcatsOf(sp).filter(sc=>sc in subMap).map(sc=>({sc,v:subMap[sc]}));
+    if(sp.name in subMap) ordered.push({sc:sp.name+' ·本级',v:subMap[sp.name]});
+    const subRows=ordered.length?`<div class="sum-subs">`+ordered.map(x=>`<div class="sum-row sub"><span>${escV(x.sc)}</span><b>${fmtCNY(x.v)}</b></div>`).join('')+`</div>`:'';
+    rows.push(`<details class="sum-grp" data-sid="${sp.id}"${prevOpen[sp.id]?' open':''}><summary><i class="dot" style="background:${sp.color}"></i><span class="sg-name">${sp.name}</span><b>${fmtCNY(s)}</b><span class="arr">▸</span></summary>${subRows}</details>`);
+  });
+  rows.push(`<div class="sum-row paid"><span>其中已支付</span><b>${fmtCNY(paidSum)}</b></div>`);
+  rows.push(`<div class="sum-row"><span>人均（÷2）</span><b>${fmtCNY(total/2)}</b></div>`);
+  rows.push(`<div class="sum-row total"><span>合计（2人）</span><b>${fmtCNY(total)}<span style="font-size:11px;font-weight:400"> ≈ ${fmtKRW(total*(+S.rate||207))}</span></b></div>`);
+  document.getElementById('sum-rows').innerHTML=rows.join('');
+  document.getElementById('hero-paid').textContent='≈ '+fmtCNY(paidSum);
+  renderRailSum(); renderTimeline(); updateMarkers();
+}
+function renderRailSum(){
+  const on=ITEMS.filter(isOn);
+  const days=[...new Set(on.filter(i=>vDay(i)).map(i=>vDay(i)))].sort((a,b)=>DAYS.indexOf(a)-DAYS.indexOf(b));
+  const cnt={}; on.filter(i=>vDay(i)).forEach(i=>cnt[vDay(i)]=(cnt[vDay(i)]||0)+1);
+  document.getElementById('rail-sum').innerHTML=
+    `已勾选 <b>${on.length}</b> 项`+(days.length?` · 已加入行程：<b>${days.map(d=>d+'×'+cnt[d]).join('、')}</b>`:'');
+}
+
+/* ================= 左栏事件（委托） ================= */
+document.getElementById('calc-left').addEventListener('input',e=>{
+  const t=e.target, id=t.dataset.id; if(!id) return;
+  const it=ITEMS.find(i=>i.id===id); if(!it) return;
+  const c=t.dataset.c;
+  if(c==='chk'){ S.checked[id]=t.checked; if(t.checked) toast(vDay(it)?`✅ <b>${vName(it)}</b><br>已加入 ${vDay(it)} 行程 + 费用`:`✅ <b>${vName(it)}</b> 已计入费用`); }
+  if(c==='price'){ S.price[id]=+t.value||0; if(it.custom) it.price=+t.value||0; }
+  if(c==='qty'){ S.qty[id]=+t.value||0; }
+  if(c==='name'){ S.name[id]=t.value; }
+  if(c==='day'){ const old=vDay(it); if(S.eday[id]===old) S.eday[id]=t.value||''; S.day[id]=t.value; }   /* 结束日跟随开始日 */
+  if(c==='time'){ S.time[id]=t.value; }
+  if(c==='eday'){ S.eday[id]=t.value; }
+  if(c==='etime'){ S.etime[id]=t.value; }
+  if(c==='note'){ S.note[id]=t.value; autosizeOne(t); }
+  if(c==='xhs'){ S.xhs[id]=t.value.trim(); }
+  if(c==='cat'){ S.cat[id]=t.value; save(); renderLeft(); refreshNumbers(); toast('已移动到「'+t.value+'」'); return; }
+  save(); refreshNumbers();
+});
+document.getElementById('calc-left').addEventListener('click',e=>{
+  const addBtn=e.target.closest('button[data-addsup]');
+  if(addBtn){
+    const sp=SUPERS.find(s=>s.id===addBtn.dataset.addsup); if(!sp) return;
+    const id='c'+Date.now();
+    S.custom.push({id, cat:sp.name, name:'新项目', price:0, cur:'CNY', qty:1, custom:true});
+    S.checked[id]=true; ITEMS=BASE_ITEMS.concat(S.custom); save(); renderLeft(); refreshNumbers();
+    const row=document.querySelector(`.item[data-id="${id}"]`);
+    if(row){ row.scrollIntoView({behavior:'smooth',block:'center'}); row.style.background='#fffbe8'; setTimeout(()=>row.style.background='',1600);
+      const nm=row.querySelector('.inp-name'); if(nm){ nm.focus(); nm.select(); } }
+    toast(`➕ 已新增到「${sp.name}」本级，可在「分类」下拉移入小类`);
+    return;
+  }
+  const nsBtn=e.target.closest('button[data-newsub]');
+  if(nsBtn){
+    const sp=SUPERS.find(s=>s.id===nsBtn.dataset.newsub); if(!sp) return;
+    const name=prompt('新建小类名称（归属「'+sp.name+'」）\n例：海云台花销、给对象买礼物、退税采购');
+    if(name===null) return;
+    const nm=name.trim().replace(/["<>]/g,'').slice(0,20);
+    if(!nm){ toast('名称不能为空'); return; }
+    if(SUPERS.some(s=>s.name===nm)||SUPERS.some(s=>subcatsOf(s).includes(nm))){ toast('已存在同名分类'); return; }
+    S.subcats.push({id:'sc'+Date.now(), name:nm, sup:sp.id});
+    save(); renderLeft(); refreshNumbers();
+    toast('✅ 小类「'+nm+'」已创建（在「'+sp.name+'」下）<br>用条目的「分类」下拉把项目移进来');
+    return;
+  }
+  const dsBtn=e.target.closest('button[data-delsub]');
+  if(dsBtn){
+    e.preventDefault();
+    const nm=dsBtn.dataset.delsub;
+    if(confirm('删除小类「'+nm+'」？其中的项目会退回所属大类本级（不会被删除）。')){
+      S.subcats=S.subcats.filter(x=>x.name!==nm);
+      Object.keys(S.cat).forEach(k=>{ if(S.cat[k]===nm) delete S.cat[k]; });
+      save(); renderLeft(); refreshNumbers(); toast('已删除小类，项目已退回大类');
+    }
+    return;
+  }
+  const cdBtn=e.target.closest('button[data-catdel]');
+  if(cdBtn){
+    e.preventDefault();
+    const nm=cdBtn.dataset.catdel;
+    const src=ITEMS.find(x=>x.id===cdBtn.dataset.id);
+    const sp=src?supOfItem(src):null; if(!sp) return;
+    if(confirm('删除小类「'+nm+'」？\n小类下的项目不会被删除，会变成「'+sp.name+'」大类里未归类的项目。')){
+      S.subcats=S.subcats.filter(x=>x.name!==nm);
+      Object.keys(S.cat).forEach(k=>{ if(S.cat[k]===nm) delete S.cat[k]; });
+      if(sp.cats.includes(nm)) S.hiddenCats[nm]=sp.id;      // 内置小类→隐藏（重置可恢复）
+      save(); renderLeft(); refreshNumbers();
+      toast('🗑 小类「'+nm+'」已删除，其项目转为未归类');
+    }
+    return;
+  }
+  const b=e.target.closest('button[data-c]'); if(!b) return;
+  const id=b.dataset.id, c=b.dataset.c;
+  const it=ITEMS.find(i=>i.id===id); if(!it) return;
+  if(c==='paid'){ S.paid[id]=!vPaid(it); save(); renderLeft(); refreshNumbers(); toast(S.paid[id]?'💰 已标记「已付」，右栏实时联动':'已标记「未付」'); }
+  if(c==='cur'){ S.cur[id]=vCur(it)==='KRW'?'CNY':'KRW'; save(); renderLeft(); refreshNumbers(); }
+  if(c==='del'){
+    if(it.custom){ if(confirm('删除「'+vName(it)+'」？')){ S.custom=S.custom.filter(x=>x.id!==id); ITEMS=BASE_ITEMS.concat(S.custom); } }
+    else{ if(confirm('从清单移除「'+vName(it)+'」？（点左栏底部「重置」可恢复）')){ S.deleted[id]=true; } }
+    save(); renderLeft(); refreshNumbers(); toast('已移除');
+  }
+});
+function autosizeOne(t){ t.style.height='auto'; t.style.height=(t.scrollHeight+2)+'px'; }
+function setAllDetails(open){ document.querySelectorAll('#calc-left details.sup, #calc-left details.sub').forEach(d=>d.open=open); }
+
+/* 汇率 / 重置 / 复制 */
+document.getElementById('rate').value=S.rate;
+document.getElementById('rate').addEventListener('input',e=>{ S.rate=+e.target.value||207; save(); refreshNumbers(); });
+document.getElementById('reset-calc').onclick=()=>{ if(confirm('重置所有勾选/数量/价格，恢复已移除的预置项和已删除的内置小类？（自定义项与自定义小类保留）')){ S.checked={};S.qty={};S.price={};S.deleted={};S.hiddenCats={}; BASE_ITEMS.forEach(i=>i.price=BASE_PRICE[i.id]); save(); renderLeft(); refreshNumbers(); toast('已重置'); } };
+document.getElementById('copy-sum').onclick=async()=>{
+  const lines=[...document.querySelectorAll('#sum-rows .sum-row')].map(r=>r.innerText.replace(/\n/g,' : '));
+  try{ await navigator.clipboard.writeText('【韩国国庆之旅·费用摘要】\n'+lines.join('\n')); toast('📋 已复制到剪贴板'); }catch(e){ toast('复制失败，请手动截图'); }
+};
+
+/* ================= 行程时间轴（左栏清单驱动 · 拖拽改序改时间 · 双向写入） ================= */
+const FIXED_TL={
+ '10/1':[
+  {t:'08:00',txt:'白云机场 T2 集合（提前 2.5h；广州雷雨概率 77%，盯航班动态）'},
+  {t:'15:30',txt:'入境审查（出示电子入境卡）→ 取行李'},
+  {t:'16:30',txt:'AREX 机场快线 → 首尔站（直达 ₩11,000/人，51 分钟）'},
+  {t:'17:45',txt:'首尔站 → 出租 8 分钟（₩5,000）或 4 号线 3 站到忠武路'},
+  {t:'21:00',txt:'便利店采购早餐 + T-money 充值，早休息倒时差'}],
+ '10/2':[
+  {t:'08:30',txt:'酒店早餐 · 🔴 今天全程带护照（射击场必查）'},
+  {t:'09:20',txt:'出发木洞：出租 35 分钟（₩25,000）或 3号线→钟路3街→5号线五木桥站'},
+  {t:'12:00',txt:'射击结束（避开 12–13 点午休）→ 移动广藏市场（30–40 分钟）'},
+  {t:'14:30',txt:'地铁去蚕室 · 石村湖环湖散步（免费）'},
+  {t:'20:30',txt:'明洞主街晚间闲逛（周五夜人多，走主干道）'}],
+ '10/3':[
+  {t:'08:00',txt:'⚠️ 韩国公休日+周六：避开景福宫/北村/弘大步行街/梨泰院等高峰'},
+  {t:'22:00',txt:'早些回酒店（次日 07:20 起床赶 KTX）'}],
+ '10/4':[
+  {t:'07:20',txt:'起床早餐；带好：泳衣、帽子（泳帽/桶帽）、戏水专用鞋、CLUBD QR 离线截图'},
+  {t:'07:50',txt:'出租 → 首尔站（约 10 分钟）'},
+  {t:'08:25',txt:'首尔站 KTX 检票（电子票出示，提前 30 分钟）'},
+  {t:'11:16',txt:'到达釜山站 → 出租 25–30 分钟（₩18,000–25,000）或地铁 1→2 号线到海云台（50 分钟）'},
+  {t:'12:30',txt:'开始玩水！园内有餐厅，午餐园内解决'},
+  {t:'18:30',txt:'🔴 时间红线：19:00 前必须出发回釜山站'},
+  {t:'23:30',txt:'出租回酒店（约 ₩6,000）'}],
+ '10/5':[
+  {t:'08:40',txt:'酒店出发（3 号线景福宫站）'},
+  {t:'21:00',txt:'回酒店收拾行李、整理退税单据'}],
+ '10/6':[
+  {t:'08:30',txt:'睡到自然醒，酒店早餐（含早）'},
+  {t:'11:00',txt:'退房（可前台寄存）'},
+  {t:'12:00',txt:'出租 → 首尔站 AREX 直达列车（51 分钟）'},
+  {t:'13:25',txt:'仁川 T1：值机托运 → 退税盖章（托运前）→ 出境 → 免税店'}]
+};
+const toMin=hm=>{const p=String(hm||'').split(':');return (+p[0]||0)*60+(+p[1]||0);};
+const toHM=m=>String(Math.floor(m/60)%24).padStart(2,'0')+':'+String(Math.round(m%60)).padStart(2,'0');
+function tlNodes(d){
+  const fixed=(FIXED_TL[d]||[]).map(f=>({type:'f',time:f.t,txt:f.txt}));
+  const items=ITEMS.filter(i=>vDay(i)===d&&isOn(i)&&!isGone(i)).map(i=>({type:'i',it:i}));
+  const timed=items.filter(n=>vTime(n.it)), untimed=items.filter(n=>!vTime(n.it));
+  return [...fixed,...timed].sort((a,b)=>toMin(a.time)-toMin(b.time)).concat(untimed);
+}
+const HOUR_PX=26, CHIP_H=24;                       /* 1小时=26px；项目条高24px */
+function tlSpan(d){                                /* 每天的可见时段：默认折叠首尾空白；tlWide=全展开 */
+  if(S.tlWide[d]) return [0,24*60];
+  const ts=[];
+  (FIXED_TL[d]||[]).forEach(f=>ts.push(toMin(f.t)));
+  ITEMS.forEach(i=>{ if(vDay(i)===d&&isOn(i)&&!isGone(i)&&vTime(i)) ts.push(toMin(vTime(i))); });
+  if(!ts.length) ts.push(9*60,21*60);
+  let a=Math.max(0,Math.floor(Math.min(...ts)/60)*60-60);
+  let b=Math.min(24*60,Math.ceil(Math.max(...ts)/60)*60+60);
+  if(b-a<4*60){ a=Math.max(0,a-120); b=Math.min(24*60,b+120); }
+  return [a,b];
+}
+function renderTimeline(){
+  DAYS.forEach(d=>{
+    const g=document.getElementById('tl-'+d); if(!g) return;
+    const [T0,T1]=tlSpan(d);
+    const items=ITEMS.filter(i=>vDay(i)===d&&isOn(i)&&!isGone(i));
+    const timed=items.filter(i=>vTime(i));
+    const untimed=items.filter(i=>!vTime(i));
+    const conts=ITEMS.filter(i=>vEDay(i)&&vEDay(i)!==vDay(i)&&vEDay(i)===d&&isOn(i)&&!isGone(i)&&vTime(i));  /* 跨天延续块 */
+    /* 事件统一进入车道计算（Apple 式并排）：固定项 + 时间段项目 + 跨天延续 */
+    const evs=[];
+    (FIXED_TL[d]||[]).forEach(f=>{ const s=toMin(f.t); const top=(s-T0)/60*HOUR_PX; evs.push({k:'f',f,top,bot:top+CHIP_H}); });
+    timed.forEach(i=>{ const s=toMin(vTime(i)); const e=Math.max(s+5,toMin(vETime(i))); const top=(s-T0)/60*HOUR_PX;
+      evs.push({k:'i',i,s,e,top,bot:Math.max(top+CHIP_H,top+(e-s)/60*HOUR_PX)}); });
+    conts.forEach(i=>{ const e=Math.max(5,toMin(vETime(i))); evs.push({k:'c',i,s:0,e,top:0,bot:Math.max(CHIP_H,e/60*HOUR_PX)}); });
+    evs.sort((a,b)=>a.top-b.top||a.bot-b.bot);
+    let lanes=[],cEnd=-1,clus=null;
+    evs.forEach(ev=>{                                        /* 重叠聚簇 + 贪心车道 */
+      if(!clus||ev.top>=cEnd){ clus={n:0}; lanes=[]; cEnd=-1; }
+      let L=0; while(L<lanes.length&&lanes[L]>ev.top) L++;
+      lanes[L]=ev.bot; ev.lane=L; ev.cl=clus; clus.n=Math.max(clus.n,L+1);
+      cEnd=Math.max(cEnd,ev.bot);
+    });
+    evs.forEach(ev=>{ ev.n=ev.cl.n; });                      /* 簇内所有事件共用同一车道数 */
+    const maxBot=evs.length?Math.max(...evs.map(x=>x.bot)):0;
+    const H=Math.max((T1-T0)/60*HOUR_PX,maxBot+12);
+    let h='';
+    if(S.tlWide[d]) h+=`<div class="tlg-fold wide" data-day="${d}" data-dir="up" title="折叠回空闲模式">📅 全天视图 00:00–24:00 已展开 · 点击折叠空闲时段</div>`;
+    if(T0>0) h+=`<div class="tlg-fold" data-day="${d}" data-dir="up">⌃ 空闲 00:00–${toHM(T0)} 已折叠（点击展开，或把项目拖到此处自动展开）</div>`;
+    h+=`<div class="tlg-inner" data-day="${d}" data-t0="${T0}" data-t1="${T1}" style="height:${H}px">`;
+    for(let m=T0;m<=Math.min(T1,24*60);m+=60){
+      const top=(m-T0)/60*HOUR_PX;
+      h+=`<div class="hr" style="top:${top}px"></div><div class="hrlbl" style="top:${top}px">${toHM(m)}</div>`;
+    }
+    evs.forEach(ev=>{
+      const pos=`top:${ev.top.toFixed(1)}px;height:${(ev.bot-ev.top).toFixed(1)}px;left:calc(${(ev.lane*100/ev.n).toFixed(2)}% + 3px);width:calc(${(100/ev.n).toFixed(2)}% - 7px)`;
+      if(ev.k==='f'){ h+=`<div class="tlg-f" style="${pos}"><span class="tt">${ev.f.t}</span>${ev.f.txt}</div>`; return; }
+      const i=ev.i, tall=(ev.bot-ev.top)>=34;
+      const tr=tall?`${toHM(ev.s)}–${toHM(ev.e)}`:toHM(ev.s);
+      if(ev.k==='c'){ h+=`<div class="tlg-i cont" style="${pos}"><div class="row1"><span class="tt">${tr}</span></div><div class="nm">${escV(vName(i))} ↦ ${vEDay(i)}（跨天）</div></div>`; return; }
+      h+=`<div class="tlg-i" data-id="${i.id}" style="${pos}" title="拖动移动（保持时长）· 上下边缘拖动调整起止">
+            <div class="row1"><span class="tt">${tr}</span><input class="tl-name" data-id="${i.id}" value="${escV(vName(i))}" title="改名称（写回左栏）"><button class="tl-del" data-id="${i.id}" title="移除">✕</button></div>
+            ${((ev.bot-ev.top)>=44&&ev.n===1)?`<span class="mt">${i.icon||''}${fmtCNY(itemCNY(i))}·${vPaid(i)?'已付':'未付'}</span>`:''}
+            <div class="rz rz-t" data-rz="t" data-id="${i.id}" title="拖动调整开始时间"></div>
+            <div class="rz rz-b" data-rz="b" data-id="${i.id}" title="拖动调整结束时间"></div>
+          </div>`;
+    });
+    h+='</div>';
+    if(T1<24*60) h+=`<div class="tlg-fold" data-day="${d}" data-dir="down">⌄ 空闲 ${toHM(T1)}–24:00 已折叠（点击展开，或把项目拖到此处自动展开）</div>`;
+    if(untimed.length){
+      h+=`<div class="tlg-pool"><span class="pool-lab">未定时间（拖入上方网格即分配时间）：</span>`+
+        untimed.map(i=>`<div class="tlg-i" data-id="${i.id}"><span class="tt">--:--</span><input type="time" class="tl-time" data-id="${i.id}" value="" title="直接填时间"><input class="tl-name" data-id="${i.id}" value="${escV(vName(i))}"><span class="mt">${i.icon||''}${fmtCNY(itemCNY(i))}</span><button class="tl-del" data-id="${i.id}" title="移除">✕</button></div>`).join('')+`</div>`;
+    }
+    g.innerHTML=h;
+  });
+}
+/* 拖拽（移动保持时长）+ 上下边缘延展（改起止时间）；拖到首尾折叠条自动展开 */
+let tlgDrag=null;
+document.addEventListener('pointerdown',e=>{
+  const chip=e.target.closest('.tlg-i'); if(!chip||chip.classList.contains('cont')) return;
+  if(e.target.closest('input,button,a,select,textarea')) return;
+  const rz=e.target.closest('.rz');
+  const grid=chip.closest('.tlgrid'); if(!grid) return;
+  const inner=grid.querySelector('.tlg-inner');
+  const it=ITEMS.find(x=>x.id===chip.dataset.id); if(!it) return;
+  e.preventDefault();
+  const mode=rz?rz.dataset.rz:'move';
+  const tip=document.createElement('div'); tip.className='tlg-tip'; document.body.appendChild(tip);
+  let ghost=null;
+  if(mode==='move'){ ghost=document.createElement('div'); ghost.className='tlg-ghost'; inner.appendChild(ghost); }
+  chip.classList.add('dragging');
+  const s0=toMin(vTime(it)), e0=Math.max(s0+5,toMin(vETime(it)));
+  tlgDrag={id:chip.dataset.id, mode, grid, inner, ghost, tip, chip, cur:null, zone:null, s0, e0, newS:null, newE:null};
+});
+document.addEventListener('pointermove',e=>{
+  if(!tlgDrag) return;
+  const ir=tlgDrag.inner.getBoundingClientRect();
+  const T0=+tlgDrag.inner.dataset.t0, T1=+tlgDrag.inner.dataset.t1;
+  const tAt=y=>Math.min(23*60+55,Math.max(0,Math.round((T0+y/HOUR_PX*60)/5)*5));
+  if(tlgDrag.mode==='move'){
+    tlgDrag.grid.querySelectorAll('.tlg-fold').forEach(f=>f.classList.remove('on'));
+    if(e.clientY<ir.top-4){ tlgDrag.zone='up'; tlgDrag.grid.querySelector('.tlg-fold[data-dir="up"]')?.classList.add('on'); tlgDrag.tip.textContent='↑ 展开并放到 '+toHM(Math.max(0,T0-30)); }
+    else if(e.clientY>ir.bottom+4){ tlgDrag.zone='down'; tlgDrag.grid.querySelector('.tlg-fold[data-dir="down"]')?.classList.add('on'); tlgDrag.tip.textContent='↓ 展开并放到 '+toHM(Math.min(23*60+55,T1+30)); }
+    else{
+      tlgDrag.zone=null;
+      const y=Math.min(Math.max(e.clientY-ir.top,0),ir.height-2);
+      tlgDrag.ghost.style.top=y+'px';
+      tlgDrag.cur=tAt(y);
+      tlgDrag.tip.textContent=toHM(tlgDrag.cur)+'–'+toHM(Math.min(23*60+55,tlgDrag.cur+(tlgDrag.e0-tlgDrag.s0)));
+    }
+  }else{
+    const y=Math.min(Math.max(e.clientY-ir.top,0),ir.height-2);
+    const m=tAt(y);
+    if(tlgDrag.mode==='b'){
+      tlgDrag.newE=Math.max(tlgDrag.s0+5,m);
+      tlgDrag.tip.textContent='结束 → '+toHM(tlgDrag.newE);
+      tlgDrag.chip.style.height=Math.max(CHIP_H,(tlgDrag.newE-tlgDrag.s0)/60*HOUR_PX).toFixed(1)+'px';
+    }else{
+      tlgDrag.newS=Math.min(tlgDrag.e0-5,m);
+      tlgDrag.tip.textContent='开始 → '+toHM(tlgDrag.newS);
+      tlgDrag.chip.style.top=((tlgDrag.newS-T0)/60*HOUR_PX).toFixed(1)+'px';
+      tlgDrag.chip.style.height=Math.max(CHIP_H,(tlgDrag.e0-tlgDrag.newS)/60*HOUR_PX).toFixed(1)+'px';
+    }
+  }
+  tlgDrag.tip.style.left=(e.clientX+16)+'px';
+  tlgDrag.tip.style.top=(e.clientY-30)+'px';
+});
+document.addEventListener('pointerup',()=>{
+  if(!tlgDrag) return;
+  const d=tlgDrag; tlgDrag=null;
+  if(d.ghost) d.ghost.remove();
+  d.tip.remove(); d.chip.classList.remove('dragging');
+  const it=ITEMS.find(x=>x.id===d.id); if(!it) return;
+  const day=d.grid.id.slice(3);
+  if(d.mode==='move'){
+    const dur=d.e0-d.s0;
+    if(d.zone){
+      S.tlWide[day]=true;
+      const T0=+d.inner.dataset.t0, T1=+d.inner.dataset.t1;
+      S.time[d.id]=d.zone==='up'?toHM(Math.max(0,T0-30)):toHM(Math.min(23*60+55,T1+30));
+      if(S.etime[d.id]) S.etime[d.id]=toHM(Math.min(23*60+55,toMin(S.time[d.id])+dur));
+    }else if(d.cur!=null){
+      S.time[d.id]=toHM(d.cur);
+      if(S.etime[d.id]) S.etime[d.id]=toHM(Math.min(23*60+55,d.cur+dur));
+    }else return;
+  }else if(d.mode==='b'&&d.newE!=null){
+    S.etime[d.id]=toHM(d.newE);
+    if(toMin(vTime(it))>=d.newE) S.time[d.id]=toHM(d.newE-5);
+  }else if(d.mode==='t'&&d.newS!=null){
+    S.time[d.id]=toHM(d.newS);
+    if(S.etime[d.id]&&toMin(S.etime[d.id])<=d.newS) S.etime[d.id]=toHM(d.newS+5);
+  }else return;
+  save(); renderTimeline(); renderLeft(); refreshNumbers();
+  toast('🕐 '+escV(vName(it))+' '+vTime(it)+(vETime(it)?'–'+vETime(it):''));
+});
+document.addEventListener('pointercancel',()=>{ if(tlgDrag){ if(tlgDrag.ghost) tlgDrag.ghost.remove(); tlgDrag.tip.remove(); tlgDrag.chip.classList.remove('dragging'); tlgDrag=null; } });
+/* 折叠条点击 = 展开/收起 */
+document.getElementById('plan').addEventListener('click',e=>{
+  const fold=e.target.closest('.tlg-fold'); if(!fold) return;
+  const d=fold.dataset.day;
+  if(S.tlWide[d]) delete S.tlWide[d]; else S.tlWide[d]=true;
+  save(); renderTimeline();
+});
+/* 长按网格空白 1 秒 → 新增项目（先大类后小类，默认其他） */
+let lpTimer=null,lp=null;
+document.addEventListener('contextmenu',e=>{ if(e.target.closest('.tlgrid')) e.preventDefault(); });
+document.addEventListener('pointerdown',e=>{
+  const inner=e.target.closest('.tlg-inner');
+  if(!inner||e.target.closest('.tlg-i')||e.target.closest('input,button')) return;
+  const grid=inner.closest('.tlgrid');
+  const hint=document.createElement('div'); hint.className='lp-hint'; hint.innerHTML='长按新增项目…<i></i>';
+  hint.style.left=(e.clientX+10)+'px'; hint.style.top=(e.clientY+8)+'px';
+  document.body.appendChild(hint);
+  const sx=e.clientX, sy=e.clientY, ir=inner.getBoundingClientRect(), T0=+inner.dataset.t0;
+  lp={hint,sx,sy};
+  lpTimer=setTimeout(()=>{
+    const y=Math.min(Math.max(sy-ir.top,0),ir.height-2);
+    const m=Math.min(23*60+55,Math.max(0,Math.round((T0+y/HOUR_PX*60)/5)*5));
+    openCatPick(grid.id.slice(3),toHM(m));
+    if(lp){lp.hint.remove();lp=null;}
+    lpTimer=null;
+  },1000);
+});
+document.addEventListener('pointermove',e=>{
+  if(!lp) return;
+  if(Math.abs(e.clientX-lp.sx)>8||Math.abs(e.clientY-lp.sy)>8){ clearTimeout(lpTimer); lp.hint.remove(); lp=null; }
+});
+['pointerup','pointercancel'].forEach(ev=>document.addEventListener(ev,()=>{ if(lp){clearTimeout(lpTimer);lp.hint.remove();lp=null;} }));
+/* 大类→小类 选择弹窗 */
+let cpState=null;
+function openCatPick(day,time){
+  cpState={day,time,sup:supOfItem({cat:'📦 其他',id:'_x'})||SUPERS[6]};
+  cpState.sup=SUPERS[6];                                  /* 默认：其他 */
+  document.getElementById('cp-when').textContent='（'+day+' '+time+'）';
+  document.getElementById('cp-sups').innerHTML=SUPERS.map(sp=>`<button class="cp-sup${sp.id==='s7'?' on':''}" data-sup="${sp.id}" style="${sp.id==='s7'?'':''}">${sp.name}</button>`).join('');
+  fillCpCat();
+  document.getElementById('catpick').classList.add('open');
+}
+function fillCpCat(){
+  const sp=SUPERS.find(s=>s.id===cpState.sup)||SUPERS[6];
+  document.getElementById('cp-cat').innerHTML=subcatsOf(sp).map(sc=>`<option value="${escV(sc)}">${escV(sc)}</option>`).join('')+`<option value="${escV(sp.name)}" selected>（${escV(sp.name)}·未归类）</option>`;
+}
+document.getElementById('cp-sups').addEventListener('click',e=>{
+  const b=e.target.closest('.cp-sup'); if(!b) return;
+  document.querySelectorAll('#cp-sups .cp-sup').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); cpState.sup=b.dataset.sup; fillCpCat();
+});
+document.getElementById('cp-cancel').onclick=()=>document.getElementById('catpick').classList.remove('open');
+document.getElementById('cp-ok').onclick=()=>{
+  const sp=SUPERS.find(s=>s.id===cpState.sup)||SUPERS[6];
+  const cat=document.getElementById('cp-cat').value;
+  const id='c'+Date.now();
+  S.custom.push({id, cat, name:'新项目', price:0, cur:'CNY', qty:1, custom:true});
+  S.checked[id]=true; S.day[id]=cpState.day; S.time[id]=cpState.time;
+  ITEMS=BASE_ITEMS.concat(S.custom);
+  save(); renderTimeline(); renderLeft(); refreshNumbers();
+  document.getElementById('catpick').classList.remove('open');
+  const chip=document.querySelector(`.tlg-i[data-id="${id}"]`);
+  if(chip){ chip.scrollIntoView({behavior:'smooth',block:'center'}); chip.style.background='#fffbe8'; setTimeout(()=>chip.style.background='',1800); const nm=chip.querySelector('.tl-name'); if(nm){nm.focus();nm.select();} }
+  toast('➕ 已新增（'+cpState.day+' '+cpState.time+' · '+sp.name+(cat===sp.name?'·未归类':'/'+cat)+'）');
+};
+/* 时间轴上的编辑/删除/新增 */
+document.getElementById('plan').addEventListener('input',e=>{
+  const t=e.target;
+  if(t.classList.contains('tl-time')){ const id=t.dataset.id; S.time[id]=t.value; save(); renderTimeline(); renderLeft(); refreshNumbers(); }
+});
+document.getElementById('plan').addEventListener('change',e=>{
+  const t=e.target;
+  if(t.classList.contains('tl-name')){ const id=t.dataset.id; S.name[id]=t.value; save(); renderLeft(); refreshNumbers(); toast('名称已同步到左栏'); }
+});
+document.getElementById('plan').addEventListener('click',e=>{
+  const del=e.target.closest('button.tl-del');
+  if(del){
+    const id=del.dataset.id; const it=ITEMS.find(i=>i.id===id); if(!it) return;
+    if(it.custom){ if(confirm('从清单删除「'+vName(it)+'」？')){ S.custom=S.custom.filter(x=>x.id!==id); ITEMS=BASE_ITEMS.concat(S.custom); } else return; }
+    else{ if(confirm('从行程和清单移除「'+vName(it)+'」？（左栏「重置」可恢复）')){ S.deleted[id]=true; } else return; }
+    save(); renderTimeline(); renderLeft(); refreshNumbers(); toast('已移除');
+    return;
+  }
+  const add=e.target.closest('button.tl-add');
+  if(add){
+    const d=add.dataset.tlday;
+    const nodes=tlNodes(d).filter(n=>n.time);
+    const lastT=nodes.length?nodes[nodes.length-1].time:'10:00';
+    const nt=toHM(Math.min(toMin(lastT)+30,23*60+30));
+    const id='c'+Date.now();
+    S.custom.push({id, cat:'📦 其他', name:'新安排', price:0, cur:'CNY', qty:1, custom:true});
+    S.checked[id]=true; S.day[id]=d; S.time[id]=nt;
+    ITEMS=BASE_ITEMS.concat(S.custom);
+    save(); renderTimeline(); renderLeft(); refreshNumbers();
+    const li=document.querySelector(`.tlg-i[data-id="${id}"]`);
+    if(li){ li.scrollIntoView({behavior:'smooth',block:'center'}); li.style.background='#fffbe8'; setTimeout(()=>li.style.background='',1800); const nm=li.querySelector('.tl-name'); if(nm){nm.focus();nm.select();} }
+    toast('➕ 已新增（'+d+' '+nt+'），可拖拽调时间');
+  }
+});
+
+/* 地图（Esri：街道≤13 / 卫星≥14 自动切换 + 全点位中文常驻标签） */
+let mapS=null,mapB=null,itemMarkers=[];
+const TILE_STREET='https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}';
+const TILE_SAT='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
+const TILE_ATTR='© Esri, HERE, Garmin';
+function divIcon(emoji,color){ return L.divIcon({html:`<div style="font-size:19px;filter:drop-shadow(0 0 2px ${color})">${emoji}</div>`,className:'',iconSize:[24,24],iconAnchor:[12,12]}); }
+const cnTip={permanent:true,direction:'top',className:'cn-label',offset:[0,-12]};
+const shortName=n=>String(n).replace(/（.*?）/g,'').replace(/\(.*?\)/g,'').trim();
+function navLinks(name,q,ll){
+  const naver='https://map.naver.com/p/search/'+encodeURIComponent(q||name);
+  const google='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent((q||name));
+  const amap='https://uri.amap.com/marker?position='+ll[1]+','+ll[0]+'&name='+encodeURIComponent(q||name)+'&src=mytrip';
+  return `<a href="${amap}" target="_blank">高德↗</a>｜<a href="${naver}" target="_blank">Naver↗</a>｜<a href="${google}" target="_blank">Google↗</a>`;
+}
+function makeMap(el,center,zoom){
+  const m=L.map(el,{scrollWheelZoom:false}).setView(center,zoom);
+  const street=L.tileLayer(TILE_STREET,{maxNativeZoom:13,maxZoom:19,attribution:TILE_ATTR});
+  const sat=L.tileLayer(TILE_SAT,{maxZoom:19,attribution:'© Esri World Imagery'});
+  street.addTo(m);
+  let manual=false;
+  m.on('zoomend',()=>{
+    if(manual) return;
+    const z=m.getZoom();
+    if(z>=14 && m.hasLayer(street)){ m.removeLayer(street); sat.addTo(m); }
+    else if(z<=13 && m.hasLayer(sat)){ m.removeLayer(sat); street.addTo(m); }
+  });
+  const ctrl=L.control.layers({'🗺 街道图(概览)':street,'🛰 卫星影像(放大)':sat},{},{position:'topright',collapsed:false});
+  ctrl.addTo(m);
+  m.on('baselayerchange',()=>{ manual=true; });
+  return m;
+}
+function initMaps(){
+  if(typeof L==='undefined'){ return false; }
+  if(mapS) return true;
+  mapS=makeMap('map-seoul',[37.556,127.005],12);
+  mapB=makeMap('map-busan',[35.15,129.10],12);
+  ['hotel','icn','seoulst'].forEach(k=>{ const f=FIXED[k];
+    L.marker(f.ll,{icon:divIcon('🔵','#2f6df6')}).bindPopup(`<b>${f.name}</b><br>${f.note}<br>${navLinks(f.name,f.q,f.ll)}`).bindTooltip(shortName(f.name),cnTip).addTo(mapS); });
+  ['busanst','haeundae','clubd'].forEach(k=>{ const f=FIXED[k];
+    L.marker(f.ll,{icon:divIcon('🔵','#2f6df6')}).bindPopup(`<b>${f.name}</b><br>${f.note}<br>${navLinks(f.name,f.q,f.ll)}`).bindTooltip(shortName(f.name),cnTip).addTo(mapB); });
+  updateMarkers();
+  setTimeout(()=>{mapS.invalidateSize();mapB.invalidateSize();},300);
+  return true;
+}
+function updateMarkers(){
+  if(typeof L==='undefined'||!mapS) return;
+  const filter=document.querySelector('#map-chips .chip.on')?.dataset.f||'all';
+  itemMarkers.forEach(m=>m.remove()); itemMarkers=[];
+  ITEMS.forEach(it=>{
+    if(!it.ll || !isOn(it) || isGone(it)) return;
+    if(filter!=='all'&&vCat(it)!==filter) return;
+    const inBusan=it.ll[0]<36.5;
+    const cny=vPrice(it)===0?'免费':(vCur(it)==='KRW'?fmtKRW(vPrice(it))+' ≈ '+fmtCNY(krw2cny(vPrice(it))):fmtCNY(vPrice(it)))+(vQty(it)>1?' /人':'');
+    const m=L.marker(it.ll,{icon:divIcon(it.icon||'⭐','#e5484d')})
+      .bindPopup(`<b>${it.icon||''} ${vName(it)}</b><br>${vNote(it)}<br>💰 ${cny}${vDay(it)?'<br>📅 '+vDay(it)+(vTime(it)?' '+vTime(it):''):''}<br>${navLinks(vName(it),it.q,it.ll)}`)
+      .bindTooltip(shortName(vName(it)),cnTip)
+      .addTo(inBusan?mapB:mapS);
+    itemMarkers.push(m);
+  });
+}
+document.getElementById('map-chips').addEventListener('click',e=>{
+  const b=e.target.closest('.chip'); if(!b) return;
+  document.querySelectorAll('#map-chips .chip').forEach(c=>c.classList.remove('on'));
+  b.classList.add('on'); updateMarkers();
+});
+(function waitLeaflet(n){
+  if(initMaps()) return;
+  if(n<=0){
+    const sl=Object.entries(FIXED).map(([k,f])=>`<a href="https://uri.amap.com/marker?position=${f.ll[1]},${f.ll[0]}&name=${encodeURIComponent(f.q)}" target="_blank">${f.name}</a>`).join(' · ');
+    document.getElementById('seoul-links').innerHTML='地图组件加载失败（需联网）。点位直达：'+sl;
+    return;
+  }
+  setTimeout(()=>waitLeaflet(n-1),350);
+})(14);
+
+/* ================= CHECKLIST（增删改查） ================= */
+function renderCK(){
+  const g=document.getElementById('ck-grid');
+  g.innerHTML=S.ckData.map((c,ci)=>`<div class="ck-cat">
+      <h4><span class="ck-cname" title="点击重命名大类">${escV(c.cat)}</span>
+        <span class="ck-tools">
+          <button class="ckb" data-act="additem" data-ci="${ci}" title="新增条目">➕</button>
+          <button class="ckb" data-act="rencat" data-ci="${ci}" title="重命名大类">✏️</button>
+          <button class="ckb danger" data-act="delcat" data-ci="${ci}" title="删除大类（含条目）">🗑</button>
+        </span></h4>
+      ${c.items.map((it,ii)=>`<div class="ck-item ${S.ck[it.id]?'done':''}">
+          <input type="checkbox" data-ck="${it.id}" ${S.ck[it.id]?'checked':''}>
+          <textarea class="ck-txt" data-ci="${ci}" data-ii="${ii}" rows="1" title="点击编辑文字">${escV(it.txt)}</textarea>
+          <span class="ck-ops"><button class="mustb ${it.must?'on':''}" data-act="must" data-ci="${ci}" data-ii="${ii}" title="切换必办/选办">${it.must?'必办':'选办'}</button><button class="ckb danger" data-act="delitem" data-ci="${ci}" data-ii="${ii}" title="删除条目">✕</button></span>
+        </div>`).join('')}
+    </div>`).join('');
+  const total=S.ckData.reduce((a,c)=>a+c.items.length,0);
+  const done=S.ckData.reduce((a,c)=>a+c.items.filter(it=>S.ck[it.id]).length,0);
+  document.getElementById('ck-bar').style.width=(total?done/total*100:0)+'%';
+  document.getElementById('ck-count').innerText=`已完成 ${done} / ${total} 项`;
+  document.querySelectorAll('.ck-txt').forEach(t=>{ t.style.height='auto'; t.style.height=(t.scrollHeight+2)+'px'; });   /* 自动换行增高 */
+}
+document.getElementById('ck-addcat').onclick=()=>{
+  const n=prompt('新大类名称（如：🧳 出发前一晚）'); if(n===null) return;
+  const nm=n.trim(); if(!nm) return toast('名称不能为空');
+  S.ckData.push({cat:nm,items:[]}); save(); renderCK(); toast('✅ 大类「'+nm+'」已创建，点 ➕ 加条目');
+};
+document.getElementById('ck-grid').addEventListener('click',e=>{
+  const b=e.target.closest('button[data-act]'); if(!b) return;
+  const {act}=b.dataset, ci=+b.dataset.ci, ii=+b.dataset.ii;
+  const c=S.ckData[ci]; if(!c) return;
+  if(act==='additem'){
+    const t=prompt('新增条目（默认标记为必办）：'); if(t===null) return;
+    if(!t.trim()) return toast('内容不能为空');
+    c.items.push({id:'k'+Date.now()+Math.floor(Math.random()*99),txt:t.trim(),must:true});
+    save(); renderCK(); toast('➕ 已添加到「'+c.cat+'」');
+  }
+  if(act==='rencat'){
+    const n=prompt('重命名大类：',c.cat); if(n===null) return;
+    if(n.trim()){ c.cat=n.trim(); save(); renderCK(); }
+  }
+  if(act==='delcat'){
+    if(confirm('删除大类「'+c.cat+'」及其 '+c.items.length+' 条条目？')){ S.ckData.splice(ci,1); save(); renderCK(); toast('已删除大类'); }
+  }
+  if(act==='must'){ c.items[ii].must=!c.items[ii].must; save(); renderCK(); }
+  if(act==='delitem'){ c.items.splice(ii,1); save(); renderCK(); }
+});
+document.getElementById('ck-grid').addEventListener('input',e=>{
+  const t=e.target;
+  if(t.classList.contains('ck-txt')){ S.ckData[+t.dataset.ci].items[+t.dataset.ii].txt=t.value; save();
+    t.style.height='auto'; t.style.height=(t.scrollHeight+2)+'px'; }
+});
+document.getElementById('ck-grid').addEventListener('change',e=>{
+  const id=e.target.dataset.ck; if(!id) return;
+  S.ck[id]=e.target.checked; save(); renderCK();
+});
+
+/* ================= 票据文件夹（文件夹原图 + 上传 IndexedDB） ================= */
+const GALLERY=[];   /* 在线净版：不打包本地票据图 */
+let idb=null, galUrls=[];
+function dbGet(){ return new Promise((res)=>{ if(idb) return res(idb);
+  const r=indexedDB.open('krtip2026',1);
+  r.onupgradeneeded=e=>{ e.target.result.createObjectStore('imgs',{keyPath:'id'}); };
+  r.onsuccess=e=>{ idb=e.target.result; res(idb); };
+  r.onerror=()=>res(null); }); }
+async function dbAll(){ const db=await dbGet(); if(!db) return [];
+  return new Promise(res=>{ const q=db.transaction('imgs').objectStore('imgs').getAll();
+    q.onsuccess=()=>res(q.result||[]); q.onerror=()=>res([]); }); }
+async function dbPut(rec){ const db=await dbGet(); if(!db) return;
+  db.transaction('imgs','readwrite').objectStore('imgs').put(rec); }
+async function dbDel(id){ const db=await dbGet(); if(!db) return;
+  db.transaction('imgs','readwrite').objectStore('imgs').delete(id); }
+async function renderGallery(){
+  galUrls.forEach(u=>URL.revokeObjectURL(u)); galUrls=[];
+  const ups=await dbAll();
+  const files=GALLERY.filter(f=>!S.galHide[f.src]);
+  document.getElementById('gallery-grid').innerHTML=
+    files.map(f=>`<div class="g-item"><img class="ticket-img" src="${f.src}" data-cap="${escV(f.full)}" alt=""><div class="cap">${f.cap}<button class="g-del" data-gdel="${f.src}" title="从票据页隐藏（不动原文件）">🗑</button></div></div>`).join('')+
+    ups.map(u=>{ const url=URL.createObjectURL(u.blob); galUrls.push(url);
+      return `<div class="g-item"><img class="ticket-img" src="${url}" data-cap="${escV(u.name||'上传图片')}" alt=""><div class="cap">📤 ${escV((u.name||'图片').slice(0,18))}<button class="g-del" data-udel="${u.id}" title="删除上传的图片">🗑</button></div></div>`; }).join('');
+  document.getElementById('gallery-desc').textContent=`文件夹票据 ${files.length} 张 + 上传 ${ups.length} 张，点图片放大。`;
+}
+document.getElementById('gal-up').addEventListener('change',async e=>{
+  for(const f of e.target.files){
+    await dbPut({id:'u'+Date.now()+Math.floor(Math.random()*999), name:f.name, blob:f, added:Date.now()});
+  }
+  e.target.value=''; renderGallery(); toast('📤 已上传 '+e.target.files.length+' 张（保存在本机浏览器）');
+});
+document.getElementById('gallery-grid').addEventListener('click',async e=>{
+  const b=e.target.closest('button.g-del'); if(!b) return;
+  e.stopPropagation();
+  if(b.dataset.gdel){ if(confirm('从票据页隐藏这张？（文件夹原文件不受影响）')){ S.galHide[b.dataset.gdel]=1; save(); renderGallery(); toast('已从票据页隐藏（可在控制台清 localStorage 恢复）'); } }
+  if(b.dataset.udel){ if(confirm('删除这张上传的图片？')){ await dbDel(b.dataset.udel); renderGallery(); toast('已删除'); } }
+});
+
+/* ================= Tab 页切换 ================= */
+function switchTab(id){
+  document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===id));
+  document.querySelectorAll('.mid .tabpane').forEach(p=>p.classList.toggle('on',p.id===id));
+  S.tab=id; save();
+  if(id==='map'&&mapS){ setTimeout(()=>{mapS.invalidateSize();mapB.invalidateSize();},60); }
+}
+document.getElementById('tabs').addEventListener('click',e=>{
+  const b=e.target.closest('button[data-tab]'); if(b) switchTab(b.dataset.tab);
+});
+document.querySelectorAll('nav a[href^="#"]').forEach(a=>{
+  a.addEventListener('click',()=>{ const id=a.getAttribute('href').slice(1);
+    if(document.getElementById(id)&&document.getElementById(id).classList.contains('tabpane')) switchTab(id); });
+});
+switchTab(S.tab&&document.getElementById(S.tab)?S.tab:'plan');
+
+/* ================= LIGHTBOX ================= */
+const lb=document.getElementById('lightbox');
+document.addEventListener('click',e=>{
+  const img=e.target.closest('img.ticket-img'); if(!img) return;
+  document.getElementById('lb-img').src=img.src;
+  document.getElementById('lb-cap').innerText=img.dataset.cap||'';
+  lb.classList.add('open');
+});
+lb.addEventListener('click',e=>{ if(e.target===lb) lb.classList.remove('open'); });
+
+/* ================= ICS 日历导出 ================= */
+function icsEsc(s){ return String(s).replace(/\\/g,'\\\\').replace(/;/g,'\\;').replace(/,/g,'\\,').replace(/\r?\n/g,'\\n'); }
+function icsStamp(){ return new Date().toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,''); }
+function foldLine(line){
+  const out=[]; let cur='', n=0;
+  for(const ch of line){
+    const cp=ch.codePointAt(0);
+    const b=cp<0x80?1:(cp<0x800?2:(cp<0x10000?3:4));
+    if(n+b>72){ out.push(cur); cur=' '+ch; n=1+b; }
+    else{ cur+=ch; n+=b; }
+  }
+  if(cur) out.push(cur);
+  return out.join('\r\n');
+}
+function dayPlan(){
+  return {
+    '20261001':{t:'🇰🇷 D1 抵达首尔 · 明洞',d:'08:00 白云T2集合 → 10:50 CZ3061 → 15:25 仁川T1 → AREX → 18:00 索拉戈明洞入住 → 19:00 明洞晚餐'},
+    '20261002':{t:'🇰🇷 D2 木洞射击场+广藏市场',d:'10:30 木洞射击场（带护照！12-13午休）→ 13:00 广藏市场午餐 → 14:30 石村湖/SEOUL SKY → 16:30 首尔林 → 18:30 BHC炸鸡'},
+    '20261003':{t:'🇰🇷 D3 麻浦低密度休闲日（韩国公休日·避人流）',d:'09:30 望远市场 → 11:00 延南洞咖啡 → 14:00 圣水洞(选) → 16:30 汝矣岛汉江野餐 → 19:30 끼로끼로부엉이烤肉(新村·02-332-5154)'},
+    '20261004':{t:'🇰🇷 D4 釜山 CLUBD OASIS 一日往返',d:'08:58 KTX青龙021(首尔站) → 11:16 釜山站 → 出租 → 12:15 CLUBD入园(帽子+水鞋必备) → 19:00出发 → 20:23 KTX072 → 23:06 首尔'},
+    '20261005':{t:'🇰🇷 D5 景福宫韩服+北村+仁寺洞',d:'09:00 景福宫(韩服免票·周二闭馆) → 11:00 北村 → 12:30 土俗村参鸡汤 → 14:00 仁寺洞 → 16:30 南山塔或明洞采购 → 19:00 告别晚宴'},
+    '20261006':{t:'🇰🇷 D6 返程 广州',d:'08:30 早餐 → 10:30 最后采买 → 11:00 退房 → 12:30 AREX → 13:25 仁川T1值机退税 → 16:45 CZ3062 → 19:25 广州T2'}
+  };
+}
+function timedEvents(){
+  const E=[]; const on=id=>{const it=ITEMS.find(i=>i.id===id);return it?isOn(it):false;};
+  E.push({u:'checkin1',s:'20261001',st:'0800',et:'1030',tz:'SH',t:'🛄 白云机场T2集合·CZ3061值机',d:'南航国际柜台；10/1广州雷雨概率77%，出发前查航班动态'});
+  E.push({u:'cz3061',s:'20261001',st:'1050',et:'1525',tz:'MIX',t:'✈️ CZ3061 广州→首尔仁川',d:'CAN T2 10:50 → ICN T1 15:25（已出票）'});
+  E.push({u:'hotelin',s:'20261001',st:'1800',et:'1900',tz:'SE',t:'🏨 入住 索拉戈明洞酒店&公寓',d:'忠武路站7号口步行2分钟 · 서울특별시 중구 충무로2길 9 · +82-2-2263-7979'});
+  if(on('shoot')) E.push({u:'shoot',s:'20261002',st:'1030',et:'1200',tz:'SE',t:'🎯 木洞射击场（带护照）',d:'목동종합운동장 · 12:00-13:00午休 · 预约02-2646-9993'});
+  if(on('gwangjang')) E.push({u:'gwj',s:'20261002',st:'1300',et:'1430',tz:'SE',t:'🥞 广藏市场午餐',d:'绿豆煎饼+生牛肉+麻药紫菜包饭'});
+  if(on('bbq')) E.push({u:'bbq',s:'20261003',st:'1930',et:'2100',tz:'SE',t:'🥓 끼로끼로 부엉이 烤肉（新村本店）',d:'서울 마포구 신촌로16길 16 · 02-332-5154 · 沙拉吧无限量'});
+  E.push({u:'ktx1go',s:'20261004',st:'0825',et:'0855',tz:'SE',t:'🚉 首尔站 KTX检票',d:'电子票出示；提前30分钟到'});
+  E.push({u:'ktx1',s:'20261004',st:'0858',et:'1116',tz:'SE',t:'🚄 KTX-青龙021 首尔→釜山',d:'座位信息已隐去'});
+  E.push({u:'clubd',s:'20261004',st:'1215',et:'1900',tz:'SE',t:'🌊 CLUBD OASIS 水上乐园+SPA',d:'海云台LCT · 帽子+戏水专用鞋强制 · 取票后20分钟内过闸机 · 19:00前必须出发'});
+  E.push({u:'ktx2',s:'20261004',st:'2023',et:'2306',tz:'SE',t:'🚄 KTX 072 釜山→首尔',d:'座位信息已隐去'});
+  if(on('palace')||on('hanbok')) E.push({u:'palace',s:'20261005',st:'0900',et:'1100',tz:'SE',t:'🏯 景福宫（韩服免票）',d:'10:00守门将换岗 · 周二闭馆'});
+  if(on('tosok')) E.push({u:'tosok',s:'20261005',st:'1230',et:'1400',tz:'SE',t:'🍲 土俗村参鸡汤午餐',d:'景福宫旁 · 米其林推荐'});
+  E.push({u:'checkout',s:'20261006',st:'1100',et:'1230',tz:'SE',t:'🧳 退房·出发仁川机场',d:'退房后出租→首尔站AREX直达(51分钟)'});
+  E.push({u:'cz3062',s:'20261006',st:'1645',et:'1925',tz:'MIX2',t:'✈️ CZ3062 首尔→广州',d:'ICN T1 16:45 → CAN T2 19:25（托运前先退税盖章）'});
+  return E;
+}
+function plus30(hm){ let [h,m]=hm.split(':').map(Number); m+=30; if(m>=60){m-=60;h=(h+1)%24;} return String(h).padStart(2,'0')+String(m).padStart(2,'0'); }
+function exportICS(){
+  const CRLF='\r\n';
+  const L=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//KR Trip 2026//CN','CALSCALE:GREGORIAN','METHOD:PUBLISH','X-WR-CALNAME:🇰🇷 韩国国庆之旅 10/1-10/6','X-WR-TIMEZONE:Asia/Seoul',
+  'BEGIN:VTIMEZONE','TZID:Asia/Seoul','BEGIN:STANDARD','DTSTART:19700101T000000','TZOFFSETFROM:+0900','TZOFFSETTO:+0900','TZNAME:KST','END:STANDARD','END:VTIMEZONE',
+  'BEGIN:VTIMEZONE','TZID:Asia/Shanghai','BEGIN:STANDARD','DTSTART:19700101T000000','TZOFFSETFROM:+0800','TZOFFSETTO:+0800','TZNAME:CST','END:STANDARD','END:VTIMEZONE'];
+  const st=icsStamp();
+  const ev=(uid,sum,desc,extra)=>{ L.push('BEGIN:VEVENT','UID:'+uid+'@krtip2026','DTSTAMP:'+st,...extra,'SUMMARY:'+icsEsc(sum),'DESCRIPTION:'+icsEsc(desc),'END:VEVENT'); };
+  ev('hotel-stay','🏨 索拉戈明洞酒店&公寓（5晚·已付¥4,406）','서울특별시 중구 충무로2길 9（04556）· +82-2-2263-7979 · 含早',['DTSTART;VALUE=DATE:20261001','DTEND;VALUE=DATE:20261006']);
+  const dp=dayPlan();
+  Object.entries(dp).forEach(([d,v])=>{
+    const dayKey='10/'+parseInt(d.slice(6,8),10);
+    const picks=ITEMS.filter(i=>vDay(i)===dayKey && isOn(i) && !isGone(i) && !i.custom);
+    const customs=ITEMS.filter(i=>vDay(i)===dayKey && isOn(i) && !isGone(i) && i.custom);
+    let selfTxt='';
+    if(picks.length) selfTxt+='\n\n【我的自选】'+picks.map(p=>'· '+(p.icon||'')+vName(p)+(vTime(p)?' '+vTime(p):'')).join('\n');
+    customs.forEach(cm=>{ selfTxt+='\n· '+vName(cm)+(vTime(cm)?' '+vTime(cm):'')+(vNote(cm)?' — '+vNote(cm):'')+(vXhs(cm)?' '+vXhs(cm):''); });
+    ev('day'+d,v.t,v.d+selfTxt,['DTSTART;VALUE=DATE:'+d,'DTEND;VALUE=DATE:'+(parseInt(d,10)+1)]);
+  });
+  timedEvents().forEach(e=>{
+    const tz=e.tz==='SH'?'Asia/Shanghai':'Asia/Seoul';
+    const ds='DTSTART;TZID='+tz+':'+e.s+'T'+e.st+'00';
+    let de;
+    if(e.tz==='MIX') de='DTEND;TZID=Asia/Seoul:'+e.s+'T'+e.et+'00';
+    else if(e.tz==='MIX2') de='DTEND;TZID=Asia/Shanghai:'+e.s+'T'+e.et+'00';
+    else de='DTEND;TZID='+tz+':'+e.s+'T'+e.et+'00';
+    ev(e.u,e.t,e.d,[ds,de]);
+  });
+  // 自定义项：带日期+时间的生成独立事件（结束时间取项目设置，缺省+30分钟）
+  ITEMS.filter(i=>i.custom&&vDay(i)&&vTime(i)&&isOn(i)&&!isGone(i)).forEach(cm=>{
+    const d='2026'+'10'+String(parseInt(vDay(cm).slice(3),10)).padStart(2,'0');
+    const stt=vTime(cm).replace(':','');
+    const eT=vETime(cm);
+    const endT=(eT&&toMin(eT)>toMin(vTime(cm)))?eT.replace(':',''):plus30(vTime(cm));
+    ev('cu-'+cm.id,'📌 '+vName(cm),(vNote(cm)||'')+(vXhs(cm)?'\n'+vXhs(cm):'')+(vPaid(cm)?'\n（已付）':'（未付）'),
+      ['DTSTART;TZID=Asia/Seoul:'+d+'T'+stt+'00','DTEND;TZID=Asia/Seoul:'+d+'T'+endT+'00']);
+  });
+  L.push('END:VCALENDAR');
+  const icsText=L.map(foldLine).join(CRLF)+CRLF;
+  const blob=new Blob([icsText],{type:'text/calendar;charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='korea-trip-101-106.ics';
+  document.body.appendChild(a); a.click();
+  setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},500);
+  toast('📥 日历已生成（含自定义项）<br>iPhone 导入方法见按钮下方说明');
+}
+
+/* ================= ☁️ 云同步（私有 Gist + AES-256-GCM 端到端加密） ================= */
+const SYNC={TKN:'krtip_sync_token',PWD:'krtip_sync_pass',AUTO:'krtip_sync_auto',GIST:'krtip_gist_id',PULL:'krtip_last_pull',PUSH:'krtip_last_push',MT:'krtip_mtime',BAK:'krtip_bak_',FILE:'krtip-sync.enc',DESC:'krtip-sync',API:'https://api.github.com'};
+let SYNCING=false, autoPushTimer=null;
+const sTok=()=>localStorage.getItem(SYNC.TKN)||'', sPwd=()=>localStorage.getItem(SYNC.PWD)||'';
+function syncStatus(t){ const el=document.getElementById('sync-status'); if(el) el.textContent=t; }
+function scheduleAutoPush(){
+  if(SYNCING||localStorage.getItem(SYNC.AUTO)!=='1'||!sTok()||!sPwd()) return;
+  clearTimeout(autoPushTimer);
+  autoPushTimer=setTimeout(()=>syncPush(true),3000);
+}
+async function deriveKey(pass,salt){
+  const km=await crypto.subtle.importKey('raw',new TextEncoder().encode(pass),'PBKDF2',false,['deriveKey']);
+  return crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:150000,hash:'SHA-256'},km,{name:'AES-GCM',length:256},false,['encrypt','decrypt']);
+}
+async function encAES(pass,plain){
+  const salt=crypto.getRandomValues(new Uint8Array(16)), iv=crypto.getRandomValues(new Uint8Array(12));
+  const key=await deriveKey(pass,salt);
+  const ct=await crypto.subtle.encrypt({name:'AES-GCM',iv},key,new TextEncoder().encode(plain));
+  const b64=a=>btoa(String.fromCharCode(...new Uint8Array(a)));
+  return b64(salt)+'.'+b64(iv)+'.'+b64(ct);
+}
+async function decAES(pass,payload){
+  const d64=x=>Uint8Array.from(atob(x),ch=>ch.charCodeAt(0));
+  const [s,i,c]=payload.split('.');
+  const key=await deriveKey(pass,d64(s));
+  const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:d64(i)},key,d64(c));
+  return new TextDecoder().decode(pt);
+}
+function gh(path,opt={}){
+  return fetch(SYNC.API+path,{...opt,headers:{Authorization:'token '+sTok(),Accept:'application/vnd.github+json','Content-Type':'application/json',...(opt.headers||{})}});
+}
+async function findOrCreateGist(content){
+  const saved=localStorage.getItem(SYNC.GIST); if(saved) return saved;
+  for(let p=1;p<=3;p++){                                    /* 找旧 Gist */
+    const r=await gh('/gists?page='+p+'&per_page=100');
+    if(!r.ok) break;
+    const arr=await r.json(); if(!arr.length) break;
+    const hit=arr.find(g=>g.description===SYNC.DESC);
+    if(hit){ localStorage.setItem(SYNC.GIST,hit.id); return hit.id; }
+  }
+  const r=await gh('/gists',{method:'POST',body:JSON.stringify({description:SYNC.DESC,public:false,files:{[SYNC.FILE]:{content}}})});
+  if(!r.ok){ const e=r.status===401?'Token 无效或未勾 gist 权限':r.status===403?'Token 权限不足/被限流':'HTTP '+r.status; throw new Error('创建 Gist 失败：'+e); }
+  const g=await r.json(); localStorage.setItem(SYNC.GIST,g.id); return g.id;
+}
+function backupLocal(){
+  try{
+    localStorage.setItem(SYNC.BAK+Date.now(),JSON.stringify(S));
+    Object.keys(localStorage).filter(k=>k.startsWith(SYNC.BAK)).map(k=>+k.slice(SYNC.BAK.length)).sort((a,b)=>b-a).slice(10)
+      .forEach(t=>localStorage.removeItem(SYNC.BAK+t));
+  }catch(e){}
+}
+const lastSyncMark=()=>Math.max(+localStorage.getItem(SYNC.PULL)||0, +localStorage.getItem(SYNC.PUSH)||0);
+async function syncPush(silent){
+  if(!sTok()||!sPwd()){ if(!silent) syncStatus('请先填写 Token 和同步密码'); return; }
+  if(!crypto.subtle){ syncStatus('当前环境不支持加密，请用在线版'); return; }
+  SYNCING=true; syncStatus('加密并推送中…');
+  try{
+    const id=await findOrCreateGist('');                    /* 确保拿到 gist id */
+    const cur=await gh('/gists/'+id);
+    if(cur.ok){                                              /* 冲突检测：云端比上次同步新 且 本地无新改动 → 提醒 */
+      const g=await cur.json();
+      const remoteNew=Date.parse(g.updated_at||0)>lastSyncMark();
+      const localDirty=(+localStorage.getItem(SYNC.MT)||0)>lastSyncMark();
+      if(remoteNew&&!localDirty&&!silent&&!confirm('云端有另一设备推送的更新版本，继续推送将覆盖它。\n（建议先「从云端恢复」）\n仍要覆盖？')){ SYNCING=false; syncStatus('已取消（云端较新）'); return; }
+      if(remoteNew&&localDirty&&!silent&&!confirm('云端和本地都有新改动，推送会覆盖云端版本（本地已自动备份）。继续？')){ SYNCING=false; syncStatus('已取消'); return; }
+    }
+    backupLocal();
+    const payload=await encAES(sPwd(),JSON.stringify(S));
+    const r=await gh('/gists/'+id,{method:'PATCH',body:JSON.stringify({description:SYNC.DESC,files:{[SYNC.FILE]:{content:payload}}})});
+    if(!r.ok){ const e=r.status===401?'Token 无效':'HTTP '+r.status; throw new Error('推送失败：'+e); }
+    localStorage.setItem(SYNC.PUSH,String(Date.now()));
+    syncStatus('✅ 已推送 '+new Date().toLocaleTimeString());
+    if(!silent) toast('☁️ 已加密推送到你的私有 Gist');
+  }catch(e){ syncStatus('❌ '+e.message); if(!silent) toast('❌ '+e.message); }
+  SYNCING=false;
+}
+async function syncPull(silent){
+  if(!sTok()||!sPwd()){ if(!silent) syncStatus('请先填写 Token 和同步密码'); return; }
+  const id=localStorage.getItem(SYNC.GIST);
+  if(!id){ syncStatus('云端还没有数据（先推送一次）'); return; }
+  SYNCING=true; syncStatus('拉取中…');
+  try{
+    const r=await gh('/gists/'+id);
+    if(!r.ok) throw new Error('HTTP '+r.status+(r.status===404?'（Gist 不存在，请先推送）':''));
+    const g=await r.json();
+    const content=g.files&&g.files[SYNC.FILE]&&g.files[SYNC.FILE].content;
+    if(!content){ syncStatus('云端文件为空'); SYNCING=false; return; }
+    const remoteNew=Date.parse(g.updated_at||0)>lastSyncMark();
+    const localDirty=(+localStorage.getItem(SYNC.MT)||0)>lastSyncMark();
+    if(silent&&!remoteNew){ syncStatus('云端无更新'); SYNCING=false; return; }          /* 自动拉取：无新则跳过 */
+    if(localDirty&&!silent&&!confirm('本地有未同步的修改，恢复云端会覆盖本地（已自动备份）。继续？')){ syncStatus('已取消'); SYNCING=false; return; }
+    if(localDirty) backupLocal();
+    const plain=await decAES(sPwd(),content);
+    const data=JSON.parse(plain);
+    Object.keys(S).forEach(k=>delete S[k]);
+    Object.assign(S,data);
+    localStorage.setItem(LS_KEY,JSON.stringify(S));
+    localStorage.setItem(SYNC.PULL,String(Date.now()));
+    renderLeft(); refreshNumbers(); renderCK(); renderGallery(); if(S.tab) switchTab(S.tab);
+    syncStatus('✅ 已恢复 '+new Date(g.updated_at).toLocaleString());
+    toast('⬇️ 已从云端恢复（解密成功）');
+  }catch(e){
+    syncStatus(/FormatError|OperationError|JSON/.test(e.name+e.message)?'❌ 解密失败：密码不正确或数据损坏':'❌ '+e.message);
+  }
+  SYNCING=false;
+}
+function wireSyncUI(){
+  const t=document.getElementById('sync-token'), p=document.getElementById('sync-pass'), a=document.getElementById('sync-auto');
+  if(!t) return;
+  t.value=sTok(); p.value=sPwd(); a.checked=localStorage.getItem(SYNC.AUTO)==='1';
+  t.onchange=()=>{ localStorage.setItem(SYNC.TKN,t.value.trim()); syncStatus(t.value?'Token 已保存（本机）':'Token 已清除'); };
+  p.onchange=()=>{ localStorage.setItem(SYNC.PWD,p.value); syncStatus('密码已保存（本机，不上传）'); };
+  a.onchange=()=>{ localStorage.setItem(SYNC.AUTO,a.checked?'1':'0'); if(a.checked) scheduleAutoPush(); };
+  document.getElementById('sync-push').onclick=()=>syncPush(false);
+  document.getElementById('sync-pull').onclick=()=>syncPull(false);
+  wireSyncUI.done=true;
+}
+['visibilitychange','online'].forEach(ev=>document.addEventListener(ev,()=>{
+  if(ev==='visibilitychange'&&document.visibilityState!=='visible') return;
+  if(localStorage.getItem(SYNC.AUTO)==='1'&&sTok()&&sPwd()&&!SYNCING&&wireSyncUI.done) syncPull(true);
+}));
+wireSyncUI();
+
+/* ================= 启动 ================= */
+renderLeft(); refreshNumbers(); renderCK(); renderGallery();
+</script>
+</body>
+</html>
