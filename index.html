@@ -427,7 +427,6 @@ footer{padding:26px 0 40px;color:var(--sub);font-size:12px;text-align:center}
         <div id="sum-rows"></div>
         <div style="display:flex;gap:5px;margin-top:6px">
           <button class="btn sm" id="copy-sum">📋 摘要</button>
-          <button class="btn green sm" onclick="exportICS()">📥 日历</button>
         </div>
       </div>
       <div style="display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap">
@@ -1001,7 +1000,7 @@ function renderLeft(){
     const itemsOf=ITEMS.filter(i=>!isGone(i)&&supOfItem(i)===sp);
     const sum=itemsOf.filter(isOn).reduce((s,it)=>s+itemCNY(it),0);
     const has=itemsOf.some(isOn);
-    const open=prevSup[sp.id]!==undefined?(prevSup[sp.id]?' open':''):(has?' open':'');
+    const open=prevSup[sp.id]!==undefined?(prevSup[sp.id]?' open':''):''; /* 默认全折叠 */
     const subsHtml=subcatsOf(sp).map(sc=>{
       const items=sortItems(itemsOf.filter(i=>vCat(i)===sc));
       if(!items.length) return '';
@@ -1061,24 +1060,16 @@ function refreshNumbers(){
   ITEMS.forEach(it=>{ if(isGone(it)||!isOn(it)) return; const s=itemCNY(it); const sc=vCat(it); catSums[sc]=(catSums[sc]||0)+s; spSums[supOfItem(it).id]+=s; });
   document.querySelectorAll('#calc-left details.sub').forEach(d=>{ const el=d.querySelector('.sub-sum'); if(el) el.textContent=fmtCNY(catSums[d.dataset.cat]||0); });
   document.querySelectorAll('#calc-left details.sup').forEach(d=>{ const el=d.querySelector('.sup-sum'); if(el) el.textContent=fmtCNY(spSums[d.dataset.sid]||0); });
-  // 右栏：大类可展开小类（保留展开状态）
-  const prevOpen={}; document.querySelectorAll('#sum-rows details.sum-grp').forEach(d=>prevOpen[d.dataset.sid]=d.open);
-  const rows=[]; let total=0, paidSum=0;
+  // 汇总：只显示合计
+  let total=0;
   SUPERS.forEach(sp=>{
     const onItems=ITEMS.filter(i=>!isGone(i)&&isOn(i)&&supOfItem(i)===sp);
     if(!onItems.length) return;
-    const s=onItems.reduce((a,it)=>a+itemCNY(it),0);
-    total+=s; paidSum+=onItems.filter(vPaid).reduce((a,it)=>a+itemCNY(it),0);
-    const subMap={}; onItems.forEach(i=>{ const c=vCat(i); subMap[c]=(subMap[c]||0)+itemCNY(i); });
-    const ordered=subcatsOf(sp).filter(sc=>sc in subMap).map(sc=>({sc,v:subMap[sc]}));
-    if(sp.name in subMap) ordered.push({sc:sp.name+' ·本级',v:subMap[sp.name]});
-    const subRows=ordered.length?`<div class="sum-subs">`+ordered.map(x=>`<div class="sum-row sub"><span>${escV(x.sc)}</span><b>${fmtCNY(x.v)}</b></div>`).join('')+`</div>`:'';
-    rows.push(`<details class="sum-grp" data-sid="${sp.id}"${prevOpen[sp.id]?' open':''}><summary><i class="dot" style="background:${sp.color}"></i><span class="sg-name">${sp.name}</span><b>${fmtCNY(s)}</b><span class="arr">▸</span></summary>${subRows}</details>`);
+    total+=onItems.reduce((a,it)=>a+itemCNY(it),0);
   });
-  rows.push(`<div class="sum-row paid"><span>其中已支付</span><b>${fmtCNY(paidSum)}</b></div>`);
-  rows.push(`<div class="sum-row"><span>人均（÷2）</span><b>${fmtCNY(total/2)}</b></div>`);
-  rows.push(`<div class="sum-row total"><span>合计（2人）</span><b>${fmtCNY(total)}<span style="font-size:11px;font-weight:400"> ≈ ${fmtKRW(total*(+S.rate||207))}</span></b></div>`);
-  document.getElementById('sum-rows').innerHTML=rows.join('');
+  document.getElementById('sum-rows').innerHTML=
+    `<div class="sum-row total" style="font-size:16px"><span>合计（2人）</span><b style="font-size:18px">${fmtCNY(total)}<span style="font-size:11px;font-weight:400"> ≈ ${fmtKRW(total*(+S.rate||207))}</span></b></div>`+
+    `<div class="sum-row" style="font-size:11px;color:var(--sub)"><span>人均 ¥${(total/2).toFixed(0)}</span></div>`;
   renderRailSum(); renderTimeline(); updateMarkers();
 }
 function renderRailSum(){
