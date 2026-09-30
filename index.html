@@ -33,7 +33,7 @@ header.hero{background:var(--bg);color:var(--ink);padding:38px 0 80px}
 .todo-banner li::before{content:"⏰";position:absolute;left:0}
 
 /* ===== 三栏布局 ===== */
-.app-grid{display:grid;grid-template-columns:330px minmax(0,1fr) 300px;gap:16px;align-items:start;padding-top:18px}
+.app-grid{display:grid;grid-template-columns:330px minmax(0,1fr);gap:16px;align-items:start;padding-top:18px}
 .rail{position:sticky;top:58px;max-height:calc(100vh - 70px);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin}
 .rail::-webkit-scrollbar{width:5px}
 .rail::-webkit-scrollbar-thumb{background:#c7c7cc;border-radius:4px}
@@ -359,7 +359,6 @@ footer{padding:26px 0 40px;color:var(--sub);font-size:12px;text-align:center}
 .bak-item:hover{border-color:var(--blue);color:var(--blue)}
 @media(max-width:1180px){
   .app-grid{grid-template-columns:280px minmax(0,1fr)}
-  .rail-right{grid-column:1/-1;position:static;max-height:none}
 }
 @media(max-width:860px){
   .app-grid{grid-template-columns:1fr}
@@ -395,6 +394,24 @@ footer{padding:26px 0 40px;color:var(--sub);font-size:12px;text-align:center}
   </ul>
 </div></div>
 
+<div class="wrap" style="margin-bottom:12px">
+  <details class="rail-card" id="sync-bar" style="padding:8px 14px">
+    <summary style="cursor:pointer;font-size:13px;font-weight:600;color:var(--blue);list-style:none">☁️ 云同步 <span style="font-weight:400;font-size:11px;color:var(--sub)">(点击展开)</span></summary>
+    <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;margin-top:8px;padding-bottom:4px">
+      <label style="font-size:10.5px;color:var(--sub);flex:1;min-width:160px">Token<input type="password" id="sync-token" placeholder="ghp_…" autocomplete="off" style="display:block;width:100%;margin-top:2px;padding:5px 8px;border:1px solid var(--line);border-radius:8px;font-size:11px;font-family:inherit"></label>
+      <label style="font-size:10.5px;color:var(--sub);flex:1;min-width:120px">密码<input type="password" id="sync-pass" placeholder="加密钥匙" autocomplete="off" style="display:block;width:100%;margin-top:2px;padding:5px 8px;border:1px solid var(--line);border-radius:8px;font-size:11px;font-family:inherit"></label>
+      <label style="display:flex;align-items:center;gap:4px;font-size:10.5px;color:var(--sub)"><input type="checkbox" id="sync-auto">每日自动</label>
+      <button class="btn sm" id="sync-push">⬆️ 推送</button>
+      <button class="btn ghost sm" id="sync-pull">⬇️ 恢复</button>
+      <button class="btn ghost sm" id="sync-baks">🕘 备份</button>
+      <button class="btn ghost sm" id="sync-hist">🕓 历史</button>
+    </div>
+    <div class="muted" id="sync-status" style="font-size:10.5px;margin-top:4px">未同步</div>
+    <div id="sync-baks-list" style="margin-top:4px"></div>
+    <div id="sync-hist-list" style="margin-top:4px"></div>
+  </details>
+</div>
+
 <div class="app-grid wrap">
 
   <!-- ============ 左栏：勾选/新增清单（悬浮） ============ -->
@@ -402,6 +419,17 @@ footer{padding:26px 0 40px;color:var(--sub);font-size:12px;text-align:center}
     <div class="rail-card">
       <h3>☑️ 行程费用清单 <span class="mini">勾选→行程+费用</span></h3>
       <div id="rail-sum">…</div>
+      <div style="background:#F5F5F7;border-radius:12px;padding:10px 12px;margin-bottom:10px">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+          <span style="font-size:12px;font-weight:700;color:var(--ink)">📊 费用汇总（2人）</span>
+          <span style="font-size:10.5px;color:var(--sub)">💱 1¥=<input type="number" id="rate" step="0.5" min="1" style="width:44px;border:1px solid var(--line);border-radius:5px;text-align:center;font-family:inherit;font-size:11px">₩</span>
+        </div>
+        <div id="sum-rows"></div>
+        <div style="display:flex;gap:5px;margin-top:6px">
+          <button class="btn sm" id="copy-sum">📋 摘要</button>
+          <button class="btn green sm" onclick="exportICS()">📥 日历</button>
+        </div>
+      </div>
       <div style="display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap">
         <button class="btn ghost sm" onclick="setAllDetails(true)">▼ 全展开</button>
         <button class="btn ghost sm" onclick="setAllDetails(false)">▲ 全折叠</button>
@@ -729,45 +757,7 @@ footer{padding:26px 0 40px;color:var(--sub);font-size:12px;text-align:center}
   </main>
 
   <!-- ============ 右栏：费用汇总（悬浮） ============ -->
-  <aside class="rail rail-right" id="calc">
-    <div class="rail-card sum-panel">
-      <h3>📊 费用汇总（2人）</h3>
-      <div class="rate-box">💱 汇率 1 CNY = <input type="number" id="rate" step="0.5" min="1"> KRW<span class="muted">(默认207)</span></div>
-      <div class="legend">
-        <span><i style="background:#1864ab"></i>交通</span>
-        <span><i style="background:#0c8599"></i>住宿</span>
-        <span><i style="background:#f08c00"></i>美食</span>
-        <span><i style="background:#e03131"></i>玩乐</span>
-        <span><i style="background:#d6336c"></i>打卡</span>
-        <span><i style="background:#7048e8"></i>购物</span>
-        <span><i style="background:#495057"></i>其他</span>
-      </div>
-      <div id="sum-rows"></div>
-      <div class="btns">
-        <button class="btn sm" id="copy-sum">📋 复制摘要</button>
-        <button class="btn green sm" onclick="exportICS()">📥 导出日历</button>
-      </div>
-      <details class="sync-box" id="sync-box" style="margin-top:12px">
-        <summary>☁️ 云同步（端到端加密）</summary>
-        <div class="sync-body">
-          <label class="sync-lab">GitHub Token（只勾 gist 权限）<input type="password" id="sync-token" placeholder="ghp_… / github_pat_…" autocomplete="off"></label>
-          <label class="sync-lab">同步密码（加密钥匙，务必牢记）<input type="password" id="sync-pass" placeholder="自定义密码" autocomplete="off"></label>
-          <label class="sync-row"><input type="checkbox" id="sync-auto"> 每日自动推送（≤1 次/天；拉取仅手动）</label>
-          <div class="sync-btns">
-            <button class="btn sm" id="sync-push">⬆️ 推送上云</button>
-            <button class="btn ghost sm" id="sync-pull">⬇️ 从云端恢复</button>
-            <button class="btn ghost sm" id="sync-baks">🕘 备份</button>
-            <button class="btn ghost sm" id="sync-hist">🕓 云端历史</button>
-          </div>
-          <div class="muted" id="sync-status" style="font-size:11px;margin-top:6px">未同步</div>
-          <div id="sync-baks-list" class="baks-list"></div>
-          <div id="sync-hist-list" class="baks-list"></div>
-          <div class="hint">数据在本机用 AES-256-GCM 加密后才写入你的<b>私有 Gist</b>，GitHub 只见密文；主数据+票据图片全部同步（图片自动压缩至≤900px 后逐张加密）。Token/密码只存本机，绝不上传。<b>密码遗忘 = 数据无法解密</b>。每次覆盖前自动本地备份最近 10 版。</div>
-        </div>
-      </details>
-      <div class="hint">* 韩元项按上方汇率折算人民币汇总；「已付」徽章在左栏点击切换，此处实时联动。KTX 为标准票价估算，可在左栏直接改价。</div>
-    </div>
-  </aside>
+  >
 
 </div>
 
